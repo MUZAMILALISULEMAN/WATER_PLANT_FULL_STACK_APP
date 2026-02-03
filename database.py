@@ -30,10 +30,10 @@ def GET_DB():
         raise e
 
     
-    except Exception as e:
-        if connection:
-            connection.rollback()
-        raise HTTPException(status_code=500, detail="Server Internal Error")
+    # except Exception as e:
+    #     if connection:
+    #         connection.rollback()
+    #     raise HTTPException(status_code=500, detail="Server Internal Error")
     
     finally:
     
