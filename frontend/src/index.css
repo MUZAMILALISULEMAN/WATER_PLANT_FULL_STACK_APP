@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+*{
+  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body{
+  background-color: var(--bg-page);
+   font-family: var(--font-body);
+  line-height: 1.6; 
+  
+}
+
+.app-layout {
+  display: grid;
+  /* Sidebar is 250px, Content takes the remaining space */
+  grid-template-columns: 280px 1fr; 
+  gap: 24px; /* Space between the two entities */
+  height: 100vh; /* Optional: makes it fill the screen height */
+}
+
+.customer-section-layout{
+  display: grid;
+  grid-template-columns: 280px 0.98fr;
+  column-gap: 24px;
+  
+}
+
+.details-collapsed{
+  grid-template-columns:  0 0.98fr;
+  column-gap: 0px;
+}
+
+.customer-main-section-layout{
+  
+  grid-template-rows: 120px 1fr;
+  
+
+  
+
+}
+
+
+/* Set specific widths for your columns */
+
+
+/*customer table*/
+.customer-table {
+  table-layout: fixed; /* This is the "lock" */
+  width: 100%;         /* You must set a width for fixed layout to work */
+  border-collapse: collapse;
+  
+}
+.customer-table td {
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds "..." if the text is too long */
+  white-space: nowrap;    /* Keeps it on one line */
+  text-align: center;
+  vertical-align: middle;
+
+}
+
+.customer-table th:nth-child(1) { width: 20%; 
+  
+
+
+}  /* ID */
+.customer-table th:nth-child(2) { width: 15%; } /* Name */
+.customer-table th:nth-child(3) { width: 20%; } /* Contact */
+.customer-table th:nth-child(4) { width: 20%; } /* Status */
+.customer-table th:nth-child(5) { width: 25%; } /* Actions */
+
+
+
+.customer-table td:nth-child(1) {
+ text-align: left;
+ padding: 0 0 0 24px;
+ 
+
+}
+
+/* 1. Define the container height and overflow */
+.table-responsive {
+ 
+  max-height: 280px; /* Adjust this to your needs */
+  overflow-y: auto;  /* Vertical scroll */
+  overflow-x: auto;  /* Horizontal scroll if table is wide */
+  border: 1px solid #e0e0e0; 
+  border-radius: 8px;
+overscroll-behavior: none;
+  
+}
+
+/* 2. Style the Scrollbar for Chrome, Edge, and Safari */
+.table-responsive::-webkit-scrollbar {
+  width: 8px;  /* Width of the vertical scrollbar */
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary-hover); 
+}
+
+/* 3. Style for Firefox */
+.table-responsive {
+  
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary) #f1f1f1;
+  position: relative;
+  
+  
+  
+}

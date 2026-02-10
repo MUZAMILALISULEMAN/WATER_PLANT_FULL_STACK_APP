@@ -20,6 +20,15 @@ def display_all_customers(cursor = Depends(GET_DB)):
         return Response(status= True,data = res,message="fetched all customers.")
      return Response(status= True,message="there is no customer in records.")
 
+@customersAPI.get("/stats")  
+def display_all_customers(cursor = Depends(GET_DB)):
+     
+     cursor.execute("select * from display_customer_stats()")
+     res = cursor.fetchone()
+     if res[0]  != 0: #res[0] is total customers count
+        return Response(status= True,data = res,message="fetched all customers stats.")
+     return Response(status= True,message="there is no customer to show stats.")
+
 @customersAPI.get("/filter")
 def filter_customers(q: str = None, cursor = Depends(GET_DB)):
 
