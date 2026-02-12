@@ -59,7 +59,7 @@ def search_customer(q :str  = "", cursor = Depends(GET_DB)):
         res = cursor.fetchall()
         if(count) != 0:
             return Response(status=True,data= res,message=f"searched the customers with {q}.")
-        return Response(status=True,  message=f"there is no matching customer with {q}")
+        return Response(status=True,  message=f"there is no matching customer #{q}")
         
      except Error as e: 
          cursor.connection.rollback()
@@ -71,11 +71,13 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
     try:
         requestBody = requestBody.model_dump(exclude_none=True)
         cursor.execute("CALL update_customer(%s,%s)",(id,json.dumps(requestBody),))
-        return Response(status=True,message=f"updated the customer with id {id}")
+        return Response(status=True,message=f"updated the customer #{id}")
       
     except Error as e:
-        print(e)
+        
+        print(requestBody)
         cursor.connection.rollback()
+        
         return Response(status=False,message=e.diag.message_primary)
 
 @customersAPI.post("/add") #proc called
@@ -101,8 +103,8 @@ def display_customer(id: int, cursor = Depends(GET_DB)):
      res = cursor.fetchone()
     
      if count != 0:
-        return Response(data = res , status = True,message=f"Found Customer With ID {id}.")    
-     return Response(status=True, message=f'No Customer Found With ID {id}.')
+        return Response(data = res , status = True,message=f"Found Customer #{id}.")    
+     return Response(status=True, message=f'No Customer Found #{id}.')
         
     except Error as e:
         cursor.connection.rollback()
@@ -114,7 +116,7 @@ def set_advance_money(id: int,advance_money : int = Body(),cursor = Depends(GET_
 
     try:
         cursor.execute("CALL set_advance_money(%s,%s)",(id,advance_money))
-        return Response(status=True,message=f"updated the advance money.")
+        return Response(status=True,message=f"Updated the dvance money.")
       
     except Error as e:
 
