@@ -1,0 +1,96 @@
+/* Block */
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background-color: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border-light);
+}
+
+/* Elements */
+.sidebar__logo {
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  color: var(--text-on-secondary);
+  text-align: center;
+  padding: var(--fs-body);
+  box-shadow: var(--shadow-secondary);
+  font-size: 20px;
+  background: var(--color-secondary);
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: 2px;
+  transition: var(--transition-slow);
+}
+
+.sidebar__logo:hover {
+  background: var(--color-secondary-hover);
+}
+
+.sidebar__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: var(--space-lg);
+}
+
+.sidebar__item {
+  border-top-right-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+  text-transform: capitalize;
+  padding: 8px 20px;
+  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 2;
+}
+
+.sidebar__item > i {
+  margin-right: 8px;
+  font-size: var(--fs-body);
+}
+
+.sidebar__item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Modifier */
+.sidebar__item--active {
+  border-left: 3px solid var(--color-secondary-active);
+  background-color: var(--color-secondary-soft);
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.sidebar__exit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-primary);
+  padding: var(--btn-padding-x);
+  border: none;
+  font-size: var(--fs-body);
+  width: 100px;
+  height: var(--btn-height);
+  font-weight: 600;
+  cursor: pointer;
+  background-color: transparent;
+  margin-bottom: var(--space-xl);
+  transition: var(--transition-slow);
+}
+
+.sidebar__exit-btn > i {
+  font-size: 16px;
+}
+
+.sidebar__exit-btn:hover {
+  color: var(--color-primary-hover);
+  letter-spacing: 2px;
+}

@@ -12,13 +12,7 @@ body{
   
 }
 
-.app-layout {
-  display: grid;
-  /* Sidebar is 250px, Content takes the remaining space */
-  grid-template-columns: 280px 1fr; 
-  gap: 24px; /* Space between the two entities */
-  height: 100vh; /* Optional: makes it fill the screen height */
-}
+
 
 .customer-section-layout{
   display: grid;
@@ -42,86 +36,6 @@ body{
 }
 
 
-/* Set specific widths for your columns */
 
 
-/*customer table*/
-.customer-table {
-  table-layout: fixed; /* This is the "lock" */
-  width: 100%;         /* You must set a width for fixed layout to work */
-  border-collapse: collapse;
-  
-}
-.customer-table td {
-  overflow: hidden;
-  text-overflow: ellipsis; /* Adds "..." if the text is too long */
-  white-space: nowrap;    /* Keeps it on one line */
-  text-align: center;
-  vertical-align: middle;
-
-}
-
-.customer-table th:nth-child(1) { width: 20%; 
-  
-
-
-}  /* ID */
-.customer-table th:nth-child(2) { width: 15%; } /* Name */
-.customer-table th:nth-child(3) { width: 20%; } /* Contact */
-.customer-table th:nth-child(4) { width: 20%; } /* Status */
-.customer-table th:nth-child(5) { width: 25%; } /* Actions */
-
-
-
-.customer-table td:nth-child(1) {
- text-align: left;
- padding: 0 0 0 24px;
- 
-
-}
-
-/* 1. Define the container height and overflow */
-.table-responsive {
- 
-  max-height: 280px; /* Adjust this to your needs */
-  overflow-y: auto;  /* Vertical scroll */
-  overflow-x: auto;  /* Horizontal scroll if table is wide */
-  border: 1px solid #e0e0e0; 
-  border-radius: 8px;
-overscroll-behavior: none;
-  
-}
-
-/* 2. Style the Scrollbar for Chrome, Edge, and Safari */
-.table-responsive::-webkit-scrollbar {
-  width: 8px;  /* Width of the vertical scrollbar */
-  height: 8px; /* Height of the horizontal scrollbar */
-}
-
-.table-responsive::-webkit-scrollbar-track {
-  
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb {
-  background: var(--color-secondary);
-  
-  border-radius: 10px;
-}
-
-.table-responsive::-webkit-scrollbar-thumb:hover {
-  background: var(--color-secondary-hover); 
-}
-
-/* 3. Style for Firefox */
-.table-responsive {
-  
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-secondary) #f1f1f1;
-  position: relative;
-  
-  
-  
-}
 

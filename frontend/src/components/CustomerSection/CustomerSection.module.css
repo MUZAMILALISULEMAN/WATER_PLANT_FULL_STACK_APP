@@ -1,0 +1,25 @@
+/* Block: The overall grid container */
+.customer-section {
+  display: grid;
+  grid-template-columns: 280px 0.98fr; /* Your "lock" width */
+  column-gap: 24px;
+  transition: all var(--transition-slow); /* Keeps the shift smooth */
+}
+
+/* Modifier: When details card is hidden */
+.customer-section--collapsed {
+  grid-template-columns: 0 0.98fr;
+  column-gap: 0px;
+}
+
+/* Element: Sidebar container */
+.customer-section__sidebar {
+  overflow: hidden; /* Ensures content doesn't bleed when width is 0 */
+}
+
+/* Element: The main area (Stats + Table) */
+.customer-section__main {
+  display: grid;
+  grid-template-rows: 128px 1fr;
+  /* Add any specific padding/gap needed for the inner sections here */
+}

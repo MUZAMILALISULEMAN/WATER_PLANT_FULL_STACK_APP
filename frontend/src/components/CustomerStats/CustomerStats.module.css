@@ -1,0 +1,80 @@
+.stats {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.stats__card {
+  background: white;
+  width: 100%;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border-light);
+  color: var(--color-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 2px;
+  padding: 16px 24px;
+}
+
+.stats__title-container {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+/* Mapping your .title-container > span */
+.stats__value {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  
+  color: var(--color-secondary);
+  
+}
+
+.stats__title > i {
+  margin-right: 4px;
+}
+
+.stats__content {
+  line-height: 1.9;
+ 
+  font-size: 12px;
+  
+
+  color: var(--text-tertiary);
+}
+
+.stats__value--inactive {
+    letter-spacing: 0px;
+    font-weight: 600;
+    font-size: 12px;
+  color: var(--color-error-light);
+}
+
+.stats__value--active {
+    letter-spacing: 0px;
+    font-weight: 600;
+    font-size: 12px;
+  color: var(--color-success-light);
+}
+
+/* Your .highlight logic applied to BEM classes */
+.stats__card--highlight,
+.stats__customer-name--highlight,
+.stats__value-bottle--highlight {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+/* Preserving your .stat-row logic */
+.stats__row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}

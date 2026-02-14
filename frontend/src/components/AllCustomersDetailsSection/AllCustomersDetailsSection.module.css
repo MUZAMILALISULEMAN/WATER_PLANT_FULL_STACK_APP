@@ -1,0 +1,372 @@
+
+/* 1. Table Container & Scrollbar (Mapping .table-responsive) */
+.customer-manager__table-wrapper {
+  max-height: 280px; 
+  overflow-y: auto;  
+  overflow-x: auto;  
+  border: 1px solid #e0e0e0; 
+  border-radius: 8px;
+  overscroll-behavior: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary) #f1f1f1;
+  position: relative;
+}
+
+/* Scrollbar Styling for Chrome, Edge, and Safari */
+.customer-manager__table-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.customer-manager__table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.customer-manager__table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  border-radius: 10px;
+}
+
+.customer-manager__table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary-hover); 
+}
+
+/* 2. Table Layout Logic */
+.customer-table {
+  table-layout: fixed; /* The "lock" */
+  width: 100%;         
+  border-collapse: collapse;
+}
+
+/* Column Widths (Mapping th:nth-child) */
+.customer-table__header:nth-child(1) { width: 20%; } /* Name */
+.customer-table__header:nth-child(2) { width: 15%; } /* ID */
+.customer-table__header:nth-child(3) { width: 20%; } /* Contact */
+.customer-table__header:nth-child(4) { width: 20%; } /* Status */
+.customer-table__header:nth-child(5) { width: 25%; } /* Actions */
+
+/* Cell Styling (Mapping td) */
+.customer-table__cell {
+  padding: 8px 0;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--color-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  white-space: nowrap;    
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Specific Padding for first column (Name) */
+.customer-table__cell:nth-child(1) {
+  text-align: left;
+  padding: 0 0 0 24px;
+}
+
+/* 3. Header Styling */
+.customer-table__head {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 12px;
+  letter-spacing: 0.05rem;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  background-color: var(--color-secondary-soft);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xs);
+  color: var(--color-secondary);
+}
+
+.customer-table__header {
+  padding: 4px 0;
+  background-color: var(--color-secondary-soft); /* Ensure sticky header isn't transparent */
+}
+
+/* 4. Action Buttons (Kept from previous actual CSS) */
+.customer-table__btn-view,
+.customer-table__btn-edit {
+  border: none;
+  background-color: var(--bg-hover);
+  color: var(--text-heading);
+  padding: 4px 8px;
+  border: var(--border-strong);
+  cursor: pointer;
+  font-family: var(--font-body);
+  border-radius: 4px;
+  transition: var(--transition-slow);
+  box-shadow: var(--shadow-xs);
+}
+
+.customer-table__btn-view {
+  background-color: var(--color-secondary);
+  color: var(--bg-hover);
+}
+
+
+ #success-badge {
+  border: 1px solid var(--color-success-light);
+  background-color: var(--color-success-soft);
+  border-radius: 4px;
+  display: inline-block;
+    padding: 0px 8px;
+  color: var(--color-success);
+  cursor: pointer;
+} 
+
+#error-badge {
+  cursor: pointer;
+  border: 1px solid var(--color-error-light);
+  background-color: var(--color-error-soft);
+  border-radius: 4px;
+  display: inline-block;
+  padding: 0px 4px;
+  color: var(--color-error);
+}
+/* Scoped Badges */
+.success-badge {
+  border: 1px solid var(--color-success-light);
+  background-color: var(--color-success-soft);
+  border-radius: 4px;
+  display: inline;
+  padding: 2px 4px;
+  margin-bottom: 2px;
+  color: var(--color-success);
+  cursor: pointer;
+}
+
+.error-badge {
+  cursor: pointer;
+  border: 1px solid var(--color-error-light);
+  background-color: var(--color-error-soft);
+  border-radius: 4px;
+  display: inline;
+  padding: 2px 4px;
+  color: var(--color-error);
+}
+
+/* Block - Customer Manager */
+.customer-manager {
+  border: 1px solid var(--border-light);
+  margin-top: 24px;
+  background-color: #fff;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header Elements */
+.customer-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-secondary);
+}
+
+.customer-manager__title h4 {
+  letter-spacing: 1px;
+}
+
+.customer-manager__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.customer-manager__actions-bar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Stats Element */
+.customer-manager__stats {
+  /* Inherits text color */
+}
+
+.customer-manager__count {
+  margin-left: 4px;
+}
+
+/* Search Wrapper Elements */
+.customer-manager__search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-light);
+  padding: 7px 16px;
+  border-radius: 4px;
+  box-shadow: var(--shadow-xs);
+}
+
+.customer-manager__search-input {
+  border: none;
+  background-color: transparent;
+  outline: none;
+  padding-right: 10px;
+}
+
+.customer-manager__search-icon {
+  cursor: pointer;
+  color: var(--color-secondary);
+  position: absolute;
+  right: 4px;
+}
+
+/* Add Button & Filter Logic */
+.customer-manager__add-btn {
+  border: none;
+  background-color: var(--color-secondary);
+  color: white;
+  padding: 8px 8px;
+  border: var(--border-strong);
+  cursor: pointer;
+  font-family: var(--font-body);
+  border-radius: 4px;
+  transition: var(--transition-slow);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Table Elements */
+.customer-manager__table-wrapper {
+  /* Container for responsiveness if needed */
+}
+
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.customer-table__head {
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 12px;
+  letter-spacing: 0.05rem;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xs);
+  color: var(--color-secondary);
+}
+
+.customer-table__header {
+  padding: 4px 0;
+}
+
+.customer-table__cell {
+  padding: 8px 0;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--color-secondary);
+}
+
+/* Modifiers */
+.customer-table__cell--name {
+  text-transform: capitalize;
+}
+
+/* Action Buttons */
+.customer-table__btn-view,
+.customer-table__btn-edit {
+  border: none;
+  background-color: var(--bg-hover);
+  color: var(--text-heading);
+  padding: 4px 8px;
+  border: var(--border-strong);
+  cursor: pointer;
+  font-family: var(--font-body);
+  border-radius: 4px;
+  transition: var(--transition-slow);
+  box-shadow: var(--shadow-xs);
+}
+
+.customer-table__btn-view {
+  background-color: var(--color-secondary);
+  color: var(--bg-hover);
+}
+
+.customer-table__btn-view i,
+.customer-table__btn-edit i {
+  margin-right: 1px;
+}
+
+/* Shared Utility/Editable Styles */
+.editable-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editable-name:focus {
+  outline: none;
+  font-weight: 600;
+  color: var(--color-secondary-light);
+}
+
+/* Filter Dropdown (If used inside this module) */
+.filter-container {
+  position: relative; /* Essential so the menu aligns to this button */
+  display: inline-block;
+}
+
+.filter-button {
+  border: none;
+  background-color: var(--bg-hover);
+  color: var(--color-secondary);
+  padding: 8px 12px;
+  border: var(--border-strong);
+  cursor: pointer;
+  font-family: var(--font-body);
+  border-radius: 4px;
+  transition: var(--transition-slow);
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Your original .filter-menu styles mapped */
+.filter-menu {
+  position: absolute;
+  top: 110%; /* Place it right below the button */
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 72px;
+  padding: 8px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  list-style: none;
+  z-index: 100; /* Ensure it stays on top of the table */
+}
+
+.filter-menu-item {
+  color: var(--text-secondary);
+  padding: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  width: 100%;
+  text-align: center;
+}
+
+.filter-menu-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.active-menu-item {
+  color: var(--color-secondary-hover);
+  font-weight: 700;
+}

@@ -1,0 +1,196 @@
+/* BLOCK */
+.customer-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 280px;
+  background-color: var(--bg-surface);
+  height: 100vh;
+  box-shadow: var(--shadow-xs);
+  border-right: 1px solid var(--border-light);
+  border-left: 1px solid var(--border-light);
+}
+
+/* ELEMENTS - Header */
+.customer-card__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-secondary-soft);
+  padding: 20px;
+  letter-spacing: 2px;
+  color: var(--color-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+.customer-card__header i {
+  position: absolute;
+  left: 12px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.customer-card__header i:hover {
+  color: var(--color-secondary-hover);
+}
+
+/* ELEMENTS - Info View */
+.customer-card__info-group {
+  display: flex;
+  flex-direction: column;
+}
+.customer-card--gap-space-xl{
+gap: var(--space-xl);
+}
+
+.customer-card__info-item {
+  margin-left: var(--space-xl);
+  margin-bottom: 12px;
+}
+
+.customer-card__info-item--editing {
+  margin-bottom: 8px; 
+}
+
+.customer-card__label {
+  font-size: var(--fs-xs);
+  margin-bottom: 2px;
+  color: var(--text-secondary);
+}
+
+.customer-card__value {
+  font-size: var(--fs-sm);
+  color: var(--color-secondary-active);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.customer-card__value--editable {
+  /* This maps to your .editable-name if you had specific styles for it */
+  outline: none;
+
+  
+}
+.customer-card__value--editable:focus {
+  /* This maps to your .editable-name if you had specific styles for it */
+  outline: none;
+  color: var(--color-secondary-light);
+  font-weight: 700;
+  
+}
+
+/* ELEMENTS - Add Form */
+.customer-card__add-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.customer-card__add-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: var(--space-xl);
+}
+
+.customer-card__add-label {
+  /* margin-top: 4px; */
+  color: var(--color-secondary);
+  font-size: var(--fs-sm);
+}
+
+.customer-card__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: red; /* Your original style */
+}
+
+.customer-card__input {
+  margin-left: 4px;
+  font-size: 12px;
+  padding: 6px 0px;
+  padding-left: 28px;
+  width: 200px;
+  background: none;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid var(--border-strong);
+  font-size: var(--fs-sm);
+  color: var(--color-secondary);
+}
+
+.customer-card__input::placeholder {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.customer-card__input:focus {
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+.customer-card__input-wrapper i {
+  position: absolute;
+  left: 12px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.customer-card__input:focus ~ i {
+  color: var(--color-secondary);
+}
+
+/* BUTTONS */
+.customer-card__submit-btn,
+.customer-card__add-submit {
+  border: none;
+  background-color: var(--color-secondary);
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--text-on-secondary);
+  cursor: pointer;
+  width: 100px;
+  margin-left: 50px;
+  margin-top: 4px;
+}
+.customer-card__submit-btn {
+  margin-left: 0px;
+  width: 80px;
+}
+
+/* MODIFIERS / BADGES (Using BEM class instead of ID for modules) */
+#success-badge {
+  border: 1px solid var(--color-success-light);
+  background-color: var(--color-success-soft);
+  border-radius: 4px;
+  display: inline;
+  padding: 2px 8px;
+  margin-bottom: 2px;
+  color: var(--color-success);
+  cursor: pointer;
+}
+
+#error-badge {
+  cursor: pointer;
+  border: 1px solid var(--color-error-light);
+  background-color: var(--color-error-soft);
+  border-radius: 4px;
+  display: inline;
+  padding: 2px 8px;
+  color: var(--color-error);
+}
+
+.customer-card__value--id {
+  padding: 2px 12px;
+  background-color: var(--color-secondary-soft);
+  display: inline;
+  border: 1px solid var(--color-secondary-light);
+  border-radius: 2px;
+}
+
+
