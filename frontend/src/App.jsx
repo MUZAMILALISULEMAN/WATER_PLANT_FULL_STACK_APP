@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { toast ,Toaster} from 'sonner'
-function ExitButton(){
-  return (
-    <button className='exit-button'><i className="fa-solid fa-arrow-left-to-bracket "></i>Exit</button>
-  )
-}
+
 
 function SideBar({activeTab,setActiveTab}) { 
 
@@ -49,7 +45,7 @@ function SideBar({activeTab,setActiveTab}) {
 
     </div>
 
-    <ExitButton></ExitButton>
+    <button className='exit-button'><i className="fa-solid fa-arrow-left-to-bracket "></i>Exit</button>
 
     </div>
 
@@ -316,28 +312,82 @@ const handleSubmit = ()=>{
   
 
   <div className="add-item">
+    
     <label className="add-label">Customer Name</label>
-    <input className="add-input" placeholder='Enter Customer Name...'></input>
+    <div className='input-wrapper'>
+    <input className="add-input" placeholder='Muzamil Bhai'></input>
+  <i class="fa-solid fa-user "></i>
+      <span className='validation-msg'></span>
+    </div>
   </div>
 
  <div className="add-item">
     <label className="add-label">Cell Phone</label>
-    <input className="add-input" placeholder='Enter Cell Phone...'></input>
+    <div className='input-wrapper'>
+    <input className="add-input" placeholder='03XXXXXXXXX' 
+    onBlur={(e) => {
+  const value = e.target.value;
+  const wrapper = e.target.closest('.input-wrapper');
+  const span = wrapper.querySelector('span');
+  const icon = wrapper.querySelector('i');
+
+  icon.classList.remove('validate-error','validate-success');
+  span.classList.remove('validate-error','validate-success');
+  e.target.classList.remove('error-border-bottom','success-border-bottom');
+  void e.target.offsetWidth;
+  
+  const isValid = value.trim() !== "" ? /^03\d{9}$/.test(value) : false;
+  
+
+      if(isValid){
+        
+        icon.classList.add('validate-success');
+        span.classList.add('validate-success');
+         e.target.classList.add('success-border-bottom');
+        
+
+      }else{
+        icon.classList.add('validate-error');
+        span.classList.add('validate-error');
+         e.target.classList.add('error-border-bottom');
+        
+      }
+  
+  
+}}
+    
+    ></input>
+     <i class="fa-solid fa-phone "></i>
+     <span className='validation-msg'></span>
+  </div>
   </div>
 
   <div className="add-item">
     <label className="add-label" >Address</label>
-    <input className="add-input" placeholder='Enter Address...' formNoValidate></input>
+     <div className='input-wrapper'>
+    <input className="add-input" placeholder='ABC-House-123 Shah Town' formNoValidate></input>
+     <i class="fa-solid fa-location-dot"></i>
+     
+     </div>
   </div>
 
   <div className="add-item">
     <label className="add-label" >Unit Price</label>
-    <input className="add-input" placeholder='Enter Unit Price...'></input>
+     <div className='input-wrapper'>
+    <input className="add-input" placeholder='Price' value="60"></input>
+    <i class="fa-solid fa-rupee-sign"></i>
+    <span className='validation-msg'></span>
+  </div>
   </div>
 
   <div className="add-item">
     <label className="add-label">Advance Money</label>
-    <input className="add-input" placeholder='Enter Advance Money...'></input>
+     <div className='input-wrapper'>
+
+    <input className="add-input" placeholder='Advance' value="0"></input>
+    <i class="fa-sharp fa-solid fa-right-from-line"></i>
+    <span className='validation-msg'></span>
+     </div>
   </div>
 
 
