@@ -268,7 +268,8 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
                 cell_phone : fields[1].value.trim().toLowerCase(),
                 address: fields[2].value.trim().toLowerCase(),
                 unit_price : fields[3].value.trim().toLowerCase(),
-                advance_money : fields[4].value.trim().toLowerCase()
+                advance_money : fields[4].value.trim().toLowerCase(),
+                modified_by : "Muzamil Ali Suleman"
               }
 
 
@@ -368,6 +369,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
           </div>
         </div>
       )}
+
     </div>
   );
 }

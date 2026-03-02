@@ -14,5 +14,6 @@ class User(BaseModel):
     unit_price : Optional[int] = None
     advance_money : Optional[int] = None
     is_active : Optional[bool] = None
+    modified_by : Optional[str] = None
 
 

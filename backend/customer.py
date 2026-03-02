@@ -83,7 +83,7 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
 @customersAPI.post("/add") #proc called
 def add_customer(requestBody: User , cursor = Depends(GET_DB)):
     try:
-        cursor.execute("CALL add_customer(%s,%s,%s,%s,%s,%s)",(requestBody.name,requestBody.cell_phone,requestBody.unit_price,requestBody.address,requestBody.is_active,requestBody.advance_money))
+        cursor.execute("CALL add_customer(%s,%s,%s,%s,%s,%s,%s)",(requestBody.name,requestBody.cell_phone,requestBody.unit_price,requestBody.address,requestBody.is_active,requestBody.advance_money,requestBody.modified_by))
         return Response(status=True,message=f"added the customer.")
       
     except Error as e:
