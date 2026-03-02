@@ -24,9 +24,12 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
             unit_price: data.data[4],
             advance_money: data.data[7],
             active: data.data[5],
-            status_changed_at: data.data[6]
+            status_changed_at: data.data[6],
+            modification_json : data.data[8]
           };
           setCustomerData(DATA_OBJ);
+          console.log(DATA_OBJ.modification_json);
+          
         }
       } catch (error) {
         toast.error("Server is not responding, try later.");
@@ -51,7 +54,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
     
     // Logic traversal using the new BEM classes from the styles object
     const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
-    const json = {};
+    const json = {modified_by:"Muzamil Ali 2"};
     const clean = (str) => String(str ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
 
     const fieldMapping = [
@@ -133,6 +136,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
         toast.success(data.message);
         triggerRefresh();
         setMode("View");
+  
       } else {
         if(data.message && data.message != "") toast.error(data.message); 
         

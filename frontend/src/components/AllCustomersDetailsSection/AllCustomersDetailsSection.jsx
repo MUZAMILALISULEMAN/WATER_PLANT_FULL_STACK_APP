@@ -133,7 +133,7 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, state, ref
             
             <button 
               className={styles['customer-manager__add-btn']} 
-              onClick={() => { setMode("Add"); setSelectedCustomerId(-2); }}
+              onClick={() => { setMode("Add"); }}
             >
               <i className="fa-solid fa-plus"></i>
             </button>
