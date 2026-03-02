@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './CustomerDetailsCard.module.css';
 
-function CustomerDetailsCard({ cust_id, Mode = "Add", setMode,toast, triggerRefresh, refresh }) {
+function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast, triggerRefresh, refresh }) {
   if (Mode === "None") return null;
 
   const cardRef = useRef(null);
@@ -75,6 +75,45 @@ function CustomerDetailsCard({ cust_id, Mode = "Add", setMode,toast, triggerRefr
     const isActiveStatus = clean(items[6].innerText) === 'active';
     if (isActiveStatus !== customerData.active) {
       json["is_active"] = isActiveStatus;
+
+
+      if(json.cell_phone  && json.cell_phone === ""){
+
+                toast.error("cell phone is empty.")
+                return;
+                
+                
+              }else if(json.cell_phone &&  !(/^03\d{9}$/.test(json.cell_phone))){
+                toast.error("cell phone format is not correct.")
+
+                return;
+              }
+              if(json.unit_price && json.unit_price === ""){
+                toast.error("price is empty.")
+                return;
+              }else if(json.unit_price && parseInt(json.unit_price) < 0){ 
+                toast.error("price is negative.")
+                return;
+                
+              }
+              
+              if(json.advance_money && json.advance_money === ""){
+                
+                json.advance_money = 0;
+                
+                
+              }else if(json.advance_money && parseInt(json.advance_money) < 0){
+                toast.error("advance is negative.")
+                return;
+              }
+             
+              json.unit_price = json.unit_price ? parseInt(json.unit_price) : 0;
+              json.advance_money = json.unit_price ? parseInt(json.advance_money) : 0;
+
+
+
+
+
     }
 
     const postData = async () => {
@@ -221,7 +260,7 @@ function CustomerDetailsCard({ cust_id, Mode = "Add", setMode,toast, triggerRefr
           <div className={styles['customer-card__add-item']}>
             <button className={styles['customer-card__add-submit']} onClick={(e) =>{
 
-              
+                
               
               const fields = customer_ref.current.querySelectorAll(`.${styles['customer-card__input']}`);
               let requestBody = {
@@ -272,16 +311,7 @@ function CustomerDetailsCard({ cust_id, Mode = "Add", setMode,toast, triggerRefr
                 toast.error("advance is negative.")
                 return;
               }
-              const clearForm = () => {
-                
-                
-                
-                for (let i = 0; i < 5; i++) {
-                  fields[i].value = "";
-                  
-                }
-              }
-
+             
               requestBody.unit_price = parseInt(requestBody.unit_price);
               requestBody.advance_money = parseInt(requestBody.advance_money);
 
@@ -303,7 +333,7 @@ function CustomerDetailsCard({ cust_id, Mode = "Add", setMode,toast, triggerRefr
 
                     toast.success(data.message)
                     triggerRefresh();
-                    clearForm();
+                    setMode("None");
                     
                     
                   }else{

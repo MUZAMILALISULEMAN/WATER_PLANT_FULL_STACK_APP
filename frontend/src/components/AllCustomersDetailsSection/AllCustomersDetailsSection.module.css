@@ -1,7 +1,7 @@
 
 /* 1. Table Container & Scrollbar (Mapping .table-responsive) */
 .customer-manager__table-wrapper {
-  max-height: 280px; 
+  max-height: 312px; 
   overflow-y: auto;  
   overflow-x: auto;  
   border: 1px solid #e0e0e0; 
@@ -81,7 +81,7 @@
 }
 
 .customer-table__header {
-  padding: 4px 0;
+  padding: 8px 0;
   background-color: var(--color-secondary-soft); /* Ensure sticky header isn't transparent */
 }
 
@@ -185,10 +185,6 @@
   gap: 4px;
 }
 
-/* Stats Element */
-.customer-manager__stats {
-  /* Inherits text color */
-}
 
 .customer-manager__count {
   margin-left: 4px;
@@ -233,10 +229,6 @@
   box-shadow: var(--shadow-xs);
 }
 
-/* Table Elements */
-.customer-manager__table-wrapper {
-  /* Container for responsiveness if needed */
-}
 
 .customer-table {
   width: 100%;

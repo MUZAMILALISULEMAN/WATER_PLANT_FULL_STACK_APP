@@ -21,7 +21,7 @@ def display_all_customers(cursor = Depends(GET_DB)):
      return Response(status= True,message="there is no customer in records.")
 
 @customersAPI.get("/stats")  
-def display_all_customers(cursor = Depends(GET_DB)):
+def display_all_customers_stats(cursor = Depends(GET_DB)):
      
      cursor.execute("select * from display_customer_stats()")
      res = cursor.fetchone()

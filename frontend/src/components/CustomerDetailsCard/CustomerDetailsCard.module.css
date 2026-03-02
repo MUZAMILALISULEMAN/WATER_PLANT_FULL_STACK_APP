@@ -94,13 +94,13 @@ gap: var(--space-xl);
 .customer-card__add-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
   margin-left: var(--space-xl);
 }
 
 .customer-card__add-label {
-  /* margin-top: 4px; */
-  color: var(--color-secondary);
+  
+  color: var(--color-secondary-active);
   font-size: var(--fs-sm);
 }
 
@@ -121,7 +121,7 @@ gap: var(--space-xl);
   outline: none;
   border: none;
   border-bottom: 1px solid var(--border-strong);
-  font-size: var(--fs-sm);
+  font-size: 12px;
   color: var(--color-secondary);
 }
 

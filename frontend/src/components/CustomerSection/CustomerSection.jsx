@@ -31,6 +31,7 @@ function CustomerSection({ activeTab ,toast}) {
           Mode={Mode} 
           setMode={setMode}
           refresh={refresh}
+          set_cust_id={setSelectedCustomerId}
         /> 
       </aside>
 

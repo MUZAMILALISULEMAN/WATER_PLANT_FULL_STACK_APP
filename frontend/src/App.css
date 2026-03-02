@@ -203,9 +203,9 @@
 
 .app-layout {
   display: grid;
-  /* Sidebar is 250px, Content takes the remaining space */
+  /* Sidebar is 280px, Content takes the remaining space */
   grid-template-columns: 280px 1fr; 
-  gap: 24px; /* Space between the two entities */
+  gap: 24px; 
   height: 100vh; /* Optional: makes it fill the screen height */
 }
 
