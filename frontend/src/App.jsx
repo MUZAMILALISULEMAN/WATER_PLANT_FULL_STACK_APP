@@ -6,13 +6,14 @@ import SideBar from './components/SideBar/SideBar'
 
 function App() {
   const [activeTab, setActiveTab] = useState('customers');
+  const [appUser,setAppUser] = useState('Muzamil Suleman')
 
   return (
     <div className="app-layout">
 
       <SideBar activeTab={activeTab} setActiveTab={setActiveTab}/>
       <CustomerSection activeTab={activeTab}
-       toast={toast}></CustomerSection>
+       toast={toast} appUser={appUser}></CustomerSection>
      <Toaster
      visibleToasts={1}
      unstyled={true}

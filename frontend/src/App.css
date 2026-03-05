@@ -98,6 +98,7 @@
   --fs-body: 1rem;      /* 16px */
   --fs-sm: 0.875rem;    /* 14px */
   --fs-xs: 0.75rem;     /* 12px */
+  --fs-xxs: 10px;
 
   /* Font weights */
   --fw-light: 300;

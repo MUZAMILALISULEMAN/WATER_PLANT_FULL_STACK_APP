@@ -1,8 +1,10 @@
 /* BLOCK */
 .customer-card {
+  
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+ justify-content: flex-start;
   width: 280px;
   background-color: var(--bg-surface);
   height: 100vh;
@@ -10,6 +12,8 @@
   border-right: 1px solid var(--border-light);
   border-left: 1px solid var(--border-light);
 }
+
+
 
 /* ELEMENTS - Header */
 .customer-card__header {
@@ -40,6 +44,7 @@
 
 /* ELEMENTS - Info View */
 .customer-card__info-group {
+
   display: flex;
   flex-direction: column;
 }
@@ -193,4 +198,26 @@ gap: var(--space-xl);
   border-radius: 2px;
 }
 
+.customer-card__footer{
+    
+    
+  color: var(--text-secondary);
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  
+  font-size: var(--fs-xxs);
+  background-color: var(--color-secondary-soft);
+  border-top: 1px solid var(--color-secondary-active);
+  margin-top: auto;
+  padding: 4px 0px 4px 0px;
+  
 
+  
+}
+
+.customer-card__by{
+  color: var(--color-secondary-active);
+  text-transform: capitalize;
+  
+}

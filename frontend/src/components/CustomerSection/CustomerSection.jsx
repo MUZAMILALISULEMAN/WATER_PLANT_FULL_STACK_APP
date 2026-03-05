@@ -4,7 +4,7 @@ import CustomerDetailsCard from '../CustomerDetailsCard/CustomerDetailsCard';
 import CustomerStats from '../CustomerStats/CustomerStats';
 import AllCustomersDetailsSection from '../AllCustomersDetailsSection/AllCustomersDetailsSection';
 
-function CustomerSection({ activeTab ,toast}) {
+function CustomerSection({ activeTab ,toast,appUser}) {
   const stateLastAction = useRef("SEARCH");
   const [refresh, setRefresh] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState(-1);
@@ -32,6 +32,7 @@ function CustomerSection({ activeTab ,toast}) {
           setMode={setMode}
           refresh={refresh}
           set_cust_id={setSelectedCustomerId}
+          appUser={appUser}
         /> 
       </aside>
 

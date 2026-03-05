@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './CustomerDetailsCard.module.css';
 
-function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast, triggerRefresh, refresh }) {
+function CustomerDetailsCard({ cust_id,appUser, Mode = "Add", setMode,toast, triggerRefresh, refresh }) {
   if (Mode === "None") return null;
 
   const cardRef = useRef(null);
@@ -28,7 +28,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
             modification_json : data.data[8]
           };
           setCustomerData(DATA_OBJ);
-          console.log(DATA_OBJ.modification_json);
+          
           
         }
       } catch (error) {
@@ -51,73 +51,66 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
 
   const handleSubmit = () => {
     if (!cardRef.current) return;
-    
-    // Logic traversal using the new BEM classes from the styles object
-    const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
-    const json = {modified_by:"Muzamil Ali 2"};
-    const clean = (str) => String(str ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
+    if (!cardRef.current) return;
 
-    const fieldMapping = [
-      { index: 1, key: "name", type: "string" },
-      { index: 2, key: "cell_phone", type: "string" },
-      { index: 3, key: "address", type: "string" },
-      { index: 4, key: "unit_price", type: "number" },
-      { index: 5, key: "advance_money", type: "number" },
-    ];
+const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
+const json = {};
 
-    fieldMapping.forEach(({ index, key, type }) => {
-      const rawValue = items[index]?.innerText || "";
-      const currentValue = customerData[key];
-      if (type === "number") {
-        if (parseFloat(rawValue) !== parseFloat(currentValue)) json[key] = rawValue.trim();
-      } else {
-        if (clean(rawValue) !== clean(currentValue)) json[key] = rawValue.trim().toLowerCase();
-      }
-    });
+// Improved clean function to handle potential nulls/undefined
+const clean = (val) => String(val ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
 
-    const isActiveStatus = clean(items[6].innerText) === 'active';
-    if (isActiveStatus !== customerData.active) {
-      json["is_active"] = isActiveStatus;
+const fields = [
+  { index: 1, key: "name", type: "string" },
+  { index: 2, key: "cell_phone", type: "string" },
+  { index: 3, key: "address", type: "string" },
+  { index: 4, key: "unit_price", type: "number" },
+  { index: 5, key: "advance_money", type: "number" },
+];
 
+fields.forEach(({ index, key, type }) => {
+  const rawValue = items[index]?.innerText?.trim() || "";
+  const originalValue = customerData[key];
 
-      if(json.cell_phone  && json.cell_phone === ""){
-
-                toast.error("cell phone is empty.")
-                return;
-                
-                
-              }else if(json.cell_phone &&  !(/^03\d{9}$/.test(json.cell_phone))){
-                toast.error("cell phone format is not correct.")
-
-                return;
-              }
-              if(json.unit_price && json.unit_price === ""){
-                toast.error("price is empty.")
-                return;
-              }else if(json.unit_price && parseInt(json.unit_price) < 0){ 
-                toast.error("price is negative.")
-                return;
-                
-              }
-              
-              if(json.advance_money && json.advance_money === ""){
-                
-                json.advance_money = 0;
-                
-                
-              }else if(json.advance_money && parseInt(json.advance_money) < 0){
-                toast.error("advance is negative.")
-                return;
-              }
-             
-              json.unit_price = json.unit_price ? parseInt(json.unit_price) : 0;
-              json.advance_money = json.unit_price ? parseInt(json.advance_money) : 0;
-
-
-
-
-
+  if (type === "number") {
+    const parsedNum = parseInt(rawValue) || 0;
+    // Strict numeric comparison prevents "0" vs 0 issues
+    if (parsedNum !== (parseInt(originalValue) || 0)) {
+      json[key] = parsedNum;
     }
+  } else {
+    // String comparison
+    if (clean(rawValue) !== clean(originalValue)) {
+      json[key] = rawValue;
+    }
+  }
+});
+
+// Handle Active Status separately
+const isActiveStatus = clean(items[6]?.innerText) === 'active';
+if (isActiveStatus !== !!customerData.active) {
+  json["is_active"] = isActiveStatus;
+}
+
+
+
+
+// STOP if nothing actually changed
+if (Object.keys(json).length === 0) return;
+
+json["modified_by"] = appUser;
+
+
+
+// VALIDATION (Now runs if ANY field in the JSON changed)
+if (json.cell_phone === "") return toast.error("cell phone is empty.");
+if (json.cell_phone && !/^03\d{9}$/.test(json.cell_phone)) return toast.error("cell phone format is not correct.");
+
+if (json.unit_price < 0) return toast.error("price is negative.");
+if (json.advance_money < 0) return toast.error("advance is negative.");
+
+console.log("Final Update JSON:", json);
+
+
 
     const postData = async () => {
 
@@ -193,6 +186,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
             { label: "Address", value: customerData.address || "No Address" },
             { label: "Unit Price", value: customerData.unit_price },
             { label: "Advance Money", value: customerData.advance_money },
+            
           ].map((item, idx) => (
             <div key={idx} className={`${styles['customer-card__info-item']} ${Mode === "Edit" ? styles['customer-card__info-item--editing'] : ""}`}>
               <div className={styles['customer-card__label']}>{item.label}</div>
@@ -206,6 +200,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
               </div>
             </div>
           ))}
+
 
           {/* Active Status Toggle */}
           <div className={`${styles['customer-card__info-item']} ${Mode === "Edit" ? styles['customer-card__info-item--editing'] : ""}`}>
@@ -229,6 +224,9 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
             <div className={styles['customer-card__label']}>Status Changed At</div>
             <div className={styles['customer-card__value']}>{formatReadableDate(customerData.status_changed_at)}</div>
           </div>
+
+           
+
 
           {Mode === "Edit" && (
             <div className={styles['customer-card__info-item']}>
@@ -273,7 +271,7 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
                 address: fields[2].value.trim().toLowerCase(),
                 unit_price : fields[3].value.trim().toLowerCase(),
                 advance_money : fields[4].value.trim().toLowerCase(),
-                modified_by : "Muzamil Ali Suleman"
+                modified_by : appUser
               }
 
 
@@ -373,6 +371,16 @@ function CustomerDetailsCard({ cust_id,set_cust_id, Mode = "Add", setMode,toast,
           </div>
         </div>
       )}
+      
+      {
+        Mode==="View" ? (
+        <div className={styles['customer-card__footer']}>
+          <div className={styles['customer-card__by']}>{customerData.modification_json.by}</div>
+          <div className={styles['customer-card__at']}>on {formatReadableDate(customerData.modification_json.at)}</div>
+          </div>
+        )
+        : null
+      }
 
     </div>
   );
