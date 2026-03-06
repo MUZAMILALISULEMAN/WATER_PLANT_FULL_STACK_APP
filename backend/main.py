@@ -1,9 +1,12 @@
 from fastapi import FastAPI
-from customer import customersAPI
+from customer_module.customer import customersAPI
 from fastapi import HTTPException,Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from logger_config import setup_logger
+
+setup_logger()
 
 app = FastAPI()
 

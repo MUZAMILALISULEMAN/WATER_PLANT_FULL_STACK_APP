@@ -15,7 +15,7 @@ def GET_DB():
     try:
             connection = connect(**DB_CONFIG)
             cursor = connection.cursor()
-            print("CONNECTION ESTABLISHED...")
+            
             yield cursor
             connection.commit()
 
@@ -42,4 +42,4 @@ def GET_DB():
         if cursor: 
             cursor.close()
         
-        print("PostgreSQL CONNECTION CLOSED...")
+      
