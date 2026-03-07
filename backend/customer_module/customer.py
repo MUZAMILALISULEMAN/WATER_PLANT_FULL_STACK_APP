@@ -80,6 +80,7 @@ def search_customer(q :str  = "", cursor = Depends(GET_DB)):
         return Response(status=True,  message=f"there is no matching customer #{q}")
         
      except Error as e: 
+         logger.warning(e.diag.message_primary)
          cursor.connection.rollback()
          return Response(status=False,message=e.diag.message_primary)
     
@@ -97,12 +98,15 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
         return Response(status=True,message=f"updated the customer #{id}")
       
     except Error as e:
-        
-        if "No customer found with ID".lower() in (e.diag.message_primary).lower():
-            logger.success(f"NO CUSTOMER WITH {id} TO UPDATE ...")
+        if e.pgcode == 'P0001':
+            if "No customer found with ID".lower() in (e.diag.message_primary).lower():
+             logger.success(f"NO CUSTOMER WITH {id} TO UPDATE ...")
+            else:
+                logger.warning(e.diag.message_primary)
+            cursor.connection.rollback()
+            return Response(status=False,message=e.diag.message_primary)
         else:
-            logger.error(e.diag.message_primary)
-        cursor.connection.rollback()
+            raise e
         
         return Response(status=False,message=e.diag.message_primary)
 
@@ -117,9 +121,12 @@ def add_customer(requestBody: User , cursor = Depends(GET_DB)):
         return Response(status=True,message=f"added the customer.")
       
     except Error as e:
-
-        cursor.connection.rollback()
-        return Response(status=False,message=e.diag.message_primary)
+        if e.pgcode == 'P0001':
+            cursor.connection.rollback()
+            logger.warning(e.diag.message_primary)
+            return Response(status=False,message=e.diag.message_primary)
+        else :
+             raise e
 
 
 @customersAPI.get("/{id}")
@@ -139,8 +146,12 @@ def display_customer(id: int, cursor = Depends(GET_DB)):
      return Response(status=True, message=f'No Customer Found #{id}.')
         
     except Error as e:
-        cursor.connection.rollback()
-        return Response(status=False,message=e.diag.message_primary)
+        if e.pgcode == 'P0001':
+            cursor.connection.rollback()
+            logger.warning(e.diag.message_primary)
+            return Response(status=False,message=e.diag.message_primary)
+        else :
+             raise e
 
 
 if __name__ == "__main__":
