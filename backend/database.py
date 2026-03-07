@@ -38,7 +38,7 @@ def GET_DB():
         except:
             pass
 
-        logger.error(f"REQUEST VALIDATION IS VIOLATED => {e}")
+        logger.error(f"API REQUEST DATA VALIDATION IS VIOLATED => {e}")
         raise e
     
     except Exception as e:

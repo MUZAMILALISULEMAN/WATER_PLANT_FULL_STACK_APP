@@ -80,9 +80,13 @@ def search_customer(q :str  = "", cursor = Depends(GET_DB)):
         return Response(status=True,  message=f"there is no matching customer #{q}")
         
      except Error as e: 
-         logger.warning(e.diag.message_primary)
-         cursor.connection.rollback()
-         return Response(status=False,message=e.diag.message_primary)
+         if e.pgcode == 'P0001':
+            cursor.connection.rollback()
+            logger.warning(e.diag.message_primary)
+            return Response(status=False,message=e.diag.message_primary)
+         else:
+             raise e
+         
     
 
 @customersAPI.put("/update/{id}")
@@ -102,13 +106,12 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
             if "No customer found with ID".lower() in (e.diag.message_primary).lower():
              logger.success(f"NO CUSTOMER WITH {id} TO UPDATE ...")
             else:
-                logger.warning(e.diag.message_primary)
-            cursor.connection.rollback()
+             logger.warning(e.diag.message_primary)
+             cursor.connection.rollback()
             return Response(status=False,message=e.diag.message_primary)
         else:
             raise e
         
-        return Response(status=False,message=e.diag.message_primary)
 
 @customersAPI.post("/add") #proc called
 def add_customer(requestBody: User , cursor = Depends(GET_DB)):
