@@ -107,7 +107,6 @@ if (json.cell_phone && !/^03\d{9}$/.test(json.cell_phone)) return toast.error("c
 
 if (json.unit_price < 0) return toast.error("price is negative.");
 if (json.advance_money < 0) return toast.error("advance is negative.");
-json["unit_price"] = "HELLO";
 console.log("Final Update JSON:", json);
 
 
