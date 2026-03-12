@@ -16,4 +16,18 @@ class User(BaseModel):
     is_active : Optional[bool] = None
     modified_by : Optional[str] = None
 
+class DateRange(BaseModel):
+    start: Optional[str] = None
+    end: Optional[str] = None   
 
+
+class Sales(BaseModel):
+    consumer_name : Optional[str] = None 
+    cust_id :Optional[int] = None
+    sales_type : Optional[str] = None
+    litres : Optional[int] = None
+    bottles : Optional[int] = None
+    price : Optional[int] = None
+    modified_by : Optional[str] = None
+    sales_status : Optional[str] = None
+    reporting_time : Optional[str] = None

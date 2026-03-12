@@ -20,7 +20,7 @@ def run_stack():
     print("🚀 [FRONTEND] Starting Vite...")
     frontend = subprocess.Popen(
         ["npm", "run", "dev"], 
-        cwd="./frontend", 
+        cwd="./frontecnd", 
         shell=True
     )
 
