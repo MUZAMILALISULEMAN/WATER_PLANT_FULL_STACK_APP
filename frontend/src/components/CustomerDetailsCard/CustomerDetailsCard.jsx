@@ -13,7 +13,7 @@ function CustomerDetailsCard({ cust_id,appUser, Mode = "Add", setMode,toast, tri
     if (cust_id <= -1) return;
     const fetchCustomer = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/customer/${cust_id}`);
+        const response = await fetch(`http://127.0.0.1:8001/customer/${cust_id}`);
         const data = await response.json();
         if (data.status) {
           let DATA_OBJ = {
@@ -115,7 +115,7 @@ console.log("Final Update JSON:", json);
 
     
 
-        const res = await fetch(`http://127.0.0.1:8000/customer/update/${cust_id}`, {
+        const res = await fetch(`http://127.0.0.1:8001/customer/update/${cust_id}`, {
           method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(json),
@@ -321,7 +321,7 @@ console.log("Final Update JSON:", json);
               
 
               const postData = async ()=>{
-                 let data = await fetch("http://127.0.0.1:8000/customer/add",{
+                 let data = await fetch("http://127.0.0.1:8001/customer/add",{
                     method:"POST",
                     body: JSON.stringify(requestBody),  
                     headers: {

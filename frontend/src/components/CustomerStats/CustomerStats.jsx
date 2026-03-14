@@ -6,7 +6,7 @@ function CustomerStats({ refresh }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      let DATA = await fetch(`http://127.0.0.1:8000/customer/stats`);
+      let DATA = await fetch(`http://127.0.0.1:8001/customer/stats`);
       DATA = await DATA.json();
 
       if (DATA.status) {

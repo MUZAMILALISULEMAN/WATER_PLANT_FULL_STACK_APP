@@ -9,7 +9,7 @@ def run_stack():
 
     print("🚀 [BACKEND] Starting FastAPI...")
     backend = subprocess.Popen(
-        [venv_python, "-m", "uvicorn", "main:app", "--reload"], 
+        [venv_python, "-m", "uvicorn", "main:app", "--reload","--port","8001"], 
         cwd="./backend", 
         shell=True
     )
@@ -20,7 +20,7 @@ def run_stack():
     print("🚀 [FRONTEND] Starting Vite...")
     frontend = subprocess.Popen(
         ["npm", "run", "dev"], 
-        cwd="./frontecnd", 
+        cwd="./frontend", 
         shell=True
     )
 

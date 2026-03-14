@@ -43,9 +43,9 @@ def get_sales( id:int, cursor = Depends(GET_DB)):
         return Response(status=True,message=f"NO SALES WITH ID {id}...")
         
 
-
     except Error as e:
        if e.pgcode == 'P0001':
+          cursor.connection.rollback()
           logger.warning(e.diag.message_primary)
           return Response(status=False,message=e.diag.message_primary)
        else:
@@ -61,7 +61,7 @@ def update_sales(id:int, status_sales : str , cursor = Depends(GET_DB)):
     except Error as e:
        
        if e.pgcode == 'P0001':
-         
+         cursor.connection.rollback()
          logger.warning(e.diag.message_primary)
          return Response(status=False,message=e.diag.message_primary)
        else: 
@@ -72,12 +72,12 @@ def update_sales(Payload:Sales, cursor = Depends(GET_DB)):
     try:
         logger.info(f"ADDING THE SALES")
         cursor.execute("call add_sales(%s,%s,%s,%s,%s,%s,%s,%s,%s)",(Payload.consumer_name,Payload.cust_id,Payload.sales_type,Payload.litres,Payload.bottles,Payload.price,Payload.sales_status,Payload.modified_by,Payload.reporting_time))
-        return Response(status=True,message="ADDED THE SALES")
         logger.success(f"ADDED THE SALES ...")
+        return Response(status=True,message="ADDED THE SALES")
     except Error as e:
        
        if e.pgcode == 'P0001':
-         
+         cursor.connection.rollback()
          logger.warning(e.diag.message_primary)
          return Response(status=False,message=e.diag.message_primary)
        else: 

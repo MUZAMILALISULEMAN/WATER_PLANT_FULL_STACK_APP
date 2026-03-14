@@ -61,9 +61,9 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, state, ref
     const fetchData = async () => {
       let url = "";
       if (state.current === "FILTER" || state.current === "FILTER-REFRESH") {
-        url = `http://127.0.0.1:8000/customer/filter?q=${filterMode}`;
+        url = `http://127.0.0.1:8001/customer/filter?q=${filterMode}`;
       } else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
-        url = searchField === "" ? `http://127.0.0.1:8000/customer/` : `http://127.0.0.1:8000/customer/search?q=${searchField}`;
+        url = searchField === "" ? `http://127.0.0.1:8001/customer/` : `http://127.0.0.1:8001/customer/search?q=${searchField}`;
       }
 
       if (url) {

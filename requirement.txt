@@ -1,0 +1,8 @@
+fastapi[standard]
+uvicorn[standard]
+psycopg2
+pydantic
+loguru
+python-dotenv
+pandas
+requests
