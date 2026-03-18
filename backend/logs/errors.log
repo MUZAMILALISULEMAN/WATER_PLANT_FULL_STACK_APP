@@ -125,3 +125,226 @@ HINT:  No procedure matches the given name and argument types. You might need to
 
   File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
     PUT /customer/update/{id}
+2026-03-17 16:59:08.222 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column s.status does not exist
+LINE 1: ...,s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.status 
+                                                              ^
+QUERY:  select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.status 
+from sales s left join customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date
+CONTEXT:  PL/pgSQL function display_all_sales(jsonb) line 24 at RETURN QUERY
+
+2026-03-17 17:00:31.986 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => invalid input syntax for type date: "string"
+CONTEXT:  SQL statement "select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+from sales s left join customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date"
+PL/pgSQL function display_all_sales(jsonb) line 24 at RETURN QUERY
+
+2026-03-17 17:07:32.489 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ")"
+LINE 1: ...,"user_id":1,"sales_status":"paid","reporting_time":null}',)
+                                                                      ^
+
+2026-03-17 17:18:31.217 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "sales" violates foreign key constraint "fk_sales_modified_by"
+DETAIL:  Key (modified_by)=(3) is not present in table "users".
+CONTEXT:  SQL statement "update sales 
+set 
+sales_status = v_sales_status::sales_status,
+modified_by = v_user_id,
+modified_at = now()
+
+where sales_id = v_sales_id"
+PL/pgSQL function update_sales_status(jsonb) line 26 at SQL statement
+
+2026-03-18 06:38:55.505 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function display_all_customers() does not exist
+LINE 1: select * from display_all_customers()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-18 06:40:15.284 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 06:40:30.429 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:41:39.003 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
+2026-03-18 06:41:56.251 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
+2026-03-18 06:46:27.191 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
+2026-03-18 06:50:29.402 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 06:50:48.891 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:51:33.214 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "customers" does not exist
+LINE 1: EXISTS (SELECT 1 FROM customers WHERE cell_phone = v_phone A...
+                              ^
+QUERY:  EXISTS (SELECT 1 FROM customers WHERE cell_phone = v_phone AND cust_id != ID)
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 69 at IF
+
+2026-03-18 06:51:46.977 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:51:58.418 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 06:56:00.530 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:56:08.716 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:57:00.734 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:57:14.405 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 06:57:26.681 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
+LINE 11:   modified_by  = now()
+                          ^
+HINT:  You will need to rewrite or cast the expression.
+QUERY:  UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_by  = now()
+				
+			
+    WHERE cust_id = ID
+CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-18 06:58:07.648 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 07:00:22.024 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+
+2026-03-18 07:06:40.801 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
+LINE 1: SELECT COUNT(*)                 FROM schema_customers
+                                             ^
+QUERY:  SELECT COUNT(*)                 FROM schema_customers
+CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 10 at SQL statement
+

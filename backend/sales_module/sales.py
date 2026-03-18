@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Depends,Body
 from psycopg2 import Error
 from database import GET_DB
-from validation import Response,DateRange,Sales
+from validation import Response,DateRange,Sales,Update_Sales
 from loguru import logger
 import json
 
@@ -52,12 +52,13 @@ def get_sales( id:int, cursor = Depends(GET_DB)):
           raise e
 
 
-@salesAPI.put("/update_sales/{id}")
-def update_sales(id:int, status_sales : str , cursor = Depends(GET_DB)):
+@salesAPI.put("/update_sales/")
+def update_sales(Payload : Update_Sales, cursor = Depends(GET_DB)):
     try:
         logger.info(f"UPDATING THE SALES STATUS WITH ID: {id}")
-        cursor.execute("call update_sales_status(%s,%s)",(id,status_sales))
+        cursor.execute("call update_sales_status(%s)",(Payload.model_dump_json(),))
         logger.success(f"UPDATE THE SALES WITH ID {id} ...")
+        return Response(status=True,message=f"UPDATED THE SALES WITH ID {Payload.sales_id}")
     except Error as e:
        
        if e.pgcode == 'P0001':
@@ -68,10 +69,10 @@ def update_sales(id:int, status_sales : str , cursor = Depends(GET_DB)):
           raise e
 
 @salesAPI.put("/add")
-def update_sales(Payload:Sales, cursor = Depends(GET_DB)):
+def add_sales(Payload:Sales, cursor = Depends(GET_DB)):
     try:
         logger.info(f"ADDING THE SALES")
-        cursor.execute("call add_sales(%s,%s,%s,%s,%s,%s,%s,%s,%s)",(Payload.consumer_name,Payload.cust_id,Payload.sales_type,Payload.litres,Payload.bottles,Payload.price,Payload.sales_status,Payload.modified_by,Payload.reporting_time))
+        cursor.execute("call add_sales(%s)",(Payload.model_dump_json(),))
         logger.success(f"ADDED THE SALES ...")
         return Response(status=True,message="ADDED THE SALES")
     except Error as e:

@@ -37,7 +37,7 @@ function CustomerSection({ activeTab ,toast,appUser}) {
       </aside>
 
       <main className={styles['customer-section__main']}>
-        <CustomerStats refresh={refresh} />
+        <CustomerStats />
         <AllCustomersDetailsSection 
           setSelectedCustomerId={setSelectedCustomerId} 
           setMode={setMode} 

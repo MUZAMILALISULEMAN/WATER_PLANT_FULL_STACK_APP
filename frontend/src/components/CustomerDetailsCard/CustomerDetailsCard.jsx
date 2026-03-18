@@ -22,10 +22,11 @@ function CustomerDetailsCard({ cust_id,appUser, Mode = "Add", setMode,toast, tri
             cell_phone: data.data[2],
             address: data.data[3],
             unit_price: data.data[4],
-            advance_money: data.data[7],
-            active: data.data[5],
-            status_changed_at: data.data[6],
-            modification_json : data.data[8]
+            advance_money: data.data[5],
+            active: data.data[6],
+            status_changed_at: data.data[7],
+            modified_at : data.data[8],
+            user_id : data.data[9]
           };
           setCustomerData(DATA_OBJ);
           
@@ -97,7 +98,7 @@ if (isActiveStatus !== !!customerData.active) {
 // STOP if nothing actually changed
 if (Object.keys(json).length === 0) return;
 
-json["modified_by"] = appUser;
+json["user_id"] = appUser;
 
 
 
@@ -270,7 +271,7 @@ console.log("Final Update JSON:", json);
                 address: fields[2].value.trim().toLowerCase(),
                 unit_price : fields[3].value.trim().toLowerCase(),
                 advance_money : fields[4].value.trim().toLowerCase(),
-                modified_by : appUser
+                user_id : appUser
               }
 
 
@@ -374,8 +375,8 @@ console.log("Final Update JSON:", json);
       {
         Mode==="View" ? (
         <div className={styles['customer-card__footer']}>
-          <div className={styles['customer-card__by']}>{customerData.modification_json.by}</div>
-          <div className={styles['customer-card__at']}>on {formatReadableDate(customerData.modification_json.at)}</div>
+          <div className={styles['customer-card__by']}>{customerData.user_id}</div>
+          <div className={styles['customer-card__at']}>on {formatReadableDate(customerData.modified_at)}</div>
           </div>
         )
         : null

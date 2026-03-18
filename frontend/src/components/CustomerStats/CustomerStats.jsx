@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CustomerStats.module.css';
 
-function CustomerStats({ refresh }) {
-  const [data, setData] = useState(null);
+function CustomerStats() {
+  const [data, setData] = useState([0, 0, 0,'Customer','0']);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -12,11 +12,11 @@ function CustomerStats({ refresh }) {
       if (DATA.status) {
         setData(DATA.data);
       } else {
-        setData([0, 0, 0]);
+        setData([0, 0, 0,'Customer','0']);
       }
     };
     fetchData();
-  }, [refresh]);
+  }, []);
 
   return (
     <section className={styles['stats']}>
@@ -55,15 +55,15 @@ function CustomerStats({ refresh }) {
           <h3 className={styles['stats__title']}>
             <i className="fa-regular fa-award"></i> Top Customer
           </h3>
-          <span className={`${styles['stats__value']} ${styles['stats__value--revenue']}`}>$100</span>
+          <span className={`${styles['stats__value']} ${styles['stats__value--revenue']}`}> Rs {data[4]} </span>
         </div>
         
         <div className={styles['stats__content']}>
           <div className={`${styles['stats__customer-name']} ${styles['stats__customer-name--highlight']}`}>
-            Muzamil Suleman
+            {data[3]}
           </div>
           <div className={styles['stats__customer-meta']}>
-            <span className={`${styles['stats__value-bottle']} ${styles['stats__value-bottle--highlight']}`}>120 </span> 
+            <span className={`${styles['stats__value-bottle']} ${styles['stats__value-bottle--highlight']}`}> {data[5]} </span> 
             Deliveries / Month
           </div>
         </div>

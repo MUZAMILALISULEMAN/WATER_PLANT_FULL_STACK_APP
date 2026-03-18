@@ -14,7 +14,7 @@ customersAPI = APIRouter()
 @customersAPI.get("/")  
 def display_all_customers(cursor = Depends(GET_DB)):
      logger.info("FETCHING ALL CUSTOMERS...")
-     cursor.execute("select * from display_all_customers()")
+     cursor.execute("select * from schema_customers.display_all_customers()")
      count = cursor.rowcount
      res = cursor.fetchall()
 
@@ -24,11 +24,13 @@ def display_all_customers(cursor = Depends(GET_DB)):
      logger.success("NO CUSTOMERS TO FETCH...")
      return Response(status= True,message="there is no customer in records.")
 
+
+
 @customersAPI.get("/stats")  
 def display_all_customers_stats(cursor = Depends(GET_DB)):
      logger.info("FETCHING CUSTOMERS STATS...")
      
-     cursor.execute("select * from display_customer_stats()")
+     cursor.execute("select * from schema_customers.display_customer_stats()")
      res = cursor.fetchone()
 
      if res[0]  != 0: #res[0] is total customers count
@@ -43,16 +45,16 @@ def filter_customers(q: str = None, cursor = Depends(GET_DB)):
 
         query = None
         if q == None or q  == "id-asc":
-            query = "select * from customer_filter_by_id_asc()"
+            query = "select * from schema_customers.customer_filter_by_id_asc()"
            
         elif q  == "name-asc":
-            query = "select * from customer_filter_by_name_asc()"
+            query = "select * from schema_customers.customer_filter_by_name_asc()"
            
         elif q == "name-desc":
-            query = "select * from customer_filter_by_name_desc()"
+            query = "select * from schema_customers.customer_filter_by_name_desc()"
            
         elif q == "active":
-            query = "select * from customer_filter_by_active()"
+            query = "select * from schema_customers.customer_filter_by_active()"
            
 
         cursor.execute(query)
@@ -69,7 +71,7 @@ def filter_customers(q: str = None, cursor = Depends(GET_DB)):
 def search_customer(q :str  = "", cursor = Depends(GET_DB)):
      logger.info(f"SEARCHING CUSTOMER {q} ...")
      try:
-        cursor.execute("select * from search_customer(%s)",(q,))
+        cursor.execute("select * from schema_customers.search_customer(%s)",(q,))
         count = cursor.rowcount
         res = cursor.fetchall()
 
@@ -97,7 +99,7 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
 
         logger.info(f"UPDATING THE CUSTOMER {id} => {requestBody} ..")
         
-        cursor.execute("CALL update_customer(%s,%s)",(id,json.dumps(requestBody),))
+        cursor.execute("CALL schema_customers.update_customer(%s,%s)",(id,json.dumps(requestBody),))
         logger.success(f"UPDATED THE CUSTOMER {id} ...")
         return Response(status=True,message=f"updated the customer #{id}")
       
@@ -114,7 +116,7 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
 def add_customer(requestBody: User , cursor = Depends(GET_DB)):
     logger.info(f"ADDING THE CUSTOMER {requestBody} ...")
     try:
-        cursor.execute("CALL add_customer(%s,%s,%s,%s,%s,%s,%s)",(requestBody.name,requestBody.cell_phone,requestBody.unit_price,requestBody.address,requestBody.is_active,requestBody.advance_money,requestBody.modified_by))
+        cursor.execute("CALL schema_customers.add_customer(%s)",(requestBody.model_dump_json(),))
       
         logger.success(f"ADDED THE CUSTOMER...")
       
@@ -135,7 +137,7 @@ def display_customer(id: int, cursor = Depends(GET_DB)):
 
     try:
     
-     cursor.execute(f"select * from display_customer({id})")
+     cursor.execute(f"select * from schema_customers.display_customer({id})")
      count = cursor.rowcount 
      res = cursor.fetchone()
     

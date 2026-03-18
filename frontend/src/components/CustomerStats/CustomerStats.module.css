@@ -17,6 +17,9 @@
   border-radius: 2px;
   padding: 16px 24px;
 }
+.stats__value--revenue{
+  text-transform: capitalize;
+}
 
 .stats__title-container {
   font-size: 12px;

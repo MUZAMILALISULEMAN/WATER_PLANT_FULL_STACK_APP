@@ -14,7 +14,7 @@ class User(BaseModel):
     unit_price : Optional[int] = None
     advance_money : Optional[int] = None
     is_active : Optional[bool] = None
-    modified_by : Optional[str] = None
+    user_id : Optional[int] = None
 
 class DateRange(BaseModel):
     start: Optional[str] = None
@@ -28,6 +28,11 @@ class Sales(BaseModel):
     litres : Optional[int] = None
     bottles : Optional[int] = None
     price : Optional[int] = None
-    modified_by : Optional[str] = None
+    user_id : Optional[int] = None
     sales_status : Optional[str] = None
     reporting_time : Optional[str] = None
+
+class Update_Sales(BaseModel):
+    sales_id :Optional[int] = None
+    user_id : Optional[int] = None
+    sales_status : Optional[str] = None

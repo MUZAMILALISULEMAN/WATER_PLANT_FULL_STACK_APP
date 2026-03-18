@@ -6,7 +6,7 @@ import SideBar from './components/SideBar/SideBar'
 
 function App() {
   const [activeTab, setActiveTab] = useState('customers');
-  const [appUser,setAppUser] = useState('Muzamil Suleman')
+  const [appUser,setAppUser] = useState(1)
 
   return (
     <div className="app-layout">
