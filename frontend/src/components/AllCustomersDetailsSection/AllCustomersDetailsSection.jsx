@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './AllCustomersDetailsSection.module.css';
 import { toast } from 'sonner'; 
 
@@ -47,8 +47,9 @@ function FilterDropdown({ onSelect }) {
   );
 }
 
-function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, state, refresh }) {
+function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,state }) {
   const isLoading = useRef(false);
+  
   const [filterMode, setfilterMode] = useState("id-asc");
   const [searchField, setSearchField] = useState("");
   const [dataFetched, setDataFetched] = useState(null);
@@ -62,7 +63,10 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, state, ref
       let url = "";
       if (state.current === "FILTER" || state.current === "FILTER-REFRESH") {
         url = `http://127.0.0.1:8001/customer/filter?q=${filterMode}`;
-      } else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
+      }else if (state.current === "CUSTOMER-OPERATIONS") {
+        url = `http://127.0.0.1:8001/customer/`;
+      }
+      else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
         url = searchField === "" ? `http://127.0.0.1:8001/customer/` : `http://127.0.0.1:8001/customer/search?q=${searchField}`;
       }
 
@@ -164,14 +168,16 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, state, ref
                 </td>
                 <td className={styles['customer-table__cell']}>{customer[0]}</td>
                 <td className={styles['customer-table__cell']}>{customer[2]}</td>
-                <td className={styles['customer-table__cell']}>
-                  <span 
-                    className={styles['customer-table__status']} 
-                    id={customer[3] ? styles['success-badge'] : styles['error-badge']}
-                  >
-                    {customer[3] ? "Active" : "Inactive"}
-                  </span>
-                </td>
+                
+                
+               <td className={styles['customer-table__cell']}>
+  <span className={`${styles['badge']} ${styles['badge--pill']} ${customer[3] ? styles['badge--success'] : styles['badge--error']}`}>
+    {customer[3] ? 'Active' : 'Inactive'}
+  </span>
+</td>
+
+
+
                 <td className={styles['customer-table__cell']}>
                   <button className={styles['customer-table__btn-view'] } id={customer[0]} onClick={() => { setSelectedCustomerId(customer[0]); setMode("View"); }}>  <i className="fa-regular fa-user-viewfinder"></i>  View</button>
                   <button className={styles['customer-table__btn-edit']} id={customer[0]} onClick={() => { setSelectedCustomerId(customer[0]); setMode("Edit"); }}><i className="fa-regular fa-pen-to-square"></i> Edit</button>

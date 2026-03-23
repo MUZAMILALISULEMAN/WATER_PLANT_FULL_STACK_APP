@@ -1,10 +1,9 @@
-/* BLOCK */
+/* ── CARD SHELL ── */
 .sales-card {
-  
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
- justify-content: flex-start;
+  justify-content: flex-start;
   width: 280px;
   background-color: var(--bg-surface);
   height: 100vh;
@@ -13,9 +12,12 @@
   border-left: 1px solid var(--border-light);
 }
 
+/* Add mode gets tighter gap */
+.sales-card--add {
+  gap: var(--space-sm);
+}
 
-
-/* ELEMENTS - Header */
+/* ── HEADER ── */
 .sales-card__header {
   position: relative;
   display: flex;
@@ -26,207 +28,321 @@
   letter-spacing: 2px;
   color: var(--color-secondary);
   font-weight: 700;
+  font-size: var(--fs-base);
   text-transform: uppercase;
   font-family: var(--font-body);
   border-bottom: 1px solid var(--color-secondary);
 }
-
 .sales-card__header i {
   position: absolute;
   left: 12px;
   cursor: pointer;
-  transition: var(--transition-fast);
+  font-size: 0.8rem;
+  transition: color 0.18s ease;
 }
-
 .sales-card__header i:hover {
   color: var(--color-secondary-hover);
 }
 
-/* ELEMENTS - Info View */
-.sales-card__info-group {
+/* ── Fetch loader (centered in card body) ── */
+.sales-card__loader-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* Card-level spinner */
+.sales-card__spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--color-secondary-soft);
+  border-top-color: var(--color-secondary);
+  animation: spin 0.7s linear infinite;
+}
+
+/* Button-level spinner */
+.sales-card__btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled / loading state for submit button */
+.btn--loading {
+  opacity: 0.75;
+  cursor: not-allowed;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── VIEW rows ── */
+.info-group {
   display: flex;
   flex-direction: column;
 }
-.sales-card--gap-space-xl{
-gap: var(--space-xl);
+.info-group--spacious .info-row {
+  margin-bottom: 16px;
 }
-
-.sales-card__info-item {
+.info-group--spacious .info-label {
+  margin-bottom: 2px;
+}
+.info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   margin-left: var(--space-xl);
   margin-bottom: 12px;
+  gap: 2px;
 }
-
-.sales-card__info-item--editing {
-  margin-bottom: 8px; 
-}
-
-.sales-card__label {
-  font-size: var(--fs-xs);
-  margin-bottom: 2px;
+.info-label {
+  font-size: 12px;
   color: var(--text-secondary);
+  font-weight: 400;
 }
-
-.sales-card__value {
-  font-size: var(--fs-sm);
+.info-value {
+  font-size: 14px;
   color: var(--color-secondary-active);
   font-weight: 500;
   text-transform: capitalize;
 }
 
-.sales-card__value--editable {
-  /* This maps to your .editable-name if you had specific styles for it */
-  outline: none;
-
-  
-}
-.sales-card__value--editable:focus {
-  /* This maps to your .editable-name if you had specific styles for it */
-  outline: none;
-  color: var(--color-secondary-light);
-  font-weight: 700;
-  
-}
-
-/* ELEMENTS - Add Form */
-.sales-card__add-form {
+/* ── ADD FORM rows ── */
+.add-form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 24px;
+  gap: 16px;
+  padding: 4px 0;
 }
-
-.sales-card__add-item {
+.form-row {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-left: var(--space-xl);
+  align-items: flex-start;
+  gap: 5px;
+  padding-left: 28px;
+  position: relative;
 }
-
-.sales-card__add-label {
-  
+.form-label {
+  font-size: 0.78rem;
   color: var(--color-secondary-active);
-  font-size: var(--fs-sm);
+  font-weight: 400;
 }
 
-.sales-card__input-wrapper {
+/* ── INPUT ── */
+.input-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  color: red; /* Your original style */
 }
-
-.sales-card__input {
-  margin-left: 4px;
-  font-size: 12px;
-  padding: 6px 0px;
-  padding-left: 28px;
-  width: 200px;
+.input-wrap i {
+  position: absolute;
+  left: 0;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+.input-wrap:focus-within i {
+  color: var(--color-secondary);
+}
+.field {
+  padding: 5px 0 5px 18px;
+  width: 185px;
   background: none;
   outline: none;
   border: none;
   border-bottom: 1px solid var(--border-strong);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--color-secondary);
+  font-family: var(--font-body);
+  text-transform: capitalize;
 }
-
-.sales-card__input::placeholder {
-  font-size: 12px;
+.field--disabled {
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+.field::placeholder {
+  font-size: 11px;
   color: var(--text-tertiary);
 }
-
-.sales-card__input:focus {
-  border-bottom: 1px solid var(--color-secondary);
+.field:focus {
+  border-bottom-color: var(--color-secondary);
 }
 
-.sales-card__input-wrapper i {
+/* ── Customer search dropdown ── */
+.cust-dropdown {
   position: absolute;
-  left: 12px;
-  font-size: 12px;
+  top: calc(100% + 4px);
+  left: 10%;
+  width: 210px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-xs);
+  z-index: 50;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.cust-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.cust-option:hover {
+  background-color: var(--color-secondary-soft);
+}
+.cust-option__name {
+  font-size: 11px;
+  color: var(--color-secondary-active);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.cust-option__meta {
+  font-size: 10px;
   color: var(--text-tertiary);
 }
 
-.sales-card__input:focus ~ i {
-  color: var(--color-secondary);
+/* ── MODE TOGGLE SWITCH ── */
+.mode-switch {
+  position: relative;
+  width: 130px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+.mode-opt {
+  font-size: 0.68rem;
+  text-align: center;
+  line-height: 1.3rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: var(--color-secondary-active);
+  font-weight: 600;
+  z-index: 1;
+  transition: color 0.2s ease;
+}
+.mode-opt--on {
+  color: var(--text-on-secondary);
+}
+.mode-thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: calc(50% - 2px);
+  background-color: var(--color-secondary);
+  border-radius: 3px;
+  transition: left 0.2s ease;
+  z-index: 0;
 }
 
-/* BUTTONS */
-.sales-card__submit-btn,
-.sales-card__add-submit {
+/* ── BADGE SYSTEM ── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  letter-spacing: 0.01em;
+  border-radius: 3px;
+
+}
+.badge--pill {
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.badge--toggle {
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.18s ease, opacity 0.18s ease;
+}
+.badge--toggle:hover {
+  filter: brightness(0.92);
+  opacity: 0.9;
+}
+.badge--id {
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--color-secondary-light);
+  color: var(--color-secondary-active);
+  font-weight: 600;
+}
+.badge--unit,
+.badge--cod {
+
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--color-secondary-light);
+  color: var(--color-secondary-active);
+}
+.badge--success {
+  background-color: var(--color-success-soft);
+  border: 1px solid var(--color-success-light);
+  color: var(--color-success);
+}
+.badge--pending {
+  background-color: #fefce8;
+  border: 1px solid #eab308;
+  color: #854d0e;
+}
+.badge--error {
+  background-color: var(--color-error-soft);
+  border: 1px solid var(--color-error-light);
+  color: var(--color-error);
+
+}
+
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn {
   border: none;
   background-color: var(--color-secondary);
-  padding: 8px;
+  padding: 7px 0;
   border-radius: 4px;
   color: var(--text-on-secondary);
   cursor: pointer;
-  width: 100px;
-  margin-left: 50px;
-  margin-top: 4px;
+  width: 110px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: background-color 0.18s ease;
 }
-.sales-card__submit-btn {
-  margin-left: 0px;
-  width: 80px;
-}
-
-/* MODIFIERS / BADGES (Using BEM class instead of ID for modules) */
-.success-badge {
-  border: 1px solid var(--color-success-light);
-  background-color: var(--color-success-soft);
-  border-radius: 4px;
-  display: inline;
-  padding: 2px 8px;
-  margin-bottom: 2px;
-  color: var(--color-success);
-  cursor: pointer;
+.submit-btn:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
 }
 
-.error-badge {
-  cursor: pointer;
-  border: 1px solid var(--color-error-light);
-  background-color: var(--color-error-soft);
-  border-radius: 4px;
-  display: inline;
-  padding: 2px 8px;
-  color: var(--color-error);
-}
-
-.pending-badge {
-  border: 1px solid var(--border-strong);
-  background-color: var(--color-secondary-soft);
-  border-radius: 4px;
-  display: inline;
-  padding: 2px 8px;
-  color: var(--color-secondary-active);
-}
-
-.sales-card__value--id {
-  padding: 2px 12px;
-  background-color: var(--color-secondary-soft);
-  display: inline;
-  border: 1px solid var(--color-secondary-light);
-  border-radius: 2px;
-}
-
-.sales-card__footer{
-    
-    
+/* ── FOOTER ── */
+.sales-card__footer {
   color: var(--text-secondary);
   display: flex;
   gap: 4px;
   justify-content: center;
-  
-  font-size: var(--fs-xxs);
+  font-size: 0.62rem;
   background-color: var(--color-secondary-soft);
   border-top: 1px solid var(--color-secondary-active);
   margin-top: auto;
-  padding: 4px 0px 4px 0px;
-  
-
-  
+  padding: 5px 0;
 }
-
-.sales-card__by{
+.footer-by {
   color: var(--color-secondary-active);
   text-transform: capitalize;
-  
+}
+.footer-at {
+  color: var(--text-secondary);
 }

@@ -5,6 +5,18 @@
   justify-content: space-between;
 }
 
+.badge--id-stats {
+  display: inline-block;
+  padding: 0px 12px;
+  font-size: 10px;
+  text-transform: capitalize;
+  border-radius: 3px;
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--color-secondary-light);
+  color: var(--color-secondary-active);
+  font-weight: 600;
+}
+
 .stats__card {
   background: white;
   width: 100%;
@@ -34,7 +46,7 @@
 .stats__value {
   font-size: 24px;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   
   color: var(--color-secondary);
   
@@ -45,10 +57,8 @@
 }
 
 .stats__content {
-  line-height: 1.9;
  
   font-size: 12px;
-  
 
   color: var(--text-tertiary);
 }
@@ -75,9 +85,25 @@
   font-weight: 600;
 }
 
+
 /* Preserving your .stat-row logic */
 .stats__row {
   display: flex;
   gap: 4px;
   align-items: center;
+  margin-bottom: 2px;
+}
+
+
+
+.stats__customer-name--highlight{
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+.customer--id_label{
+  font-size: 10px;
+  color: var(--text-secondary);
 }

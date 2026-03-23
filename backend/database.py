@@ -50,7 +50,7 @@ def GET_DB():
             pass
 
         logger.error(f"LOGIC ERROR OR BACKEND ERROR => {e}")
-        raise HTTPException(status_code=500, detail="Server Internal Error")
+        raise HTTPException(status_code=500, detail="Server has encountered an error while processing the request")
     
     finally:
     

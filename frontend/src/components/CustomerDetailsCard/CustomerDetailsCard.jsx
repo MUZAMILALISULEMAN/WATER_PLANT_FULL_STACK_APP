@@ -1,158 +1,204 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './CustomerDetailsCard.module.css';
 
-function CustomerDetailsCard({ cust_id,appUser, Mode = "Add", setMode,toast, triggerRefresh, refresh }) {
+function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRefresh, refresh ,state}) {
   if (Mode === "None") return null;
 
-  const cardRef = useRef(null);
-  const customer_ref = useRef(null);
-  const [customerData, setCustomerData] = useState(null);
-  const [resetKey, setResetKey] = useState(false);
+  const cardRef         = useRef(null);
+  const customer_ref    = useRef(null);
 
+  // ── Idempotency locks ──────────────────────────────────────────────────────
+  const submitLockRef   = useRef(false);   // blocks double-submit on Edit form
+  const addLockRef      = useRef(false);   // blocks double-submit on Add form
+  const fetchAbortRef   = useRef(null);    // AbortController for in-flight fetches
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [customerData,  setCustomerData]  = useState(null);
+  const [resetKey,      setResetKey]      = useState(false);
+  const [isFetching,    setIsFetching]    = useState(false);   // card-level skeleton
+  const [isSubmitting,  setIsSubmitting]  = useState(false);   // edit submit button
+  const [isAdding,      setIsAdding]      = useState(false);   // add submit button
+
+  // ── Fetch customer ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (cust_id <= -1) return;
+
+    // Cancel any previous in-flight request
+    if (fetchAbortRef.current) fetchAbortRef.current.abort();
+    const controller = new AbortController();
+    fetchAbortRef.current = controller;
+
     const fetchCustomer = async () => {
+      setIsFetching(true);
       try {
-        const response = await fetch(`http://127.0.0.1:8001/customer/${cust_id}`);
-        const data = await response.json();
-        if (data.status) {
-          let DATA_OBJ = {
-            id: data.data[0],
-            name: data.data[1],
-            cell_phone: data.data[2],
-            address: data.data[3],
-            unit_price: data.data[4],
-            advance_money: data.data[5],
-            active: data.data[6],
-            status_changed_at: data.data[7],
-            modified_at : data.data[8],
-            user_id : data.data[9]
-          };
-          setCustomerData(DATA_OBJ);
-          
-          
+        const response = await fetch(`http://127.0.0.1:8001/customer/${cust_id}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          toast.error("Server Internal Error.");
+          return;
         }
-      } catch (error) {
-        toast.error("Server is not responding, try later.");
+
+        const data = await response.json();
+        const rows = data.data;
+        const row =
+          Array.isArray(rows) && rows.length > 0
+            ? Array.isArray(rows[0]) ? rows[0] : rows
+            : null;
+
+        const toBool = (v) =>
+          v === true || v === 1 || v === '1' ||
+          String(v).toLowerCase() === 't'    ||
+          String(v).toLowerCase() === 'true' ||
+          String(v).toLowerCase() === 'active';
+
+        if (data.status && row && row.length >= 7) {
+          setCustomerData({
+            id: row[0], name: row[1], cell_phone: row[2],
+            address: row[3], unit_price: row[4], advance_money: row[5],
+            active: toBool(row[6]), status_changed_at: row[7],
+            modified_at: row[8], user_id: row[9],
+          });
+        } else if (!rows || !rows.length) {
+          setCustomerData({
+            id: 0, name: "Dummy", cell_phone: "03000000000",
+            address: "No Address", unit_price: 0, advance_money: 0,
+            active: true, status_changed_at: new Date(),
+            modified_at: new Date(), user_id: 0,
+          });
+        }
+      } catch (err) {
+        // Ignore abort errors — they are intentional
+        if (err.name !== 'AbortError') {
+          toast.error("Server is not responding, try later.");
+        }
+      } finally {
+        setIsFetching(false);
       }
     };
+
     fetchCustomer();
+
+    // Cleanup: abort if component unmounts or deps change before fetch completes
+    return () => controller.abort();
   }, [cust_id, resetKey, refresh]);
 
-  if (!customerData && Mode !== "Add") return null;
-
+  // ── Helpers ────────────────────────────────────────────────────────────────
   const formatReadableDate = (isoString) => {
     if (!isoString) return "";
-    const date = new Date(isoString);
     return new Intl.DateTimeFormat('en-US', {
       month: 'short', day: 'numeric', year: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true
-    }).format(date);
+      hour: 'numeric', minute: '2-digit', hour12: true,
+    }).format(new Date(isoString));
   };
 
+  // ── Edit submit ────────────────────────────────────────────────────────────
   const handleSubmit = () => {
+    // Ref lock — ignore if a submission is already running
+    if (submitLockRef.current) return;
     if (!cardRef.current) return;
-    if (!cardRef.current) return;
 
-const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
-const json = {};
+    const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
+    const json  = {};
+    const clean = (val) => String(val ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
 
-// Improved clean function to handle potential nulls/undefined
-const clean = (val) => String(val ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
+    const fields = [
+      { index: 1, key: "name",          type: "string" },
+      { index: 2, key: "cell_phone",    type: "string" },
+      { index: 4, key: "unit_price",    type: "number" },
+      { index: 5, key: "advance_money", type: "number" },
+    ];
 
-const fields = [
-  { index: 1, key: "name", type: "string" },
-  { index: 2, key: "cell_phone", type: "string" },
-  { index: 3, key: "address", type: "string" },
-  { index: 4, key: "unit_price", type: "number" },
-  { index: 5, key: "advance_money", type: "number" },
-];
+    for (const { index, key, type } of fields) {
+      const rawValue = (items[index]?.innerText?.trim()).toLowerCase() ?? "";
 
-fields.forEach(({ index, key, type }) => {
-  const rawValue = items[index]?.innerText?.trim() || "";
-  const originalValue = customerData[key];
-
-  if (type === "number") {
-    const parsedNum = parseInt(rawValue) || 0;
-    // Strict numeric comparison prevents "0" vs 0 issues
-    if (parsedNum !== (parseInt(originalValue) || 0)) {
-      json[key] = parsedNum;
+      if (type === "number") {
+        if (rawValue === "") {
+          toast.error(`${key.replace("_", " ")} is empty.`);
+          setResetKey(prev => !prev);
+          return;
+        }
+        const parsedNum = parseInt(rawValue);
+        if (isNaN(parsedNum)) {
+          toast.error(`${key.replace("_", " ")} must be a number.`);
+          setResetKey(prev => !prev);
+          return;
+        }
+        if (parsedNum < 0) {
+          toast.error(`${key.replace("_", " ")} is negative.`);
+          setResetKey(prev => !prev);
+          return;
+        }
+        if (parsedNum !== parseInt(customerData[key])) json[key] = parsedNum;
+      } else {
+        if (rawValue === "") {
+          toast.error(`${key.replace("_", " ")} is empty.`);
+          setResetKey(prev => !prev);
+          return;
+        }
+        if (key === "cell_phone" && !/^03\d{9}$/.test(rawValue)) {
+          toast.error("Cell phone format is not correct.");
+          setResetKey(prev => !prev);
+          return;
+        }
+        if (clean(rawValue) !== clean(customerData[key])) json[key] = rawValue;
+      }
     }
-  } else {
-    // String comparison
-    if (clean(rawValue) !== clean(originalValue)) {
-      json[key] = rawValue;
+
+    // Active status toggle
+    const isActiveStatus = clean(items[6]?.innerText) === 'active';
+    if (isActiveStatus !== customerData?.active) json["is_active"] = isActiveStatus;
+
+    if (clean(items[3]?.innerText).toLowerCase() !== clean(customerData?.address || "no address").toLowerCase()) {
+      json["address"] = items[3]?.innerText.trim().toLowerCase() || "";
     }
-  }
-});
 
-// Handle Active Status separately
-const isActiveStatus = clean(items[6]?.innerText) === 'active';
-if (isActiveStatus !== !!customerData.active) {
-  json["is_active"] = isActiveStatus;
-}
+    if (Object.keys(json).length === 0) return;
 
+    json["user_id"] = appUser;
 
-
-
-// STOP if nothing actually changed
-if (Object.keys(json).length === 0) return;
-
-json["user_id"] = appUser;
-
-
-
-// VALIDATION (Now runs if ANY field in the JSON changed)
-if (json.cell_phone === "") return toast.error("cell phone is empty.");
-if (json.cell_phone && !/^03\d{9}$/.test(json.cell_phone)) return toast.error("cell phone format is not correct.");
-
-if (json.unit_price < 0) return toast.error("price is negative.");
-if (json.advance_money < 0) return toast.error("advance is negative.");
-console.log("Final Update JSON:", json);
-
-
+    // Acquire lock
+    submitLockRef.current = true;
+    setIsSubmitting(true);
 
     const postData = async () => {
-
-    
-
+      try {
         const res = await fetch(`http://127.0.0.1:8001/customer/update/${cust_id}`, {
           method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(json),
-      });
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(json),
+        });
 
-      const data = await res.json();
-      
+        if (!res.ok) {
+          toast.error("Server Internal Error.");
+          setResetKey(prev => !prev);
+          return;
+        }
 
-      if (data.status) {
-        toast.success(data.message);
-        triggerRefresh();
-        setMode("View");
-  
-      } else {
-        if(data.message && data.message != "") toast.error(data.message); 
-        
-        setResetKey(prev => !prev);
+        const data = await res.json();
+        if (data.status) {
+          toast.success(data.message);
+          triggerRefresh();
+          state.current = "CUSTOMER-OPERATIONS";
+          setMode("View");
+        } else {
+          if (data.message) toast.error(data.message);
+          setResetKey(prev => !prev);
+        }
+      } catch {
+        toast.error("Server is not responding, try later.");
+      } finally {
+        // Always release lock
+        submitLockRef.current = false;
+        setIsSubmitting(false);
       }
-    
-      
-    }
+    };
 
-    try{
-
-       
-      if (Object.keys(json).length !== 0) postData();
-
-      
-      
-    }catch{
-
-      toast.error(data.message);
-
-    }
+    postData();
   };
 
+  // ── Key handler ────────────────────────────────────────────────────────────
   const handleKeyEnter = (event) => {
     if (Mode === "Edit" && event.key === 'Enter') {
       event.preventDefault();
@@ -160,18 +206,39 @@ console.log("Final Update JSON:", json);
     }
   };
 
+  // ── Render ─────────────────────────────────────────────────────────────────
+  // Show centered spinner while fetching (View / Edit modes only)
+  const showFetchLoader = isFetching && Mode !== "Add";
+
+  // Block render until data arrives (after first fetch), unless we're in Add mode
+  if (!customerData && !isFetching && Mode !== "Add") return null;
+
   return (
-    <div className = {` ${styles['customer-card']} ${Mode === "Add" ? styles['customer-card--gap-space-xl'] : ""}` } key={`${Mode === "Add" ? -1 : customerData.id}-${resetKey}`} ref={cardRef}>
+    <div
+      className={`${styles['customer-card']} ${Mode === "Add" ? styles['customer-card--gap-space-xl'] : ""}`}
+      key={`${Mode === "Add" ? -1 : customerData?.id}-${resetKey}`}
+      ref={cardRef}
+    >
+      {/* ── Header ── */}
       <div className={styles['customer-card__header']}>
-        <i className="fa-solid fa-arrow-left" onClick={() => setMode("None")}></i>
+        <i className="fa-solid fa-arrow-left" onClick={() => setMode("None")} />
         <div className={styles['customer-card__title']}>
           {Mode === "View" ? "Customer View" : Mode === "Add" ? "Customer Add" : "Customer Edit"}
         </div>
       </div>
 
-      {Mode !== "Add" ? (
+      {/* ── Centered fetch loader (View / Edit) ── */}
+      {showFetchLoader && (
+        <div className={styles['customer-card__loader-wrap']}>
+          <span className={styles['customer-card__spinner']} />
+        </div>
+      )}
+
+      {/* ── View / Edit body ── */}
+      {Mode !== "Add" && !showFetchLoader && customerData && (
         <div className={styles['customer-card__info-group']}>
-          {/* ID Item */}
+
+          {/* ID */}
           <div className={styles['customer-card__info-item']}>
             <div className={styles['customer-card__label']}>Customer ID</div>
             <div className={`${styles['customer-card__value']} ${styles['customer-card__value--id']}`}>
@@ -179,16 +246,18 @@ console.log("Final Update JSON:", json);
             </div>
           </div>
 
-          {/* Editable Items */}
+          {/* Editable fields */}
           {[
             { label: "Customer Name", value: customerData.name },
-            { label: "Cell Phone", value: customerData.cell_phone },
-            { label: "Address", value: customerData.address || "No Address" },
-            { label: "Unit Price", value: customerData.unit_price },
+            { label: "Cell Phone",    value: customerData.cell_phone },
+            { label: "Address",       value: (customerData.address === "" ? "no address" : customerData.address) || "no address" },
+            { label: "Unit Price",    value: customerData.unit_price },
             { label: "Advance Money", value: customerData.advance_money },
-            
           ].map((item, idx) => (
-            <div key={idx} className={`${styles['customer-card__info-item']} ${Mode === "Edit" ? styles['customer-card__info-item--editing'] : ""}`}>
+            <div
+              key={idx}
+              className={`${styles['customer-card__info-item']} ${Mode === "Edit" ? styles['customer-card__info-item--editing'] : ""}`}
+            >
               <div className={styles['customer-card__label']}>{item.label}</div>
               <div
                 spellCheck="false"
@@ -201,187 +270,155 @@ console.log("Final Update JSON:", json);
             </div>
           ))}
 
-
           {/* Active Status Toggle */}
           <div className={`${styles['customer-card__info-item']} ${Mode === "Edit" ? styles['customer-card__info-item--editing'] : ""}`}>
             <div className={styles['customer-card__label']}>Active Status</div>
             <div
-              className={styles['customer-card__value']}
-              id={customerData.active ? styles['success-badge'] : styles['error-badge']}
+              className={`${styles['customer-card__value']} ${styles['customer-card__value--badge']} ${customerData.active ? styles['badge--success'] : styles['badge--error']}`}
               onClick={(e) => {
                 if (Mode === "Edit") {
                   const isActive = e.target.innerText === "Active";
                   e.target.innerText = isActive ? "Inactive" : "Active";
-                  e.target.id = isActive ? styles['error-badge'] : styles['success-badge'];
+                  e.target.className = `${styles['customer-card__value']} ${styles['customer-card__value--badge']} ${isActive ? styles['badge--error'] : styles['badge--success']}`;
                 }
               }}
             >
-              {customerData.active ? "Active" : "Inactive"}
+              {customerData.active ? "active" : "inactive"}
             </div>
           </div>
 
+          {/* Status Changed At */}
           <div className={styles['customer-card__info-item']}>
             <div className={styles['customer-card__label']}>Status Changed At</div>
             <div className={styles['customer-card__value']}>{formatReadableDate(customerData.status_changed_at)}</div>
           </div>
 
-           
-
-
+          {/* Edit Submit */}
           {Mode === "Edit" && (
             <div className={styles['customer-card__info-item']}>
-              <button className={styles['customer-card__submit-btn']} onClick={handleSubmit}>Submit</button>
+              <button
+                className={`${styles['customer-card__submit-btn']} ${isSubmitting ? styles['btn--loading'] : ""}`}
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? <span className={styles['customer-card__btn-spinner']} />
+                  : "Submit"}
+              </button>
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {/* ── Add form ── */}
+      {Mode === "Add" && (
         <div className={styles['customer-card__add-form']} ref={customer_ref}>
-          {/* Add form inputs */}
           {[
-            { label: "Customer Name", icon: "fa-user", placeholder: "Muzamil Bhai" },
-            { label: "Cell Phone", icon: "fa-phone", placeholder: "03XXXXXXXXX", validate: true },
-            { label: "Address", icon: "fa-location-dot", placeholder: "ABC-House-123 Shah Town" },
-            { label: "Unit Price", icon: "fa-rupee-sign", placeholder: "Price", defaultVal: "60" },
-            { label: "Advance Money", icon: "fa-sharp fa-right-from-line", placeholder: "Advance", defaultVal: "0" },
+            { label: "Customer Name",  icon: "fa-user",                     placeholder: "Muzamil Bhai" },
+            { label: "Cell Phone",     icon: "fa-phone",                    placeholder: "03XXXXXXXXX" },
+            { label: "Address",        icon: "fa-location-dot",             placeholder: "ABC-House-123 Shah Town" },
+            { label: "Unit Price",     icon: "fa-rupee-sign",               placeholder: "Price",   defaultVal: "60" },
+            { label: "Advance Money",  icon: "fa-sharp fa-right-from-line", placeholder: "Advance", defaultVal: "0" },
           ].map((field, idx) => (
             <div key={idx} className={styles['customer-card__add-item']}>
               <label className={styles['customer-card__add-label']}>{field.label}</label>
               <div className={styles['customer-card__input-wrapper']}>
-                <input 
+                <input
                   data-id={idx}
-                  className={styles['customer-card__input']} 
-                  placeholder={field.placeholder} 
+                  className={styles['customer-card__input']}
+                  placeholder={field.placeholder}
                   defaultValue={field.defaultVal}
-                  
                 />
-                <i className={`fa-solid ${field.icon}`}></i>
-                <span className={styles['customer-card__validation-msg']}></span>
+                <i className={`fa-solid ${field.icon}`} />
+                <span className={styles['customer-card__validation-msg']} />
               </div>
             </div>
           ))}
+
           <div className={styles['customer-card__add-item']}>
-            <button className={styles['customer-card__add-submit']} onClick={(e) =>{
+            <button
+              className={`${styles['customer-card__add-submit']} ${isAdding ? styles['btn--loading'] : ""}`}
+              disabled={isAdding}
+              onClick={(e) => {
+                e.preventDefault();
 
-                
-              
-              const fields = customer_ref.current.querySelectorAll(`.${styles['customer-card__input']}`);
-              let requestBody = {
-                name : (fields[0].value).trim().toLowerCase(),
-                cell_phone : fields[1].value.trim().toLowerCase(),
-                address: fields[2].value.trim().toLowerCase(),
-                unit_price : fields[3].value.trim().toLowerCase(),
-                advance_money : fields[4].value.trim().toLowerCase(),
-                user_id : appUser
-              }
+                // Ref lock — ignore if a submission is already running
+                if (addLockRef.current) return;
 
+                const inputs = customer_ref.current.querySelectorAll(`.${styles['customer-card__input']}`);
+                const requestBody = {
+                  name:          inputs[0].value.trim().toLowerCase(),
+                  cell_phone:    inputs[1].value.trim(),
+                  address:       inputs[2].value.trim().toLowerCase(),
+                  unit_price:    inputs[3].value.trim(),
+                  advance_money: inputs[4].value.trim(),
+                  user_id:       appUser,
+                };
 
-               if(requestBody.name === ""){
+                if (requestBody.name === "")                                               return toast.error("Name is empty.");
+                if (requestBody.cell_phone === "")                                         return toast.error("Cell phone is empty.");
+                if (!/^03\d{9}$/.test(requestBody.cell_phone))                            return toast.error("Cell phone format is not correct.");
+                if (requestBody.unit_price === "")                                         return toast.error("Price is empty.");
+                if (parseFloat(requestBody.unit_price) < 0)                               return toast.error("Price is negative.");
+                if (requestBody.advance_money !== "" && parseFloat(requestBody.advance_money) < 0)
+                                                                                           return toast.error("Advance is negative.");
 
-                toast.error("name is empty.")
-                return;
-                
-                
-              }
+                requestBody.unit_price    = parseInt(requestBody.unit_price);
+                requestBody.advance_money = requestBody.advance_money === "" ? 0 : parseInt(requestBody.advance_money);
 
+                // Acquire lock
+                addLockRef.current = true;
+                setIsAdding(true);
 
-              if(requestBody.cell_phone === ""){
+                const postData = async () => {
+                  try {
+                    let res = await fetch("http://127.0.0.1:8001/customer/add", {
+                      method: "POST",
+                      body: JSON.stringify(requestBody),
+                      headers: { 'Content-Type': 'application/json' },
+                    });
 
-                toast.error("cell phone is empty.")
-                return;
-                
-                
-              }else if(!(/^03\d{9}$/.test(requestBody.cell_phone))){
-                toast.error("cell phone format is not correct.")
+                    if (!res.ok) {
+                      toast.error("Server Internal Error.");
+                      return;
+                    }
 
-                return;
-              }
-              if(requestBody.unit_price === ""){
-                toast.error("price is empty.")
-                return;
-
-              }else if(parseFloat(requestBody.unit_price) < 0){ 
-                toast.error("price is negative.")
-                return;
-                
-              }
-              
-              if(requestBody.advance_money === ""){
-                
-                requestBody.advance_money = 0;
-                
-                
-              }else if(parseFloat(requestBody.advance_money) < 0){
-                toast.error("advance is negative.")
-                return;
-              }
-             
-              requestBody.unit_price = parseInt(requestBody.unit_price);
-              requestBody.advance_money = parseInt(requestBody.advance_money);
-
-              console.log(JSON.stringify(requestBody));
-              
-
-              const postData = async ()=>{
-                 let data = await fetch("http://127.0.0.1:8001/customer/add",{
-                    method:"POST",
-                    body: JSON.stringify(requestBody),  
-                    headers: {
-        'Content-Type': 'application/json', // MUST BE PRESENT
-    },
-
-                  })
-                  data = await data.json();
-                  
-                  if(data.status){
-
-                    toast.success(data.message)
-                    triggerRefresh();
-                    setMode("None");
-                    
-                    
-                  }else{
-                    toast.error(data.message)
-                    
-
+                    const data = await res.json();
+                    if (data.status) {
+                      toast.success(data.message);
+                      triggerRefresh();
+                      state.current = "CUSTOMER-OPERATIONS";
+                      setMode("None");
+                    } else {
+                      toast.error(data.message);
+                    }
+                  } catch {
+                    toast.error("Server is not responding, try later.");
+                  } finally {
+                    // Always release lock
+                    addLockRef.current = false;
+                    setIsAdding(false);
                   }
-
-
-                }
-
-              try{
+                };
 
                 postData();
-
-              }
-              catch{
-
-                toast.error("server is not responding, try later.")
-
-              }
-
-              
-  
-              
-                
-                
-                e.preventDefault()
-                
-              }
-              }>Submit</button>
+              }}
+            >
+              {isAdding
+                ? <span className={styles['customer-card__btn-spinner']} />
+                : "Submit"}
+            </button>
           </div>
         </div>
       )}
-      
-      {
-        Mode==="View" ? (
+
+      {/* ── Footer (View only) ── */}
+      {Mode === "View" && !showFetchLoader && customerData && (
         <div className={styles['customer-card__footer']}>
           <div className={styles['customer-card__by']}>{customerData.user_id}</div>
           <div className={styles['customer-card__at']}>on {formatReadableDate(customerData.modified_at)}</div>
-          </div>
-        )
-        : null
-      }
-
+        </div>
+      )}
     </div>
   );
 }

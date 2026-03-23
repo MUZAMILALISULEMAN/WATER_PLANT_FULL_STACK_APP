@@ -7,34 +7,10 @@
 
 body{
   background-color: var(--bg-page);
-   font-family: var(--font-body);
+  font-family: var(--font-body);
   line-height: 1.6; 
   text-transform: capitalize;
-  
 }
-
-
-
-/* .customer-section-layout{
-  display: grid;
-  grid-template-columns: 280px 0.98fr;
-  column-gap: 24px;
-  
-}
-
-.details-collapsed{
-  grid-template-columns:  0 0.98fr;
-  column-gap: 0px;
-}
-
-.customer-main-section-layout{
-  
-  grid-template-rows: 120px 1fr;
-  
-
-  
-
-} */
 
 
 

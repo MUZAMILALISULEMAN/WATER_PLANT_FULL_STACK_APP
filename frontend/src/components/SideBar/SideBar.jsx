@@ -1,4 +1,13 @@
+import React, { memo } from 'react';
 import styles from './SideBar.module.css';
+
+const NAV_ITEMS = [
+  { id: 'home', label: 'Home', icon: 'fa-house' },
+  { id: 'customers', label: 'Customers', icon: 'fa-user' },
+  { id: 'sales', label: 'Sales', icon: 'fa-dollar' },
+  { id: 'stats', label: 'Stats & Analysis', icon: 'fa-chart-bar' },
+  { id: 'expenses', label: 'Daily Expenses', icon: 'fa-box-dollar' },
+];
 
 function SideBar({ activeTab, setActiveTab }) {
   return (
@@ -6,40 +15,17 @@ function SideBar({ activeTab, setActiveTab }) {
       <div className={styles['sidebar__logo']}>Tulip Water Plant</div>
 
       <div className={styles['sidebar__items']}>
-        <div 
-          className={`${styles['sidebar__item']} ${activeTab === 'home' ? styles['sidebar__item--active'] : ''}`}
-          onClick={() => setActiveTab('home')}
-        >
-          <i className="fa-solid fa-house"></i> Home
-        </div>
-
-        <div 
-          className={`${styles['sidebar__item']} ${activeTab === 'customers' ? styles['sidebar__item--active'] : ''}`}
-          onClick={() => setActiveTab('customers')}
-        >
-          <i className="fa-solid fa-user"></i> Customers
-        </div>
-
-        <div 
-          className={`${styles['sidebar__item']} ${activeTab === 'sales' ? styles['sidebar__item--active'] : ''}`}
-          onClick={() => setActiveTab('sales')}
-        >
-          <i className="fa-solid fa-dollar"></i> Sales
-        </div>
-
-        <div 
-          className={`${styles['sidebar__item']} ${activeTab === 'stats' ? styles['sidebar__item--active'] : ''}`}
-          onClick={() => setActiveTab('stats')}
-        >
-          <i className="fa-solid fa-chart-bar"></i> Stats & Analysis
-        </div>
-
-        <div 
-          className={`${styles['sidebar__item']} ${activeTab === 'expenses' ? styles['sidebar__item--active'] : ''}`}
-          onClick={() => setActiveTab('expenses')}
-        >
-          <i className="fa-solid fa-box-dollar"></i> Daily Expenses
-        </div>
+        {NAV_ITEMS.map((item) => (
+          <div
+            key={item.id}
+            className={`${styles['sidebar__item']} ${
+              activeTab === item.id ? styles['sidebar__item--active'] : ''
+            }`}
+            onClick={() => setActiveTab(item.id)}
+          >
+            <i className={`fa-solid ${item.icon}`}></i> {item.label}
+          </div>
+        ))}
       </div>
 
       <button className={styles['sidebar__exit-btn']}>
@@ -49,4 +35,4 @@ function SideBar({ activeTab, setActiveTab }) {
   );
 }
 
-export default SideBar;
+export default memo(SideBar);

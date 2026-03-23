@@ -1,350 +1,1229 @@
-2026-03-11 16:56:14.843 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => 1 validation error for Response
-message
-  Input should be a valid string [type=string_type, input_value=15, input_type=int]
-    For further information visit https://errors.pydantic.dev/2.12/v/string_type
-2026-03-11 17:15:28.658 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => Object of type DateRange is not JSON serializable
-2026-03-11 17:19:42.910 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => Object of type DateRange is not JSON serializable
-2026-03-11 17:56:54.484 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => sales id is null or empty
-CONTEXT:  PL/pgSQL function display_sales(integer) line 5 at RAISE
+2026-03-22 04:24:59.463 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(100) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-11 17:57:11.492 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => sales id is null or empty
-CONTEXT:  PL/pgSQL function display_sales(integer) line 5 at RAISE
+2026-03-22 04:25:02.253 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(100) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-11 17:57:21.040 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => sales id is null or empty
-CONTEXT:  PL/pgSQL function display_sales(integer) line 5 at RAISE
+2026-03-22 04:25:03.622 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(100) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:07:25.478 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => invalid input syntax for type date: "''; drop table sales;"
-CONTEXT:  SQL statement "select s.sales_id,s.consumer_name,s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.status 
-from sales s left join customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date"
-PL/pgSQL function display_all_sales(jsonb) line 17 at RETURN QUERY
+2026-03-22 04:25:09.334 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(100) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:12:28.675 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ";"
-LINE 1: select * from search_customer(' '; drop table test; --)
-                                         ^
+2026-03-22 04:25:53.347 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
 
-2026-03-12 06:13:15.954 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "muzzy" does not exist
-LINE 1: select * from search_customer(muzzy)
-                                      ^
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:29:36.599 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
 
-2026-03-12 06:13:22.499 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "muzamil" does not exist
-LINE 1: select * from search_customer(muzamil)
-                                      ^
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:29:42.707 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:15:45.463 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ";"
-LINE 1: select * from search_customer('';drop table test;)
-                                        ^
+2026-03-22 04:30:47.472 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:16:16.365 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ";"
-LINE 1: select * from search_customer(`'';drop table test;`)
-                                         ^
+2026-03-22 04:31:08.546 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:17:05.626 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ";"
-LINE 1: select * from search_customer('';drop table test)
-                                        ^
+2026-03-22 04:31:12.026 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:19:12.123 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ";"
-LINE 1: select * from search_customer('';drop table test;)
-                                        ^
+2026-03-22 04:33:55.995 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:36:22.110 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => Object of type StatusSale is not JSON serializable
-2026-03-12 06:36:53.406 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
-2026-03-12 06:39:31.705 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'missing', 'loc': ('query', 'status_sales'), 'msg': 'Field required', 'input': None}
+2026-03-22 04:34:10.390 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 55, in update_sales
-    PUT /sales/update_sales/{id}
-2026-03-12 06:51:24.347 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => name 'payload' is not defined
-2026-03-12 06:51:53.739 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => 'Sales' object has no attribute 'reporting_time'
-2026-03-12 06:52:12.003 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => procedure update_sales_status() does not exist
-LINE 1: call update_sales_status()
-             ^
-HINT:  No procedure matches the given name and argument types. You might need to add explicit type casts.
+2026-03-22 04:34:22.078 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-12 06:53:07.617 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => procedure add_sales(unknown, integer, unknown, integer, integer, integer, unknown, unknown, unknown) does not exist
-LINE 1: call add_sales(NULL,77,'account',0,10,400,'paid','muzzy',NUL...
-             ^
-HINT:  No procedure matches the given name and argument types. You might need to add explicit type casts.
+2026-03-22 04:34:25.065 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
 
-2026-03-13 09:09:09.639 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'add'}
+2026-03-22 04:35:07.375 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "INSERT INTO schema_customers.customers (
+        name, 
+        cell_phone, 
+        address, 
+        unit_price, 
+        is_active, 
+        advance_money,
+		modified_by
+		
+    ) 
+    VALUES (
+        p_name, 
+        p_cell_phone, 
+        p_address, 
+        p_unit_price, 
+        p_is_active, 
+        p_advance_money,
+		p_modified_by
+		        
+    )"
+PL/pgSQL function schema_customers.add_customer(jsonb) line 48 at SQL statement
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 132, in display_customer
-    GET /customer/{id}
-2026-03-13 09:09:39.736 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'add'}
+2026-03-22 04:39:28.218 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "sales" violates foreign key constraint "fk_sales_modified_by"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "INSERT INTO schema_sales.sales (consumer_name, cust_id, sales_type, litres, bottles, price, sales_status, modified_by, created_at)
+            VALUES (v_consumer_name, v_cust_id, v_sales_type::sales_category, v_litres, v_bottles, v_price, v_sales_status::sales_status, 
+                    v_user_id::int, v_reporting_time)"
+PL/pgSQL function schema_sales.add_sales(jsonb) line 116 at SQL statement
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 132, in display_customer
-    GET /customer/{id}
-2026-03-13 09:25:38.244 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'name=muzzy%20suleman'}
+2026-03-22 04:39:38.471 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:27:15.736 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'name=muzzy%20suleman'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:39:47.119 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:27:23.522 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'name=muzzy%20suleman'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:30.602 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:27:23.692 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'name=muzzy%20suleman'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:32.037 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:39:19.399 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\n"name":"baba boss"\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:33.840 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:39:51.501 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\n"name":"baba boss"\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:35.945 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:40:17.822 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\n"name":""\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:36.938 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:40:26.156 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\n"name":"muzzy"\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:37.936 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:40:42.427 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\n"name":"muzzy"\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:38.744 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-13 09:40:50.605 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
-  {'type': 'model_attributes_type', 'loc': ('body',), 'msg': 'Input should be a valid dictionary or object to extract fields from', 'input': b'{\r\nname:"muzzy"\r\n}\r\n\r\n'}
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:39.604 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-  File "C:\Users\Mr-Computer\Desktop\APP\backend\customer_module\customer.py", line 92, in update_customer
-    PUT /customer/update/{id}
-2026-03-17 16:59:08.222 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column s.status does not exist
-LINE 1: ...,s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.status 
-                                                              ^
-QUERY:  select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.status 
-from sales s left join customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date
-CONTEXT:  PL/pgSQL function display_all_sales(jsonb) line 24 at RETURN QUERY
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:47.313 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-17 17:00:31.986 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => invalid input syntax for type date: "string"
-CONTEXT:  SQL statement "select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
-from sales s left join customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date"
-PL/pgSQL function display_all_sales(jsonb) line 24 at RETURN QUERY
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:40:52.137 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-17 17:07:32.489 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => syntax error at or near ")"
-LINE 1: ...,"user_id":1,"sales_status":"paid","reporting_time":null}',)
-                                                                      ^
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:09.287 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-17 17:18:31.217 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "sales" violates foreign key constraint "fk_sales_modified_by"
-DETAIL:  Key (modified_by)=(3) is not present in table "users".
-CONTEXT:  SQL statement "update sales 
-set 
-sales_status = v_sales_status::sales_status,
-modified_by = v_user_id,
-modified_at = now()
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:10.075 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-where sales_id = v_sales_id"
-PL/pgSQL function update_sales_status(jsonb) line 26 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:11.061 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 06:38:55.505 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function display_all_customers() does not exist
-LINE 1: select * from display_all_customers()
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:12.272 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:13.330 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:14.011 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:14.923 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:41:16.624 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 04:43:41.663 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:26.867 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:29.403 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:30.040 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:30.196 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:35.293 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:14:47.449 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:16:35.486 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:18:45.538 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:19:27.442 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:25:38.683 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:27:26.601 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(11) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-22 05:27:37.903 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 05:27:42.419 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(2) is not present in table "users".
+CONTEXT:  SQL statement "UPDATE schema_customers.customers
+    SET  
+        name          = COALESCE(v_name, name),
+        cell_phone    = COALESCE(v_phone, cell_phone),
+        address       = COALESCE(v_address, address),
+        unit_price    = COALESCE(v_price, unit_price),
+        advance_money = COALESCE(v_advance, advance_money),
+        is_active     = COALESCE(v_is_active, is_active),
+        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
+		modified_by = coalesce(v_modified_by,modified_by),
+		modified_at  = now()
+				
+			
+    WHERE cust_id = ID"
+PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+
+2026-03-22 05:27:45.659 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:10:36.980 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:23:57.869 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:28:09.689 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:30:56.257 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:31:38.510 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:37:26.186 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:39:25.342 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:40:02.837 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:40:41.745 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:47:20.838 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:48:11.522 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:49:11.823 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:54:55.715 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:55:08.251 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:55:10.022 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:55:48.914 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 07:58:08.329 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:07:02.293 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:08:58.085 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:15:01.929 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:15:06.325 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:15:47.816 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:15:56.252 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:15:57.836 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:18:30.413 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:18:57.944 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:21:33.240 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:22:41.123 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:24:48.091 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:26:08.296 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:30:15.403 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:33:06.475 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:38:48.403 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 08:51:36.763 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:15:11.351 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:15:55.911 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:20:56.512 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:25:46.007 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:26:12.038 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 09:27:25.765 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 10:48:46.756 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 10:49:15.760 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 10:50:29.117 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 10:50:32.900 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:07:05.464 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:07:55.813 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:08:08.232 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:09:34.121 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:10:22.977 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:10:54.910 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:21:10.930 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:28:37.663 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:28:52.436 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:30:40.552 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:30:51.676 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:37:19.028 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:43:12.668 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:43:12.679 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:53:29.530 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:54:42.643 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:56:37.029 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 11:56:49.435 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:06:06.541 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:21:26.947 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:21:29.916 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:21:33.646 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:21:55.902 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:21:55.931 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "c.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: select coalesce(c.name,s.consumer_name) , s.price , count(*)...
+                        ^
+QUERY:  select coalesce(c.name,s.consumer_name) , s.price , count(*) , c.cust_id                                          from schema_customers.customers c join schema_sales.sales s on c.cust_id = s.cust_id  where (TO_CHAR(s.created_at, 'YY-MM') = TO_CHAR(CURRENT_DATE, 'YY-MM')) and s.sales_status::varchar <> 'deleted' and c.is_active = true  order by s.price desc limit 1
+CONTEXT:  PL/pgSQL function schema_sales.display_sales_stats() line 18 at SQL statement
+
+2026-03-22 12:22:02.023 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:22:02.031 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "c.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: select coalesce(c.name,s.consumer_name) , s.price , count(*)...
+                        ^
+QUERY:  select coalesce(c.name,s.consumer_name) , s.price , count(*) , c.cust_id                                          from schema_customers.customers c join schema_sales.sales s on c.cust_id = s.cust_id  where (TO_CHAR(s.created_at, 'YY-MM') = TO_CHAR(CURRENT_DATE, 'YY-MM')) and s.sales_status::varchar <> 'deleted' and c.is_active = true  order by s.price desc limit 1
+CONTEXT:  PL/pgSQL function schema_sales.display_sales_stats() line 18 at SQL statement
+
+2026-03-22 12:22:24.199 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:23:58.495 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:24:01.743 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:24:33.032 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:26:43.898 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:29:14.713 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:29:18.874 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:30:40.824 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'stats'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 14, in get_sales
+    GET /sales/{id}
+2026-03-22 12:30:56.624 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "c.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: select coalesce(c.name,s.consumer_name) , s.price , count(*)...
+                        ^
+QUERY:  select coalesce(c.name,s.consumer_name) , s.price , count(*) , c.cust_id                                          from schema_customers.customers c join schema_sales.sales s on c.cust_id = s.cust_id  where (TO_CHAR(s.created_at, 'YY-MM') = TO_CHAR(CURRENT_DATE, 'YY-MM')) and s.sales_status::varchar <> 'deleted' and c.is_active = true  order by s.price desc limit 1
+CONTEXT:  PL/pgSQL function schema_sales.display_sales_stats() line 18 at SQL statement
+
+2026-03-22 12:33:24.530 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "c.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: select coalesce(c.name,s.consumer_name) , s.price , count(*)...
+                        ^
+QUERY:  select coalesce(c.name,s.consumer_name) , s.price , count(*) , c.cust_id                                          from schema_customers.customers c join schema_sales.sales s on c.cust_id = s.cust_id  
+	where (TO_CHAR(s.created_at, 'YY-MM') = TO_CHAR(CURRENT_DATE, 'YY-MM')) and 
+	s.sales_status::varchar <> 'deleted' and c.is_active = true  
+	order by s.price desc limit 1
+CONTEXT:  PL/pgSQL function schema_sales.display_sales_stats() line 18 at SQL statement
+
+2026-03-22 12:36:02.589 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "qty" does not exist
+LINE 1: ...TAL_ACCOUNT, F_TOTAL_CASH , customer_name , amt , qty,SALES_...
+                                                             ^
+QUERY:  SELECT F_TOTAL_SALE, F_TOTAL_ACCOUNT, F_TOTAL_CASH , customer_name , amt , qty,SALES_ID
+CONTEXT:  PL/pgSQL function schema_sales.display_sales_stats() line 21 at RETURN QUERY
+
+2026-03-22 13:42:36.555 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 25, in get_sales
+    GET /sales/{id}
+2026-03-22 13:43:46.262 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 25, in get_sales
+    GET /sales/{id}
+2026-03-22 13:44:06.407 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 25, in get_sales
+    GET /sales/{id}
+2026-03-22 13:45:08.767 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 25, in get_sales
+    GET /sales/{id}
+2026-03-22 13:45:57.113 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 25, in get_sales
+    GET /sales/{id}
+2026-03-22 13:46:13.643 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:47:35.205 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search_sales'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:49:08.060 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:49:59.870 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:50:07.821 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:50:28.244 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:50:34.439 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:52:04.302 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:52:17.464 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:52:32.582 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:53:22.901 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'search'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:53:36.525 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.search_sales(unknown) does not exist
+LINE 1: select * from schema_sales.search_sales('91')
                       ^
 HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
 
-2026-03-18 06:40:15.284 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+2026-03-22 13:54:44.648 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:40:30.429 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:55:40.442 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:41:39.003 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
-2026-03-18 06:41:56.251 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
-2026-03-18 06:46:27.191 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'method'
-2026-03-18 06:50:29.402 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:55:45.498 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:50:48.891 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:55:51.056 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:51:33.214 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "customers" does not exist
-LINE 1: EXISTS (SELECT 1 FROM customers WHERE cell_phone = v_phone A...
-                              ^
-QUERY:  EXISTS (SELECT 1 FROM customers WHERE cell_phone = v_phone AND cust_id != ID)
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 69 at IF
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:57:03.641 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:51:46.977 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:57:15.026 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'all'}
 
-2026-03-18 06:51:58.418 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 13:58:31.263 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'missing', 'loc': ('body',), 'msg': 'Field required', 'input': None}
 
-2026-03-18 06:56:00.530 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 100, in get_all_sales
+    PUT /sales/all
+2026-03-22 13:58:35.364 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'missing', 'loc': ('body',), 'msg': 'Field required', 'input': None}
 
-2026-03-18 06:56:08.716 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 100, in get_all_sales
+    PUT /sales/all
+2026-03-22 14:00:45.511 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 06:57:00.734 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:03:34.132 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 06:57:14.405 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:03:36.539 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 06:57:26.681 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => column "modified_by" is of type integer but expression is of type timestamp with time zone
-LINE 11:   modified_by  = now()
-                          ^
-HINT:  You will need to rewrite or cast the expression.
-QUERY:  UPDATE schema_customers.customers
-    SET  
-        name          = COALESCE(v_name, name),
-        cell_phone    = COALESCE(v_phone, cell_phone),
-        address       = COALESCE(v_address, address),
-        unit_price    = COALESCE(v_price, unit_price),
-        advance_money = COALESCE(v_advance, advance_money),
-        is_active     = COALESCE(v_is_active, is_active),
-        active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at), 
-		modified_by = coalesce(v_modified_by,modified_by),
-		modified_by  = now()
-				
-			
-    WHERE cust_id = ID
-CONTEXT:  PL/pgSQL function schema_customers.update_customer(integer,jsonb) line 88 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:03:41.861 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 06:58:07.648 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:03:50.844 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 07:00:22.024 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 9 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:39:34.361 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
 
-2026-03-18 07:06:40.801 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => relation "schema_customers" does not exist
-LINE 1: SELECT COUNT(*)                 FROM schema_customers
-                                             ^
-QUERY:  SELECT COUNT(*)                 FROM schema_customers
-CONTEXT:  PL/pgSQL function schema_customers.display_customer_stats() line 10 at SQL statement
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 14:39:42.742 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 22:55:19.374 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 22:55:23.172 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 22:55:25.516 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-22 22:55:27.655 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:39.212 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:40.409 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:47.240 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:48.325 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:49.101 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:03:50.389 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:04:24.988 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:04:31.683 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:04:33.265 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:05:01.292 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:06:23.360 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:06:24.836 | ERROR    | database:GET_DB:41 - API REQUEST DATA VALIDATION IS VIOLATED => 1 validation error:
+  {'type': 'int_parsing', 'loc': ('path', 'id'), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'filter'}
+
+  File "C:\Users\Mr-Computer\Desktop\APP\backend\sales_module\sales.py", line 118, in get_sales
+    GET /sales/{id}
+2026-03-23 00:06:55.761 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_status() does not exist
+LINE 1: select * from schema_sales.sales_filter_by_status()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-23 00:07:02.113 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_status() does not exist
+LINE 1: select * from schema_sales.sales_filter_by_status()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-23 00:07:05.186 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't execute an empty query
+2026-03-23 00:09:29.265 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => operator does not exist: sales_status ~~ unknown
+LINE 12: s.sales_status like 'paid',
+                        ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  select s.sales_id,
+coalesce(s.consumer_name,c.name),
+s.cust_id,
+s.sales_type,
+s.litres,
+s.bottles,
+s.price,
+s.sales_status
+from schema_sales.sales s 
+left join schema_customers.customers c 
+on s.cust_id = c.cust_id order by 
+s.sales_status like 'paid',
+s.sales_status like 'pending'
+CONTEXT:  PL/pgSQL function schema_sales.sales_filter_by_status() line 4 at RETURN QUERY
+
+2026-03-23 00:09:33.913 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't execute an empty query
+2026-03-23 00:09:43.729 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't execute an empty query
+2026-03-23 00:10:42.331 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => operator does not exist: sales_status ~~ unknown
+LINE 12: s.sales_status like 'paid',
+                        ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  select s.sales_id,
+coalesce(s.consumer_name,c.name),
+s.cust_id,
+s.sales_type,
+s.litres,
+s.bottles,
+s.price,
+s.sales_status
+from schema_sales.sales s 
+left join schema_customers.customers c 
+on s.cust_id = c.cust_id order by 
+s.sales_status like 'paid',
+s.sales_status like 'pending'
+CONTEXT:  PL/pgSQL function schema_sales.sales_filter_by_status() line 4 at RETURN QUERY
+
+2026-03-23 00:10:49.322 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't execute an empty query
+2026-03-23 00:11:41.191 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't execute an empty query
+2026-03-23 00:11:44.637 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => operator does not exist: sales_status ~~ unknown
+LINE 12: s.sales_status like 'paid',
+                        ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  select s.sales_id,
+coalesce(s.consumer_name,c.name),
+s.cust_id,
+s.sales_type,
+s.litres,
+s.bottles,
+s.price,
+s.sales_status
+from schema_sales.sales s 
+left join schema_customers.customers c 
+on s.cust_id = c.cust_id order by 
+s.sales_status like 'paid',
+s.sales_status like 'pending'
+CONTEXT:  PL/pgSQL function schema_sales.sales_filter_by_status() line 4 at RETURN QUERY
+
+2026-03-23 00:11:49.049 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => operator does not exist: sales_status ~~ unknown
+LINE 12: s.sales_status like 'paid',
+                        ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  select s.sales_id,
+coalesce(s.consumer_name,c.name),
+s.cust_id,
+s.sales_type,
+s.litres,
+s.bottles,
+s.price,
+s.sales_status
+from schema_sales.sales s 
+left join schema_customers.customers c 
+on s.cust_id = c.cust_id order by 
+s.sales_status like 'paid',
+s.sales_status like 'pending'
+CONTEXT:  PL/pgSQL function schema_sales.sales_filter_by_status() line 4 at RETURN QUERY
+
+2026-03-23 06:42:38.413 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_status() does not exist
+LINE 1: select * from schema_sales.sales_filter_by_status()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-23 06:45:54.203 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:45:54.302 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:45:54.392 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:46:07.199 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:46:08.383 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:46:54.666 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:46:55.907 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => can't adapt type 'DateRange'
+2026-03-23 06:47:16.338 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_id_asc(unknown) does not exist
+LINE 1: select * from schema_sales.sales_filter_by_id_asc('{"start":...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-23 06:47:34.528 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_id_asc(unknown) does not exist
+LINE 1: select * from schema_sales.sales_filter_by_id_asc('{"start":...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-03-23 06:53:51.278 | ERROR    | database:GET_DB:52 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.sales_filter_by_price_desc(unknown) does not exist
+LINE 1: select * from schema_sales.sales_filter_by_price_desc('{"sta...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
 

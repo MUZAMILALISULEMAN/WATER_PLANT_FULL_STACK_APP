@@ -10,7 +10,7 @@ for i, rows in df.iterrows():
     requestBody["unit_price"] = rows["Rate"]
     requestBody["cell_phone"] = rows["Phone Number"]
     try:
-     response = rq.post(url = "http://127.0.0.1:8000/customer/add",json=requestBody,timeout=5)
+     response = rq.post(url = "http://127.0.0.1:8001/customer/add",json=requestBody,timeout=5)
      if response.status_code == 201:
         print("SUCCESS")
      else:

@@ -1,12 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef ,memo} from 'react';
 import styles from './CustomerSection.module.css';
 import CustomerDetailsCard from '../CustomerDetailsCard/CustomerDetailsCard';
 import CustomerStats from '../CustomerStats/CustomerStats';
 import AllCustomersDetailsSection from '../AllCustomersDetailsSection/AllCustomersDetailsSection';
 
-function CustomerSection({ activeTab ,toast,appUser}) {
-  const stateLastAction = useRef("SEARCH");
+
+const Stats = memo(CustomerStats);
+const CustomerTable = memo(AllCustomersDetailsSection);
+const DetailsCard = memo(CustomerDetailsCard);
+
+
+function CustomerSection({  toast,appUser,isVisible}) {
+  
   const [refresh, setRefresh] = useState(false);
+  const state = useRef("CUSTOMER-OPERATIONS");
   const [selectedCustomerId, setSelectedCustomerId] = useState(-1);
   const [Mode, setMode] = useState('None');
 
@@ -14,7 +21,7 @@ function CustomerSection({ activeTab ,toast,appUser}) {
     setRefresh(prev => !prev);
   };
 
-  if (activeTab !== "customers") return null;
+  
 
   // Combine base layout with the modifier for collapsed state
   const layoutClassName = Mode === "None" 
@@ -22,27 +29,29 @@ function CustomerSection({ activeTab ,toast,appUser}) {
     : styles['customer-section'];
 
   return (
-    <div className={layoutClassName}>
+    <div className={`${layoutClassName} ${isVisible ? styles["display-grid"] : styles["display-none"]}`}>
       <aside className={styles['customer-section__sidebar']}>
-        <CustomerDetailsCard 
+        <DetailsCard 
           cust_id={selectedCustomerId} 
           triggerRefresh={triggerRefresh}
           toast={toast}
           Mode={Mode} 
           setMode={setMode}
-          refresh={refresh}
           set_cust_id={setSelectedCustomerId}
           appUser={appUser}
+          refresh={refresh}
+          state={state}
         /> 
       </aside>
 
       <main className={styles['customer-section__main']}>
-        <CustomerStats />
-        <AllCustomersDetailsSection 
+
+        <Stats  refresh={refresh}/>
+        <CustomerTable 
           setSelectedCustomerId={setSelectedCustomerId} 
           setMode={setMode} 
-          state={stateLastAction} 
           refresh={refresh}
+          state={state}
         />
       </main>
     </div>

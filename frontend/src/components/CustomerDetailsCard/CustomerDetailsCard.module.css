@@ -1,10 +1,9 @@
 /* BLOCK */
 .customer-card {
-  
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
- justify-content: flex-start;
+  justify-content: flex-start;
   width: 280px;
   background-color: var(--bg-surface);
   height: 100vh;
@@ -12,8 +11,6 @@
   border-right: 1px solid var(--border-light);
   border-left: 1px solid var(--border-light);
 }
-
-
 
 /* ELEMENTS - Header */
 .customer-card__header {
@@ -42,14 +39,59 @@
   color: var(--color-secondary-hover);
 }
 
+/* ── Fetch loader (centered in card body) ── */
+.customer-card__loader-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Shared spinner shape — used by both card loader and button loader */
+.customer-card__spinner,
+.customer-card__btn-spinner {
+  display: inline-block;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Card-level spinner — larger */
+.customer-card__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-secondary-soft);
+  border-top-color: var(--color-secondary);
+}
+
+/* Button-level spinner — smaller, inherits button colours */
+.customer-card__btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled / loading state for submit buttons */
+.btn--loading {
+  opacity: 0.75;
+  cursor: not-allowed;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ELEMENTS - Info View */
 .customer-card__info-group {
-
   display: flex;
   flex-direction: column;
 }
-.customer-card--gap-space-xl{
-gap: var(--space-xl);
+
+.customer-card--gap-space-xl {
+  gap: var(--space-xl);
 }
 
 .customer-card__info-item {
@@ -58,7 +100,7 @@ gap: var(--space-xl);
 }
 
 .customer-card__info-item--editing {
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 }
 
 .customer-card__label {
@@ -75,17 +117,13 @@ gap: var(--space-xl);
 }
 
 .customer-card__value--editable {
-  /* This maps to your .editable-name if you had specific styles for it */
   outline: none;
-
-  
 }
+
 .customer-card__value--editable:focus {
-  /* This maps to your .editable-name if you had specific styles for it */
   outline: none;
   color: var(--color-secondary-light);
   font-weight: 700;
-  
 }
 
 /* ELEMENTS - Add Form */
@@ -104,7 +142,6 @@ gap: var(--space-xl);
 }
 
 .customer-card__add-label {
-  
   color: var(--color-secondary-active);
   font-size: var(--fs-sm);
 }
@@ -113,7 +150,7 @@ gap: var(--space-xl);
   position: relative;
   display: flex;
   align-items: center;
-  color: red; /* Your original style */
+  color: red;
 }
 
 .customer-card__input {
@@ -163,12 +200,13 @@ gap: var(--space-xl);
   margin-left: 50px;
   margin-top: 4px;
 }
+
 .customer-card__submit-btn {
   margin-left: 0px;
   width: 80px;
 }
 
-/* MODIFIERS / BADGES (Using BEM class instead of ID for modules) */
+/* MODIFIERS / BADGES */
 #success-badge {
   border: 1px solid var(--color-success-light);
   background-color: var(--color-success-soft);
@@ -198,26 +236,41 @@ gap: var(--space-xl);
   border-radius: 2px;
 }
 
-.customer-card__footer{
-    
-    
+.customer-card__footer {
   color: var(--text-secondary);
   display: flex;
   gap: 4px;
   justify-content: center;
-  
   font-size: var(--fs-xxs);
   background-color: var(--color-secondary-soft);
   border-top: 1px solid var(--color-secondary-active);
   margin-top: auto;
   padding: 4px 0px 4px 0px;
-  
-
-  
 }
 
-.customer-card__by{
+.customer-card__by {
   color: var(--color-secondary-active);
   text-transform: capitalize;
-  
+}
+
+.customer-card__value--badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.badge--success {
+  background-color: var(--color-success-soft);
+  border: 1px solid var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badge--error {
+  background-color: var(--color-error-soft);
+  border: 1px solid var(--color-error-light);
+  color: var(--color-error);
 }

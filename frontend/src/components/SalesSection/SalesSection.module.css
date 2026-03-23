@@ -1,0 +1,31 @@
+/* Block: The overall grid container */
+.sales-section {
+  display: grid;
+  grid-template-columns: 280px .98fr;
+  column-gap: 24px;
+  transition: all var(--transition-slow);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Modifier: When details card is hidden */
+.sales-section--collapsed {
+  grid-template-columns: 0 .98fr;
+  column-gap: 0px;
+}
+
+/* Element: The main area (Stats + Table) */
+.sales-section__main {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.display-none {
+  display: none;
+}
+
+.display-grid {
+  display: grid;
+}

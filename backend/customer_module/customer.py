@@ -139,7 +139,7 @@ def display_customer(id: int, cursor = Depends(GET_DB)):
     
      cursor.execute(f"select * from schema_customers.display_customer({id})")
      count = cursor.rowcount 
-     res = cursor.fetchone()
+     res = cursor.fetchall()
     
      if count != 0:
         logger.success(f"GOT THE CUSTOMER {id} ...")

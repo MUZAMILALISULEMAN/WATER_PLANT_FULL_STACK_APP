@@ -19,3 +19,11 @@
   grid-template-rows: 128px .98fr;
   
 }
+
+.display-none{
+  display: none;
+}
+
+.display-grid{
+  display: grid;
+}

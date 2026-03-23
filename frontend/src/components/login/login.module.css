@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ============================= */
+/* PAGE WRAPPER */
+/* ============================= */
+.loginRoot {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-secondary-soft);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+.loginRoot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 90%, rgba(0, 48, 73, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 70% at 90% 5%,  rgba(102, 155, 188, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ============================= */
+/* CARD */
+/* ============================= */
+.card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  margin: var(--space-md);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-secondary), 0 0 0 1px var(--border-light);
+  background: var(--bg-surface);
+  animation: cardIn var(--transition-slow) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+.shake {
+  animation: shake 0.45s ease;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+.cardHeader {
+  background: var(--color-secondary);
+  padding: var(--space-lg) var(--space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  border-bottom: 3px solid var(--color-secondary-hover);
+}
+
+.dropIcon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.brandText {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: var(--fs-h4);
+  color: var(--text-on-secondary);
+  letter-spacing: 0.5px;
+  line-height: var(--lh-tight);
+}
+
+.brandSub {
+  font-size: var(--fs-xxs);
+  font-weight: var(--fw-medium);
+  color: var(--color-secondary-light);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ============================= */
+/* BODY */
+/* ============================= */
+.cardBody {
+  padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  background: var(--bg-surface);
+}
+
+.sectionTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--color-secondary);
+  letter-spacing: 0.3px;
+  margin-bottom: var(--space-xs);
+}
+
+.sectionSub {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+/* ============================= */
+/* FIELDS */
+/* ============================= */
+.field {
+  margin-bottom: var(--space-md);
+}
+
+.field label {
+  display: block;
+  font-size: var(--fs-xxs);
+  font-weight: var(--fw-semibold);
+  color: var(--color-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.inputWrap {
+  position: relative;
+}
+
+.inputWrap svg.fieldIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-secondary-light);
+  pointer-events: none;
+}
+
+.inputWrap input {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 var(--input-padding-x) 0 40px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--input-radius);
+  font-size: var(--fs-sm);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--color-secondary-soft);
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    background   var(--transition-fast),
+    box-shadow   var(--transition-fast);
+}
+
+.inputWrap input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.inputWrap input:focus {
+  border-color: var(--color-secondary);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-secondary);
+}
+
+.pwdToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-secondary-light);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast);
+}
+
+.pwdToggle:hover {
+  color: var(--color-secondary);
+}
+
+/* ============================= */
+/* ERROR */
+/* ============================= */
+.errorMsg {
+  background: var(--color-error-soft);
+  border: 1px solid var(--border-light);
+  border-left: 2px solid var(--color-error);
+  border-radius: var(--radius-none);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--color-secondary);
+  text-transform: capitalize;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.errorMsg svg {
+  color: var(--color-error-light);
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================= */
+/* SUBMIT BUTTON */
+/* ============================= */
+.submitBtn {
+  width: 100%;
+  height: var(--btn-height);
+  padding: 0 var(--btn-padding-x);
+  background: var(--color-secondary);
+  color: var(--text-on-secondary);
+  border: none;
+  border-radius: var(--btn-radius);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform  var(--transition-fast);
+  box-shadow: var(--shadow-secondary);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-secondary-hover);
+  box-shadow: var(--shadow-secondary), 0 2px 8px rgba(0, 48, 73, 0.2);
+}
+
+.submitBtn:active:not(:disabled) {
+  background: var(--color-secondary-active);
+  transform: scale(0.985);
+}
+
+.submitBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ============================= */
+/* SPINNER */
+/* ============================= */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: var(--radius-full);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+.cardFooter {
+  background: var(--color-secondary-soft);
+  border-top: 1px solid var(--border-light);
+  padding: var(--space-sm) var(--space-xl);
+  text-align: center;
+  font-size: var(--fs-xxs);
+  color: var(--color-secondary);
+  letter-spacing: 0.5px;
+  font-weight: var(--fw-medium);
+}
