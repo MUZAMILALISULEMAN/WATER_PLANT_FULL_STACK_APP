@@ -96,21 +96,21 @@
 
 .customer-card__info-item {
   margin-left: var(--space-xl);
-  margin-bottom: 12px;
+  margin-bottom: 9px;
 }
 
 .customer-card__info-item--editing {
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 }
 
 .customer-card__label {
-  font-size: var(--fs-xs);
+  font-size: 0.68rem;
   margin-bottom: 2px;
   color: var(--text-secondary);
 }
 
 .customer-card__value {
-  font-size: var(--fs-sm);
+  font-size: 13px;
   color: var(--color-secondary-active);
   font-weight: 500;
   text-transform: capitalize;
@@ -137,27 +137,27 @@
 .customer-card__add-item {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   margin-left: var(--space-xl);
 }
 
 .customer-card__add-label {
   color: var(--color-secondary-active);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
 }
 
 .customer-card__input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  color: red;
+;
+  /* color: red; */
 }
 
 .customer-card__input {
-  margin-left: 4px;
+ 
   font-size: 12px;
-  padding: 6px 0px;
-  padding-left: 28px;
+padding: 5px 0 5px 33px;
   width: 200px;
   background: none;
   outline: none;
@@ -192,19 +192,25 @@
 .customer-card__add-submit {
   border: none;
   background-color: var(--color-secondary);
-  padding: 8px;
+  padding: 7px 0px;
+  text-align: center;
   border-radius: 4px;
   color: var(--text-on-secondary);
   cursor: pointer;
-  width: 100px;
-  margin-left: 50px;
-  margin-top: 4px;
+  width: 110px;
+ 
+
+  
 }
 
+
 .customer-card__submit-btn {
-  margin-left: 0px;
-  width: 80px;
+     margin-top: 4px;
+  width: 110px;
 }
+
+
+
 
 /* MODIFIERS / BADGES */
 #success-badge {
@@ -274,3 +280,6 @@
   border: 1px solid var(--color-error-light);
   color: var(--color-error);
 }
+/* .text-uppercase{
+  text-transform: uppercase;
+} */

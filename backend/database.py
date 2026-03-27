@@ -2,13 +2,25 @@ from fastapi import HTTPException
 from psycopg2 import connect,OperationalError
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
-
-DB_CONFIG ={"host":"localhost",       # or "127.0.0.1"
-            "port":"5432",            # Default Postgres port
-            "database":"RO-PLANT-DB",    # Your database name
-            "user":"postgres",        # Your username (default is usually 'postgres')
-            "password":"muzzy"} # Your password
-        
+import os
+DB_CONFIG = {
+   "host": os.getenv("host"),
+    # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
+    "port": "5432", 
+    "database": os.getenv("db"), # READ NOTE BELOW
+    # CHANGE 2: The username must match exactly what Supabase provides
+    "user": os.getenv("user"), # CHANGE 2: Use the correct username provided by Supabase
+    "password": os.getenv("pwd") # CHANGE 3: Use the correct password provided by Supabase
+}   
+# DB_CONFIG = {
+#     "host": "localhost",
+#     # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
+#     "port": "5432", 
+#     "database": "tulip-db", # READ NOTE BELOW
+#     # CHANGE 2: The username must match exactly what Supabase provides
+#     "user": "postgres", # CHANGE 2: Use the correct username provided by Supabase 
+#     "password": "muzzy" # CHANGE 3: Use the correct password provided by Supabase
+# }   
 
 def GET_DB():
     connection = None

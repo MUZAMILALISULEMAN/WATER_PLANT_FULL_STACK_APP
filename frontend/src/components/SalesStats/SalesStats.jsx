@@ -10,8 +10,8 @@ import styles from './SalesStats.module.css';
  * 4: top customer name
  * 5: bottles or litres
  */
-function SalesStats({ refresh }) {
-  const [data, setData] = useState([0, 0, 0, 0, 'Customer', 0,0,0,-1]);
+function SalesStats({ refresh ,externalRefresh}) {
+  const [data, setData] = useState([0, 0, 0,'Customer', 0,  null,0,-1,0]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,14 +29,16 @@ function SalesStats({ refresh }) {
         if (DATA.status && DATA.data) { 
           setData(DATA.data);
         } else {
-          setData([0, 0, 0, 0, 'Customer', 0,0,0,-1]);
+          setData([0, 0, 0,'Customer', 0,  null,0,-1,0]);
+          console.log("here");
+          
         }
       } catch {
-        setData([0, 0, 0, 0, 'Customer', 0,0,0,-1]);
+        setData([0, 0, 0,'Customer', 0,  null,0,-1,0]);
       }
     };
     fetchData();
-  }, [refresh]);
+  }, [refresh,externalRefresh]);
 
   return (
     <section className={styles.stats}>

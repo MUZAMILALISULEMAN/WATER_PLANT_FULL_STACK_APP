@@ -2,14 +2,16 @@ import React, { memo } from 'react';
 import styles from './SideBar.module.css';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: 'fa-house' },
+  
   { id: 'customers', label: 'Customers', icon: 'fa-user' },
   { id: 'sales', label: 'Sales', icon: 'fa-dollar' },
+  { id: 'dispatch', label: 'Daily Dispatch', icon: 'fa-calendar-day' },
   { id: 'stats', label: 'Stats & Analysis', icon: 'fa-chart-bar' },
-  { id: 'expenses', label: 'Daily Expenses', icon: 'fa-box-dollar' },
+  { id: 'billings', label: 'Billings', icon: 'fa-file-invoice' },
 ];
+// { id: 'expenses', label: 'Daily Expenses', icon: 'fa-box-dollar' }
 
-function SideBar({ activeTab, setActiveTab }) {
+function SideBar({ activeTab, setActiveTab ,setIsLoggedIn}) {
   return (
     <div className={styles['sidebar']}>
       <div className={styles['sidebar__logo']}>Tulip Water Plant</div>
@@ -28,7 +30,7 @@ function SideBar({ activeTab, setActiveTab }) {
         ))}
       </div>
 
-      <button className={styles['sidebar__exit-btn']}>
+      <button className={styles['sidebar__exit-btn']} onClick={() => setIsLoggedIn(false)}>
         <i className="fa-solid fa-arrow-left-to-bracket"></i> Exit
       </button>
     </div>

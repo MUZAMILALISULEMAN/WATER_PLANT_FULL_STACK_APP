@@ -7,6 +7,10 @@ class Response(BaseModel):
     data : Optional[Any] = None
     message : Optional[str] = None
 
+class Credentials(BaseModel):
+    username : str
+    password : str
+
 class User(BaseModel):
     name : Optional[str] = None 
     cell_phone :Optional[str] = None
@@ -15,6 +19,7 @@ class User(BaseModel):
     advance_money : Optional[int] = None
     is_active : Optional[bool] = None
     user_id : Optional[int] = None
+    regular_bottles : Optional[int] = None
 
 class DateRange(BaseModel):
     start: Optional[str] = None
@@ -31,6 +36,10 @@ class Sales(BaseModel):
     user_id : Optional[int] = None
     sales_status : Optional[str] = None
     reporting_time : Optional[str] = None
+
+class DispatchBatch(BaseModel):
+    sales_list: list[Sales]
+    dispatched_by: Optional[str] = None
 
 class Update_Sales(BaseModel):
     sales_id :Optional[int] = None

@@ -3,7 +3,8 @@
   display: grid;
   grid-template-columns: 280px .98fr; /* Your "lock" width */
   column-gap: 24px;
-  transition: all var(--transition-slow); /* Keeps the shift smooth */
+  transition: all var(--transition-quick);
+
    
 }
 

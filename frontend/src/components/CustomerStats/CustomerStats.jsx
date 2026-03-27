@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CustomerStats.module.css';
 
-function CustomerStats({refresh}) {
+function CustomerStats({refresh,externalRefresh}) {
   const [data, setData] = useState([0, 0, 0,'Customer',0,0,-1]);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function CustomerStats({refresh}) {
       }
     };
     fetchData();
-  }, [refresh]);
+  }, [refresh, externalRefresh]);
 
   return (
     <section className={styles['stats']}>
@@ -59,16 +59,16 @@ function CustomerStats({refresh}) {
           <h3 className={styles['stats__title']}>
             <i className="fa-regular fa-award"></i> Top Customer
           </h3>
-          <span className={`${styles['stats__value']} ${styles['stats__value--revenue']}`}> Rs {data[4] ? data[4] : 0} </span>
+          <span className={`${styles['stats__value']} ${styles['stats__value--revenue']}`}> Rs {data?.[4] ? data?.[4] : 0} </span>
         </div>
         
         <div className={styles['stats__content']}>
           <div className={`${styles['stats__customer-name']} ${styles['stats__customer-name--highlight']}`}>
-            {data[3] ? data[3] : 'Customer'}   <span  className={styles['customer--id_label']}>Customer ID — <span className={styles['badge--id-stats']}>{data?.[6] ?? -1}</span></span>
+            {data?.[3] ? data?.[3] : 'Customer'}   <span  className={styles['customer--id_label']}>Customer ID — <span className={styles['badge--id-stats']}>{data?.[6] ?? -1}</span></span>
                       
           </div>
           <div className={styles['stats__customer-meta']}>
-            <span className={`${styles['stats__value-bottle']} ${styles['stats__value-bottle--highlight']}`}> {data[5] ? data[5] : 0} </span> 
+            <span className={`${styles['stats__value-bottle']} ${styles['stats__value-bottle--highlight']}`}> {data?.[5] ? data?.[5] : 0} </span> 
             Deliveries / Month
           </div>
         </div>

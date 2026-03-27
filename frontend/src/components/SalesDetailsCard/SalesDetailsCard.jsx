@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './SalesDetailsCard.module.css';
+import { toKarachi } from '../../utils/timeUtils';
 
 const API_BASE = 'http://127.0.0.1:8001';
 
@@ -44,14 +45,14 @@ function SalesDetailsCard({
   const [selectedCust,   setSelectedCust]   = useState(null);
   const [showDropdown,   setShowDropdown]   = useState(false);
 
-  const [isFetching,     setIsFetching]     = useState(false);   // card-level spinner (View)
-  const [isSubmitting,   setIsSubmitting]   = useState(false);   // submit button spinner
+  const [isFetching,     setIsFetching]     = useState(false);
+  const [isSubmitting,   setIsSubmitting]   = useState(false);
 
   // ── Refs ───────────────────────────────────────────────────────────────────
-  const searchRef       = useRef(null);
-  const submitLockRef   = useRef(false);      // blocks double-submit on Add form
-  const fetchAbortRef   = useRef(null);       // AbortController for fetchSales
-  const searchAbortRef  = useRef(null);       // AbortController for customer search
+  const searchRef      = useRef(null);
+  const submitLockRef  = useRef(false);
+  const fetchAbortRef  = useRef(null);
+  const searchAbortRef = useRef(null);
 
   // ── Close dropdown on outside click ───────────────────────────────────────
   useEffect(() => {
@@ -63,7 +64,7 @@ function SalesDetailsCard({
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // ── Debounced customer search with AbortController ─────────────────────────
+  // ── Debounced customer search ──────────────────────────────────────────────
   useEffect(() => {
     if (!custSearch.trim() || systemType !== 'account') {
       setCustResults([]);
@@ -72,7 +73,6 @@ function SalesDetailsCard({
     }
 
     const timer = setTimeout(async () => {
-      // Cancel any previous in-flight search
       if (searchAbortRef.current) searchAbortRef.current.abort();
       const controller = new AbortController();
       searchAbortRef.current = controller;
@@ -89,6 +89,7 @@ function SalesDetailsCard({
             cust_id:    row[0],
             name:       row[1],
             unit_price: row[2],
+            bottles:    row[3],
           }));
           setCustResults(mapped);
           setShowDropdown(true);
@@ -98,13 +99,10 @@ function SalesDetailsCard({
       }
     }, 300);
 
-    return () => {
-      clearTimeout(timer);
-      // Don't abort here — let the debounce timer handle stale requests
-    };
+    return () => clearTimeout(timer);
   }, [custSearch, systemType]);
 
-  // ── Fetch sale + reset on mode / id change ─────────────────────────────────
+  // ── Fetch sale on mode / id change ────────────────────────────────────────
   useEffect(() => {
     if (Mode !== 'None') setIsCollapsed(false);
 
@@ -124,7 +122,6 @@ function SalesDetailsCard({
 
     if (sales_id == null || sales_id <= -1) return;
 
-    // Cancel any previous in-flight fetch
     if (fetchAbortRef.current) fetchAbortRef.current.abort();
     const controller = new AbortController();
     fetchAbortRef.current = controller;
@@ -166,18 +163,16 @@ function SalesDetailsCard({
     };
 
     fetchSales();
-
     return () => controller.abort();
   }, [sales_id, refresh, Mode]);
 
   // ── Derived flags ──────────────────────────────────────────────────────────
-  const isCash         = systemType === 'cash';
-  const isLitres       = unitType   === 'litres';
-  const qtyLabel       = isLitres ? 'Litres' : 'Bottles';
-  const priceDisabled  = !isCash && !isLitres && !priceUnlocked;
+  const isCash          = systemType === 'cash';
+  const isLitres        = unitType   === 'litres';
+  const qtyLabel        = isLitres ? 'Litres' : 'Bottles';
+  const priceDisabled   = !isCash && !isLitres && !priceUnlocked;
   const showFetchLoader = isFetching && Mode !== 'Add';
 
-  // Block render of data until fetch completes (View mode)
   if (!salesData && !isFetching && Mode !== 'Add') return null;
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -194,16 +189,6 @@ function SalesDetailsCard({
     setFormState(next === 'cash' ? CASH_DEFAULTS : ACCT_DEFAULTS);
   };
 
-  const formatReadableDate = (iso) => {
-    if (!iso) return '—';
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return '—';
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true,
-    }).format(d);
-  };
-
   const statusBadgeClass = (s) => {
     const v = String(s ?? '').trim().toLowerCase();
     if (v === 'paid')    return styles['badge--success'];
@@ -214,17 +199,21 @@ function SalesDetailsCard({
   const handleInputChange = (key) => (e) =>
     setFormState((prev) => ({ ...prev, [key]: e.target.value }));
 
+  // ── Customer select — auto-fills price AND bottles ─────────────────────────
   const handleSelectCustomer = (cust) => {
     setSelectedCust(cust);
     setCustSearch(cust.name);
     setShowDropdown(false);
     setPriceUnlocked(false);
-    setFormState((prev) => ({ ...prev, price: !isLitres ? String(cust.unit_price ?? '') : '' }));
+    setFormState((prev) => ({
+      ...prev,
+      price:    !isLitres ? String(cust.unit_price ?? '') : '',
+      quantity: !isLitres ? String(cust.bottles    ?? '') : '',
+    }));
   };
 
   // ── Add submit ─────────────────────────────────────────────────────────────
   const handleAddSubmit = () => {
-    // Ref lock — ignore if already in-flight
     if (submitLockRef.current) return;
 
     const priceValue = Number.parseFloat(formState.price?.trim());
@@ -264,7 +253,6 @@ function SalesDetailsCard({
       }
     }
 
-    // Acquire lock
     submitLockRef.current = true;
     setIsSubmitting(true);
 
@@ -290,7 +278,6 @@ function SalesDetailsCard({
       } catch {
         toast.error('Server is not responding, try later.');
       } finally {
-        // Always release lock
         submitLockRef.current = false;
         setIsSubmitting(false);
       }
@@ -313,7 +300,7 @@ function SalesDetailsCard({
         <span>{Mode === 'View' ? 'Sales View' : 'Sales Add'}</span>
       </div>
 
-      {/* ── Centered fetch loader (View mode) ── */}
+      {/* ── Fetch loader ── */}
       {showFetchLoader && (
         <div className={styles['sales-card__loader-wrap']}>
           <span className={styles['sales-card__spinner']} />
@@ -372,8 +359,9 @@ function SalesDetailsCard({
 
           <div className={styles['info-row']}>
             <span className={styles['info-label']}>Created At</span>
-            <span className={styles['info-value']}>{formatReadableDate(salesData.created_at)}</span>
+            <span className={styles['info-value']}>{toKarachi(salesData.created_at)}</span>
           </div>
+
         </div>
       )}
 
@@ -423,7 +411,7 @@ function SalesDetailsCard({
                     setCustSearch(e.target.value);
                     setSelectedCust(null);
                     setPriceUnlocked(false);
-                    setFormState((p) => ({ ...p, price: '' }));
+                    setFormState((p) => ({ ...p, price: '', quantity: '' }));
                   }}
                   onFocus={() => custResults.length > 0 && setShowDropdown(true)}
                   onBlur={() => { if (!selectedCust) setCustSearch(''); }}
@@ -439,7 +427,7 @@ function SalesDetailsCard({
                       onMouseDown={() => handleSelectCustomer(c)}
                     >
                       <span className={styles['cust-option__name']}>{c.name}</span>
-                      <span className={styles['cust-option__meta']}>Rs {c.unit_price}</span>
+                      <span className={styles['cust-option__meta']}>Rs {c.unit_price} · {c.bottles}B</span>
                     </div>
                   ))}
                 </div>
@@ -542,13 +530,14 @@ function SalesDetailsCard({
         </div>
       )}
 
-      {/* ── Footer (View only, hidden during fetch) ── */}
+      {/* ── Footer (View only) ── */}
       {Mode === 'View' && !showFetchLoader && salesData && (
         <div className={styles['sales-card__footer']}>
           <span className={styles['footer-by']}>{displayValue(salesData.modified_by)}</span>
-          <span className={styles['footer-at']}>on {formatReadableDate(salesData.modified_at)}</span>
+          <span className={styles['footer-at']}>on {toKarachi(salesData.modified_at)}</span>
         </div>
       )}
+
     </div>
   );
 }

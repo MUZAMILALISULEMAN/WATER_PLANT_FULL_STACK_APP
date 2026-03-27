@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './AllCustomersDetailsSection.module.css';
-import { toast } from 'sonner'; 
+import { toast } from 'sonner';
 
 function FilterDropdown({ onSelect }) {
   const options = ["A-Z", "Z-A", "1-*", "+/-"];
@@ -8,26 +8,24 @@ function FilterDropdown({ onSelect }) {
   const [selected, setSelected] = useState(options[2]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
-  
 
   const handleSelect = (option) => {
     setSelected(option);
     setIsOpen(false);
-    // Mapping your logic to the API filter strings
-    const filterVal = option === "+/-" ? "active" : 
-                      option === "A-Z" ? "name-asc" : 
+    const filterVal = option === "+/-" ? "active" :
+                      option === "A-Z" ? "name-asc" :
                       option === "Z-A" ? "name-desc" : "id-asc";
     if (onSelect) onSelect(filterVal);
   };
 
   return (
     <div className={styles['filter-container']}>
-      <button 
-        className={styles['filter-button']} 
+      <button
+        className={styles['filter-button']}
         onClick={toggleDropdown}
         type="button"
       >
-        <i class="fa-solid fa-filter-list"></i> {selected}
+        <i className="fa-solid fa-filter-list"></i> {selected}
       </button>
 
       {isOpen && (
@@ -47,13 +45,13 @@ function FilterDropdown({ onSelect }) {
   );
 }
 
-function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,state }) {
+function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh, state ,externalRefresh}) {
   const isLoading = useRef(false);
-  
   const [filterMode, setfilterMode] = useState("id-asc");
   const [searchField, setSearchField] = useState("");
-  const [dataFetched, setDataFetched] = useState(null);
+  const [dataFetched, setDataFetched] = useState([]);
   const searchInputRef = useRef(null);
+  const [showFetchLoader, setShowFetchLoader] = useState(false);
 
   useEffect(() => {
     if (isLoading.current) return;
@@ -63,36 +61,38 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,st
       let url = "";
       if (state.current === "FILTER" || state.current === "FILTER-REFRESH") {
         url = `http://127.0.0.1:8001/customer/filter?q=${filterMode}`;
-      }else if (state.current === "CUSTOMER-OPERATIONS") {
+      } else if (state.current === "CUSTOMER-OPERATIONS") {
         url = `http://127.0.0.1:8001/customer/`;
-      }
-      else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
+      } else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
         url = searchField === "" ? `http://127.0.0.1:8001/customer/` : `http://127.0.0.1:8001/customer/search?q=${searchField}`;
       }
 
       if (url) {
         try {
+          setShowFetchLoader(true);
           let response = await fetch(url);
           let DATA = await response.json();
           if (DATA.status) {
             if (DATA.message && DATA.message.includes("there is no matching customer")) {
               toast.info(DATA.message);
-            } 
-            setDataFetched(DATA.data);
-          }else{
-            if(DATA.message &&  DATA.message != ""){
-              toast.error(DATA.message);
             }
+            setDataFetched(DATA.data || []);
+          } else {
+            if (DATA.message) toast.error(DATA.message);
           }
         } catch (err) {
-          toast.error("Network Issue try later.")
+          toast.error("Network Issue try later.");
+        } finally {
+          setShowFetchLoader(false);
+          isLoading.current = false;
         }
+      } else {
+        isLoading.current = false;
       }
-      isLoading.current = false;
     };
 
     fetchData();
-  }, [filterMode, searchField, refresh]);
+  }, [filterMode, searchField, refresh,externalRefresh]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -116,11 +116,11 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,st
               {dataFetched ? dataFetched.length : 0}
             </span>
           </div>
-          
+
           <div className={styles['customer-manager__actions-bar']}>
             <div className={styles['customer-manager__search-wrapper']}>
-              <i 
-                className={`fa-solid fa-magnifying-glass ${styles['customer-manager__search-icon']}`} 
+              <i
+                className={`fa-solid fa-magnifying-glass ${styles['customer-manager__search-icon']}`}
                 onClick={() => {
                   setSearchField(searchInputRef.current.value);
                   state.current = "SEARCH";
@@ -134,16 +134,16 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,st
                 ref={searchInputRef}
               />
             </div>
-            
-            <button 
-              className={styles['customer-manager__add-btn']} 
+
+            <button
+              className={styles['customer-manager__add-btn']}
               onClick={() => { setMode("Add"); }}
             >
               <i className="fa-solid fa-plus"></i>
             </button>
-            
-            <FilterDropdown 
-              onSelect={(val) => { setfilterMode(val); state.current = "FILTER"; }} 
+
+            <FilterDropdown
+              onSelect={(val) => { setfilterMode(val); state.current = "FILTER"; }}
             />
           </div>
         </div>
@@ -161,29 +161,38 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh,st
             </tr>
           </thead>
           <tbody className={styles['customer-table__body']}>
-            {dataFetched?.map((customer) => (
-              <tr key={customer[0]} className={styles['customer-table__row']}>
-                <td className={`${styles['customer-table__cell']} ${styles['customer-table__cell--name']}`}>
-                  {customer[1]}
-                </td>
-                <td className={styles['customer-table__cell']}>{customer[0]}</td>
-                <td className={styles['customer-table__cell']}>{customer[2]}</td>
-                
-                
-               <td className={styles['customer-table__cell']}>
-  <span className={`${styles['badge']} ${styles['badge--pill']} ${customer[3] ? styles['badge--success'] : styles['badge--error']}`}>
-    {customer[3] ? 'Active' : 'Inactive'}
-  </span>
-</td>
-
-
-
-                <td className={styles['customer-table__cell']}>
-                  <button className={styles['customer-table__btn-view'] } id={customer[0]} onClick={() => { setSelectedCustomerId(customer[0]); setMode("View"); }}>  <i className="fa-regular fa-user-viewfinder"></i>  View</button>
-                  <button className={styles['customer-table__btn-edit']} id={customer[0]} onClick={() => { setSelectedCustomerId(customer[0]); setMode("Edit"); }}><i className="fa-regular fa-pen-to-square"></i> Edit</button>
+            {showFetchLoader ? (
+              <tr className={styles['customer-table__loader-row']}>
+                <td colSpan="5">
+                  <div className={styles['customer__loader-wrap']}>
+                    <span className={styles['customer__spinner']} />
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              dataFetched?.map((customer) => (
+                <tr key={customer[0]} className={styles['customer-table__row']}>
+                  <td className={`${styles['customer-table__cell']} ${styles['customer-table__cell--name']}`}>
+                    {customer[1]}
+                  </td>
+                  <td className={styles['customer-table__cell']}>{customer[0]}</td>
+                  <td className={styles['customer-table__cell']}>{customer[2]}</td>
+                  <td className={styles['customer-table__cell']}>
+                    <span className={`${styles['badge']} ${styles['badge--pill']} ${customer[3] ? styles['badge--success'] : styles['badge--error']}`}>
+                      {customer[3] ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className={styles['customer-table__cell']}>
+                    <button className={styles['customer-table__btn-view']} onClick={() => { setSelectedCustomerId(customer[0]); setMode("View"); }}>
+                      <i className="fa-regular fa-user-viewfinder"></i> View
+                    </button>
+                    <button className={styles['customer-table__btn-edit']} onClick={() => { setSelectedCustomerId(customer[0]); setMode("Edit"); }}>
+                      <i className="fa-regular fa-pen-to-square"></i> Edit
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

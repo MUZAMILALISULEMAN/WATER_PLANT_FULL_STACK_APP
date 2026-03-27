@@ -24,22 +24,29 @@ const handleSubmit = async () => {
   setLoading(true);
 
   try {
-    // const res = await fetch("/login", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ username: username.trim(), password }),
-    // });
+    const res = await fetch("http://127.0.0.1:8001/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: username.trim(), password: password.trim() }),
+    });
 
-    // const data = await res.json();
+    const data = await res.json();
 
-    // if (!res.ok) {
-    //   setError(data.message || "Invalid username or password.");
-    //   triggerShake();
-    // } else {
-      onLogin(1); // pass the id straight up
-    // }
+    if (!res.ok) {
+      setError(data.message || "Invalid username or password.");
+      triggerShake();
+    } else {
+      if(data.status){
+        onLogin(data.data);
+      }else {
+        setError(data.message || "Invalid username or password.");
+        triggerShake();
+      } 
+    }
   } catch (err) {
     setError("Server unreachable. Please try again.");
+    console.log(err);
+    
     triggerShake();
   } finally {
     setLoading(false);
@@ -55,7 +62,7 @@ const handleSubmit = async () => {
           <svg className={styles.dropIcon} viewBox="0 0 38 38" fill="none">
             <path
               d="M19 4 C19 4 6 18 6 25.5 A13 13 0 0 0 32 25.5 C32 18 19 4 19 4Z"
-              fill="var(--color-primary)"
+              fill="var(--color-secondary-light)"
             />
             <ellipse
               cx="14" cy="24" rx="3" ry="5"

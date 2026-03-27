@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: 280px .98fr;
   column-gap: 24px;
-  transition: all var(--transition-slow);
+  transition: all var(--transition-quick);
   height: 100vh;
   overflow: hidden;
 }

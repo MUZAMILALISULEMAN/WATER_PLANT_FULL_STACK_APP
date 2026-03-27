@@ -1,33 +1,35 @@
-import React, { useState, useEffect, useRef,memo, use } from 'react';
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import styles from './AllSalesDetailsSection.module.css';
+import { todayKarachi, yesterdayKarachi, weekStartKarachi, monthStartKarachi } from '../../utils/timeUtils';
 
 const API_BASE = 'http://127.0.0.1:8001';
 
-const Table = memo(SalesTable)
+const Table = memo(SalesTable);
+
+const SHORTCUTS = [
+  { label: 'Today',      start: todayKarachi,      end: todayKarachi      },
+  { label: 'Yesterday',  start: yesterdayKarachi,  end: yesterdayKarachi  },
+  { label: 'This Week',  start: weekStartKarachi,  end: todayKarachi      },
+  { label: 'This Month', start: monthStartKarachi, end: todayKarachi      },
+];
+
+const FILTER_OPTIONS = ['1-*', '+/-', 'Rs'];
 
 
-
-// ── Status dropdown per row ──────────────────────────────────────────────────
-function StatusDropdown({ salesId, currentStatus, onUpdated, toast ,refresh, state,appUser}) {
-  const [open, setOpen] = useState(false);
+// ── Status dropdown ──────────────────────────────────────────────────────────
+function StatusDropdown({ salesId, currentStatus, onUpdated, toast, appUser }) {
+  const [open,     setOpen]     = useState(false);
+  const [options,  setOptions]  = useState([]);
+  const [updating, setUpdating] = useState(false);
   const ref = useRef(null);
-  const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    
-     if(currentStatus === 'pending'){
+    if (currentStatus === 'pending')      setOptions(['paid', 'deleted']);
+    else if (currentStatus === 'deleted') setOptions(['pending', 'paid']);
+    else                                  setOptions(['pending', 'deleted']);
+  }, [currentStatus]);
 
-       setOptions(['paid', 'deleted'])
-    }else if(currentStatus === 'deleted'){
-      setOptions(['pending','paid'])
-    }else{
-      setOptions(['pending','deleted'])
-    } 
-    
-
-  }, [refresh]);
-
-  useEffect(() => { 
+  useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
@@ -35,52 +37,47 @@ function StatusDropdown({ salesId, currentStatus, onUpdated, toast ,refresh, sta
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-
-  const handleSelect = async (newStatus) => {
+  const handleSelect = useCallback(async (newStatus) => {
     setOpen(false);
+    setUpdating(true);
     try {
       const res = await fetch(`${API_BASE}/sales/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sales_id: salesId, sales_status: newStatus ,user_id:appUser}),
+        body: JSON.stringify({ sales_id: salesId, sales_status: newStatus, user_id: appUser }),
       });
-      if (!res.ok) {
-        toast.error('Server internal error, try later.');
-        return;
-      }
+      if (!res.ok) { toast.error('Server internal error, try later.'); return; }
       const data = await res.json();
-      
-      if (data.status) {
-        toast.success(data.message || 'Status updated.');
-        onUpdated();
-        // state.current = 'SALES-OPERATIONS';
-      } else {
-        toast.error(data.message || 'Could not update status.');
-      }
-    } catch(e) {
+      if (data.status) { toast.success(data.message || 'Status updated.'); onUpdated(); }
+      else toast.error(data.message || 'Could not update status.');
+    } catch (e) {
       console.log(e);
-      // console.log("here");
-      
       toast.error('Server is not responding, try later.');
+    } finally {
+      setUpdating(false);
     }
-  };
+  }, [salesId, appUser, toast, onUpdated]);
 
   return (
     <div className={styles['status-dd']} ref={ref}>
       <button
-        className={styles['status-dd__trigger']}
-        onClick={(e) => { e.stopPropagation(); setOpen((p) => !p); }}
+        className={`${styles['status-dd__trigger']} ${updating ? styles['btn--loading'] : ''}`}
+        onClick={(e) => { e.stopPropagation(); if (!updating) setOpen((p) => !p); }}
+        disabled={updating}
         title="Update status"
         type="button"
       >
-        <i className="fa-solid fa-chevron-down" />
+        {updating
+          ? <span className={styles['sales__btn-spinner']} />
+          : <i className="fa-solid fa-chevron-down" />
+        }
       </button>
       {open && (
         <ul className={styles['status-dd__menu']}>
           {options.map((opt) => (
             <li
               key={opt}
-              className={`${styles['status-dd__item']}  ${styles[`status-dd__item--${opt}`]}`}
+              className={`${styles['status-dd__item']} ${styles[`status-dd__item--${opt}`]}`}
               onClick={() => handleSelect(opt)}
             >
               {opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -92,21 +89,21 @@ function StatusDropdown({ salesId, currentStatus, onUpdated, toast ,refresh, sta
   );
 }
 
+
 // ── Filter dropdown ──────────────────────────────────────────────────────────
 function FilterDropdown({ onSelect }) {
-  const options = [ '1-*', '+/-','Rs'];
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(options[0]);
+  const [isOpen,   setIsOpen]   = useState(false);
+  const [selected, setSelected] = useState(FILTER_OPTIONS[0]);
 
-  const handleSelect = (option) => {
+  const handleSelect = useCallback((option) => {
     setSelected(option);
     setIsOpen(false);
     const filterVal =
-      option === '+/-'  ? 'status' :
-      option === '1-*'  ? 'id-asc'       :
-      option === 'Rs'  ? 'price-desc'       : 'id-asc';
+      option === '+/-' ? 'status'     :
+      option === '1-*' ? 'id-asc'    :
+      option === 'Rs'  ? 'price-desc' : 'id-asc';
     onSelect?.(filterVal);
-  };
+  }, [onSelect]);
 
   return (
     <div className={styles['filter-container']}>
@@ -119,7 +116,7 @@ function FilterDropdown({ onSelect }) {
       </button>
       {isOpen && (
         <ul className={styles['filter-menu']}>
-          {options.map((opt) => (
+          {FILTER_OPTIONS.map((opt) => (
             <li
               key={opt}
               className={`${styles['filter-menu-item']} ${selected === opt ? styles['active-menu-item'] : ''}`}
@@ -134,8 +131,9 @@ function FilterDropdown({ onSelect }) {
   );
 }
 
-// ── Sales Table Component ────────────────────────────────────────────────────
-function SalesTable({ dataFetched, setSelectedSalesId,setMode,triggerRefresh,toast ,refresh,state,appUser}) {
+
+// ── Sales Table ──────────────────────────────────────────────────────────────
+function SalesTable({ dataFetched, showFetchLoader, setSelectedSalesId, setMode, triggerRefresh, toast, appUser }) {
   const getQty = (row) => {
     if (row[5] != null) return { val: row[5], unit: 'B' };
     if (row[4] != null) return { val: row[4], unit: 'L' };
@@ -145,7 +143,7 @@ function SalesTable({ dataFetched, setSelectedSalesId,setMode,triggerRefresh,toa
   const statusBadgeClass = (s) => {
     const v = String(s ?? '').trim().toLowerCase();
     if (v === 'paid')    return styles['badge--success'];
-    if (v === 'deleted') return styles['badge--error']
+    if (v === 'deleted') return styles['badge--error'];
     return styles['badge--pending'];
   };
 
@@ -171,183 +169,154 @@ function SalesTable({ dataFetched, setSelectedSalesId,setMode,triggerRefresh,toa
           </tr>
         </thead>
         <tbody className={styles['sales-table__body']}>
-          {dataFetched?.map((row) => {
-            const qty    = getQty(row);
-            const status = String(row[7] ?? '').trim().toLowerCase();
-            return (
-              <tr key={row[0]} className={styles['sales-table__row']}>
-                {/* Customer name */}
-                <td className={`${styles['sales-table__cell']} ${styles['sales-table__cell--name']}`}>
-                  {row[1] ?? '—'}
-                </td>
-                {/* Sales ID */}
-                <td className={styles['sales-table__cell']}>{row[0]}</td>
-                {/* Sales type badge */}
-                <td className={styles['sales-table__cell']}>
-                  <span className={`${styles['badge']} ${typeBadgeClass(row[3])}`}>
-                    {row[3] ?? '—'}
-                  </span>
-                </td>
-                {/* Qty */}
-                <td className={styles['sales-table__cell']}>
-                  {qty.val} <span className={styles['unit-label']}>{qty.unit}</span>
-                </td>
-                {/* Price */}
-                <td className={styles['sales-table__cell']}>
-                  {row[6] != null ? `Rs ${row[6]}` : '—'}
-                </td>
-                {/* Status badge */}
-                <td className={styles['sales-table__cell']}>
-                  <span className={`${styles['badge']} ${styles['badge--pill']} ${statusBadgeClass(row[7])}`}>
-                    {row[7] ?? '—'}
-                  </span>
-                </td>
-                {/* Actions */}
-                <td className={`${styles['sales-table__cell']} ${styles['sales-table__cell--actions']}`}>
-                  <button
-                    className={styles['sales-table__btn-view']}
-                    onClick={() => { setSelectedSalesId(row[0]); setMode('View');}}
-                    type="button"
-                  >
-                    <i className="fa-regular fa-chisel fa-expand" /> View
-                  </button>
-                  <StatusDropdown
-                    salesId={row[0]}
-                    currentStatus={status}
-                    onUpdated={triggerRefresh}
-                    toast={toast}
-                    refresh={refresh}
-                    state={state}
-                    appUser={appUser}
-
-                  />
-                </td>
-              </tr>
-            );
-          })}
+          {showFetchLoader ? (
+            <tr className={styles['sales__loader-row']}>
+              <td colSpan="7">
+                <div className={styles['sales__loader-wrap']}>
+                  <span className={styles['sales__spinner']} />
+                </div>
+              </td>
+            </tr>
+          ) : (
+            dataFetched?.map((row) => {
+              const qty    = getQty(row);
+              const status = String(row[7] ?? '').trim().toLowerCase();
+              return (
+                <tr key={row[0]} className={styles['sales-table__row']}>
+                  <td className={`${styles['sales-table__cell']} ${styles['sales-table__cell--name']}`}>
+                    {row[1] ?? '—'}
+                  </td>
+                  <td className={styles['sales-table__cell']}>{row[0]}</td>
+                  <td className={styles['sales-table__cell']}>
+                    <span className={`${styles['badge']} ${typeBadgeClass(row[3])}`}>
+                      {row[3] ?? '—'}
+                    </span>
+                  </td>
+                  <td className={styles['sales-table__cell']}>
+                    {qty.val} <span className={styles['unit-label']}>{qty.unit}</span>
+                  </td>
+                  <td className={styles['sales-table__cell']}>
+                    {row[6] != null ? `Rs ${row[6]}` : '—'}
+                  </td>
+                  <td className={styles['sales-table__cell']}>
+                    <span className={`${styles['badge']} ${styles['badge--pill']} ${statusBadgeClass(row[7])}`}>
+                      {row[7] ?? '—'}
+                    </span>
+                  </td>
+                  <td className={`${styles['sales-table__cell']} ${styles['sales-table__cell--actions']}`}>
+                    <button
+                      className={styles['sales-table__btn-view']}
+                      onClick={() => { setSelectedSalesId(row[0]); setMode('View'); }}
+                      type="button"
+                    >
+                      <i className="fa-regular fa-expand" /> View
+                    </button>
+                    <StatusDropdown
+                      salesId={row[0]}
+                      currentStatus={status}
+                      onUpdated={triggerRefresh}
+                      toast={toast}
+                      appUser={appUser}
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
   );
 }
 
+
 // ── Main component ───────────────────────────────────────────────────────────
-function AllSalesDetailsSection({ setSelectedSalesId, setMode, refresh, triggerRefresh, toast, isCollapsed ,state,appUser}) {
-  const dateBarRef = useRef(null);
-  const isLoading   = useRef(false);
-  
-  const [filterMode,   setFilterMode]   = useState('id-asc');
-  const [searchField,  setSearchField]  = useState('');
-  const [dataFetched,  setDataFetched]  = useState(null);
-  const [dateRange,    setDateRange]    = useState({ start: '', end: '' });
-  const [activeShortcut, setActiveShortcut] = useState(null);
+function AllSalesDetailsSection({ setSelectedSalesId, setMode, refresh, triggerRefresh, toast, isCollapsed, state, appUser ,externalRefresh}) {
+  const isLoading      = useRef(false);
   const searchInputRef = useRef(null);
 
-  // ── Date helpers ──
-  const toDateStr = (d) => d.toISOString().split('T')[0];
-  const today     = () => toDateStr(new Date());
-  const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - 1); return toDateStr(d); };
-  const weekStart = () => {
-    const d = new Date();
-    const day = d.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-    d.setDate(d.getDate() + diff);
-    return toDateStr(d);
-  };
-  const monthStart = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`; };
+  const [filterMode,      setFilterMode]      = useState('id-asc');
+  const [searchField,     setSearchField]     = useState('');
+  const [dataFetched,     setDataFetched]     = useState(null);
+  const [dateRange,       setDateRange]       = useState({ start: '', end: '' });
+  const [activeShortcut,  setActiveShortcut]  = useState(null);
+  const [showFetchLoader, setShowFetchLoader] = useState(false);
 
-  const shortcuts = [
-    { label: 'Today',      start: today,      end: today      },
-    { label: 'Yesterday',  start: yesterday,  end: yesterday  },
-    { label: 'This Week',  start: weekStart,  end: today      },
-    { label: 'This Month', start: monthStart, end: today      },
-  ];
-
-  const applyShortcut = (s, idx) => {
-    const range = { start: s.start(), end: s.end() };
-    setDateRange(range);
+  const applyShortcut = useCallback((s, idx) => {
+    setDateRange({ start: s.start(), end: s.end() });
     setActiveShortcut(idx);
     state.current = 'DATE';
     isLoading.current = false;
-  };
+  }, [state]);
 
-  const clearDate = () => {
+  const clearDate = useCallback(() => {
     setDateRange({ start: '', end: '' });
     setActiveShortcut(null);
     state.current = 'SEARCH';
     isLoading.current = false;
-  };
+  }, [state]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    
-    
-    try {
-      let res;
-      
-      if (state.current === 'SALES-OPERATIONS' || state.current === 'DATE' && (dateRange.start || dateRange.end)) {
-        res = await fetch(`${API_BASE}/sales/all`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null }),
-        });
-        
-      } else if (state.current === 'FILTER' || state.current === 'FILTER-REFRESH') {
-        
-        
-        res = await fetch(`${API_BASE}/sales/filter?q=${filterMode}`,{method:"PUT",headers:{'Content-Type':'application/json'},body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null })});
-      } else {
-        
-        
-        res = searchField === ''
-          ? await fetch(`${API_BASE}/sales/all`,{method:"PUT",headers:{'Content-Type':'application/json'},body: JSON.stringify({ start: null, end: null })} ) :
-           await fetch(`${API_BASE}/sales/search?q=${searchField}`,{method:"GET",headers:{'Content-Type':'application/json'}}); 
-           
-      }
-      if (!res.ok) { toast.error('Server internal error, try later.'); return; }
-      const data = await res.json();
-      console.log(data);
-      
-      if (data.status) setDataFetched(data.data); 
-      else if (data.message) toast.error(data.message);
-    } catch(e) {
-      console.log(e);
-      
-      toast.error('Network issue, try later.');
-    }
-  };
-
-  fetchData();
-}, [filterMode, searchField, dateRange,refresh,]);
-
-// useEffect(() => {
-//   if (!refresh) return;
-
-//   const fetchData = async () => {
-//     try {
-//       const res = await fetch(`${API_BASE}/sales/`);
-//       if (!res.ok) { toast.error('Server internal error, try later.'); return; }
-//       const data = await res.json();
-//       if (data.status) setDataFetched(data.data);
-//       else if (data.message) toast.error(data.message);
-//     } catch {
-//       toast.error('Network issue, try later.');
-//     }
-//   };
-
-//   fetchData();
-// }, [refresh]);
-
-
-
-
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       setSearchField(searchInputRef.current.value.trim().toLowerCase());
       state.current = 'SEARCH';
     }
-  };
+  }, [state]);
+
+  const handleFilterSelect = useCallback((val) => {
+    setFilterMode(val);
+    state.current = 'FILTER';
+  }, [state]);
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+
+      try {
+        setShowFetchLoader(true);
+        let res;
+        console.log(state.current);
+
+        if (state.current === 'SALES-OPERATIONS' || (state.current === 'DATE' && (dateRange.start || dateRange.end))) {
+          res = await fetch(`${API_BASE}/sales/all`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null }),
+          });
+        } else if (state.current === 'FILTER' || state.current === 'FILTER-REFRESH') {
+          res = await fetch(`${API_BASE}/sales/filter?q=${filterMode}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null }),
+          });
+        } else {
+          res = searchField === ''
+            ? await fetch(`${API_BASE}/sales/all`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start: null, end: null }),
+              })
+            : await fetch(`${API_BASE}/sales/search?q=${searchField}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+              });
+        }
+
+        if (!res.ok) { toast.error('Server internal error, try later.'); return; }
+        const data = await res.json();
+        if (data.status) setDataFetched(data.data);
+        else if (data.message) toast.error(data.message);
+      } catch (e) {
+        console.log(e);
+        toast.error('Network issue, try later.');
+      } finally {
+        setShowFetchLoader(false);
+      }
+    };
+
+    fetchData();
+  }, [filterMode, searchField, dateRange, refresh,externalRefresh]);
 
   return (
     <div className={styles['sales-manager']}>
@@ -368,8 +337,6 @@ useEffect(() => {
                 className={`fa-solid fa-magnifying-glass ${styles['sales-manager__search-icon']}`}
                 onClick={() => {
                   setSearchField(searchInputRef.current.value.trim().toLowerCase());
-                  console.log(searchInputRef);
-                  
                   state.current = 'SEARCH';
                 }}
               />
@@ -383,25 +350,21 @@ useEffect(() => {
             </div>
             <button
               className={styles['sales-manager__add-btn']}
-              onClick={() => {setMode('Add');}}
+              onClick={() => setMode('Add')}
               type="button"
             >
               <i className="fa-solid fa-plus" />
             </button>
-            <FilterDropdown
-              onSelect={(val) => { setFilterMode(val); state.current = 'FILTER';
-              }}
-            />
+            <FilterDropdown onSelect={handleFilterSelect} />
           </div>
         </div>
       </header>
 
       {/* ── Date range bar ── */}
       <div className={styles['date-bar']}>
-        <div className={`${styles['date-bar__shortcuts']} ` } >
-          {shortcuts.map((s, idx) => (
+        <div className={styles['date-bar__shortcuts']}>
+          {SHORTCUTS.map((s, idx) => (
             <button
-              
               key={s.label}
               type="button"
               className={`${styles['date-bar__shortcut']} ${activeShortcut === idx ? styles['date-bar__shortcut--active'] : ''} ${!isCollapsed ? styles['date-bar__shortcuts--card--opened'] : ''}`}
@@ -449,12 +412,11 @@ useEffect(() => {
       {/* ── Sales Table ── */}
       <Table
         dataFetched={dataFetched}
+        showFetchLoader={showFetchLoader}
         setSelectedSalesId={setSelectedSalesId}
         setMode={setMode}
         triggerRefresh={triggerRefresh}
         toast={toast}
-        refresh={refresh}
-        state={state}
         appUser={appUser}
       />
     </div>

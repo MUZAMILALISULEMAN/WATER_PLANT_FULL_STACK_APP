@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './CustomerDetailsCard.module.css';
+import { toKarachi } from '/src/utils/timeUtils';
 
 function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRefresh, refresh ,state}) {
   if (Mode === "None") return null;
@@ -59,6 +60,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
             address: row[3], unit_price: row[4], advance_money: row[5],
             active: toBool(row[6]), status_changed_at: row[7],
             modified_at: row[8], user_id: row[9],
+            bottles: row[10],
           });
         } else if (!rows || !rows.length) {
           setCustomerData({
@@ -85,13 +87,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
   }, [cust_id, resetKey, refresh]);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  const formatReadableDate = (isoString) => {
-    if (!isoString) return "";
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true,
-    }).format(new Date(isoString));
-  };
+
 
   // ── Edit submit ────────────────────────────────────────────────────────────
   const handleSubmit = () => {
@@ -100,14 +96,17 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
     if (!cardRef.current) return;
 
     const items = cardRef.current.querySelectorAll(`.${styles['customer-card__value']}`);
+    console.log(items);
+    
     const json  = {};
     const clean = (val) => String(val ?? "").replace(/\s|&nbsp;|\u00A0/g, '').toLowerCase();
 
     const fields = [
       { index: 1, key: "name",          type: "string" },
       { index: 2, key: "cell_phone",    type: "string" },
-      { index: 4, key: "unit_price",    type: "number" },
-      { index: 5, key: "advance_money", type: "number" },
+      { index: 5, key: "unit_price",    type: "number" },
+      { index: 6, key: "advance_money", type: "number" },
+      {index: 4, key: "regular_bottles", type: "number"},
     ];
 
     for (const { index, key, type } of fields) {
@@ -147,7 +146,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
     }
 
     // Active status toggle
-    const isActiveStatus = clean(items[6]?.innerText) === 'active';
+    const isActiveStatus = clean(items[7]?.innerText) === 'active';
     if (isActiveStatus !== customerData?.active) json["is_active"] = isActiveStatus;
 
     if (clean(items[3]?.innerText).toLowerCase() !== clean(customerData?.address || "no address").toLowerCase()) {
@@ -159,6 +158,9 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
     json["user_id"] = appUser;
 
     // Acquire lock
+
+    console.log(json);
+    
     submitLockRef.current = true;
     setIsSubmitting(true);
 
@@ -214,8 +216,9 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
   if (!customerData && !isFetching && Mode !== "Add") return null;
 
   return (
+    // ${Mode === "Add" ? styles['customer-card--gap-space-xl'] : ""
     <div
-      className={`${styles['customer-card']} ${Mode === "Add" ? styles['customer-card--gap-space-xl'] : ""}`}
+      className={`${styles['customer-card']}`}
       key={`${Mode === "Add" ? -1 : customerData?.id}-${resetKey}`}
       ref={cardRef}
     >
@@ -251,6 +254,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
             { label: "Customer Name", value: customerData.name },
             { label: "Cell Phone",    value: customerData.cell_phone },
             { label: "Address",       value: (customerData.address === "" ? "no address" : customerData.address) || "no address" },
+            {label:"Bottles" , value: customerData.bottles || 0},
             { label: "Unit Price",    value: customerData.unit_price },
             { label: "Advance Money", value: customerData.advance_money },
           ].map((item, idx) => (
@@ -290,7 +294,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
           {/* Status Changed At */}
           <div className={styles['customer-card__info-item']}>
             <div className={styles['customer-card__label']}>Status Changed At</div>
-            <div className={styles['customer-card__value']}>{formatReadableDate(customerData.status_changed_at)}</div>
+            <div className={styles['customer-card__value']}>{toKarachi(customerData.status_changed_at)}</div>
           </div>
 
           {/* Edit Submit */}
@@ -316,6 +320,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
           {[
             { label: "Customer Name",  icon: "fa-user",                     placeholder: "Muzamil Bhai" },
             { label: "Cell Phone",     icon: "fa-phone",                    placeholder: "03XXXXXXXXX" },
+            { label: "Bottles",        icon: "fa-bottle-water",             placeholder: "Bottles" ,defaultVal: "0"},
             { label: "Address",        icon: "fa-location-dot",             placeholder: "ABC-House-123 Shah Town" },
             { label: "Unit Price",     icon: "fa-rupee-sign",               placeholder: "Price",   defaultVal: "60" },
             { label: "Advance Money",  icon: "fa-sharp fa-right-from-line", placeholder: "Advance", defaultVal: "0" },
@@ -349,13 +354,15 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
                 const requestBody = {
                   name:          inputs[0].value.trim().toLowerCase(),
                   cell_phone:    inputs[1].value.trim(),
-                  address:       inputs[2].value.trim().toLowerCase(),
-                  unit_price:    inputs[3].value.trim(),
-                  advance_money: inputs[4].value.trim(),
+                  regular_bottles:       parseInt(inputs[2].value.trim()),
+                  address:       inputs[3].value.trim().toLowerCase(),
+                  unit_price:    inputs[4].value.trim(),  
+                  advance_money: inputs[5].value.trim(),
                   user_id:       appUser,
                 };
 
                 if (requestBody.name === "")                                               return toast.error("Name is empty.");
+                if(requestBody.regular_bottles === "" || isNaN(requestBody.regular_bottles) || parseInt(requestBody.regular_bottles) < 0) return toast.error("Regular bottles is negative or empty.");
                 if (requestBody.cell_phone === "")                                         return toast.error("Cell phone is empty.");
                 if (!/^03\d{9}$/.test(requestBody.cell_phone))                            return toast.error("Cell phone format is not correct.");
                 if (requestBody.unit_price === "")                                         return toast.error("Price is empty.");
@@ -416,7 +423,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
       {Mode === "View" && !showFetchLoader && customerData && (
         <div className={styles['customer-card__footer']}>
           <div className={styles['customer-card__by']}>{customerData.user_id}</div>
-          <div className={styles['customer-card__at']}>on {formatReadableDate(customerData.modified_at)}</div>
+          <div className={styles['customer-card__at']}>on {toKarachi(customerData.modified_at)}</div>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 /* ── TABLE WRAPPER ── */
 .customer-manager__table-wrapper {
+  height: 312px;
   max-height: 312px;
   overflow-y: auto;
   overflow-x: auto;
@@ -266,3 +267,33 @@
 .badge--pill { border-radius: 999px; padding: 2px 8px; width: 80px;}
 .badge--success { background-color: var(--color-success-soft); border: 1px solid var(--color-success-light); color: var(--color-success); }
 .badge--error { background-color: var(--color-error-soft); border: 1px solid var(--color-error-light); color: var(--color-error); }
+
+/* ── LOADER ROW STYLING ── */
+.customer-table__loader-row td {
+  height: 260px; /* Roughly the height of the wrapper minus header */
+  vertical-align: middle;
+  text-align: center;
+}
+
+.customer__loader-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* Ensure the spinner has keyframes defined (you might have missed this) */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.customer__spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-secondary-soft);
+  border-top-color: var(--color-secondary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

@@ -96,7 +96,7 @@ def update_customer(id : int ,requestBody: User , cursor = Depends(GET_DB)):
 
     try:
         requestBody = requestBody.model_dump(exclude_none=True)
-
+        logger.debug(f"REQUEST BODY FOR UPDATING THE CUSTOMER {id} => {requestBody} ..")
         logger.info(f"UPDATING THE CUSTOMER {id} => {requestBody} ..")
         
         cursor.execute("CALL schema_customers.update_customer(%s,%s)",(id,json.dumps(requestBody),))

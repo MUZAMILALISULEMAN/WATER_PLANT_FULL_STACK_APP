@@ -201,7 +201,7 @@
   border-left: 2px solid var(--color-error);
   border-radius: var(--radius-none);
   padding: var(--space-sm) var(--space-md);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);
   color: var(--color-secondary);
   text-transform: capitalize;
@@ -294,4 +294,17 @@
   color: var(--color-secondary);
   letter-spacing: 0.5px;
   font-weight: var(--fw-medium);
+}
+
+.cardFooter a {
+  color: var(--color-secondary);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  border-bottom: 1.5px solid var(--color-secondary-light);
+  padding-bottom: 1px;
+}
+
+.cardFooter a:hover {
+  color: var(--color-secondary-light);
+  border-bottom-color: transparent;
 }
