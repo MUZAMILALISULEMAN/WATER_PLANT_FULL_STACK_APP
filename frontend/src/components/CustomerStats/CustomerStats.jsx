@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import styles from './CustomerStats.module.css';
+import styles from '/src/components/CustomerStats/CustomerStats.module.css';
+
+const URL = import.meta.env.url;
 
 function CustomerStats({refresh,externalRefresh}) {
   const [data, setData] = useState([0, 0, 0,'Customer',0,0,-1]);
 
   useEffect(() => {
     const fetchData = async () => {
-      let DATA = await fetch(`http://127.0.0.1:8001/customer/stats`);
+      let DATA = await fetch(`${URL}/customer/stats`);
       DATA = await DATA.json();
 
       if (DATA.status) {

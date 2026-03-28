@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './CustomerDetailsCard.module.css';
+import styles from '/src/components/CustomerDetailsCard.module.css';
 import { toKarachi } from '/src/utils/timeUtils';
+
+const URL = import.meta.env.url;
 
 function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRefresh, refresh ,state}) {
   if (Mode === "None") return null;
@@ -32,7 +34,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
     const fetchCustomer = async () => {
       setIsFetching(true);
       try {
-        const response = await fetch(`http://127.0.0.1:8001/customer/${cust_id}`, {
+        const response = await fetch(`${URL}/customer/${cust_id}`, {
           signal: controller.signal,
         });
 
@@ -166,7 +168,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
 
     const postData = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8001/customer/update/${cust_id}`, {
+        const res = await fetch(`${URL}/customer/update/${cust_id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(json),
@@ -379,7 +381,7 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
 
                 const postData = async () => {
                   try {
-                    let res = await fetch("http://127.0.0.1:8001/customer/add", {
+                    let res = await fetch("${URL}/customer/add", {
                       method: "POST",
                       body: JSON.stringify(requestBody),
                       headers: { 'Content-Type': 'application/json' },

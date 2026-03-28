@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
-import styles from './AllSalesDetailsSection.module.css';
+import styles from '/src/components/AllSalesDetailsSection/AllSalesDetailsSection.module.css';
 import { todayKarachi, yesterdayKarachi, weekStartKarachi, monthStartKarachi } from '../../utils/timeUtils';
 
-const API_BASE = 'http://127.0.0.1:8001';
+const URL = import.meta.env.url;
 
 const Table = memo(SalesTable);
 
@@ -41,7 +41,7 @@ function StatusDropdown({ salesId, currentStatus, onUpdated, toast, appUser }) {
     setOpen(false);
     setUpdating(true);
     try {
-      const res = await fetch(`${API_BASE}/sales/update`, {
+      const res = await fetch(`${URL}/sales/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sales_id: salesId, sales_status: newStatus, user_id: appUser }),
@@ -279,25 +279,25 @@ function AllSalesDetailsSection({ setSelectedSalesId, setMode, refresh, triggerR
         console.log(state.current);
 
         if (state.current === 'SALES-OPERATIONS' || (state.current === 'DATE' && (dateRange.start || dateRange.end))) {
-          res = await fetch(`${API_BASE}/sales/all`, {
+          res = await fetch(`${URL}/sales/all`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null }),
           });
         } else if (state.current === 'FILTER' || state.current === 'FILTER-REFRESH') {
-          res = await fetch(`${API_BASE}/sales/filter?q=${filterMode}`, {
+          res = await fetch(`${URL}/sales/filter?q=${filterMode}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ start: dateRange.start || null, end: dateRange.end || null }),
           });
         } else {
           res = searchField === ''
-            ? await fetch(`${API_BASE}/sales/all`, {
+            ? await fetch(`${URL}/sales/all`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ start: null, end: null }),
               })
-            : await fetch(`${API_BASE}/sales/search?q=${searchField}`, {
+            : await fetch(`${URL}/sales/search?q=${searchField}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
               });

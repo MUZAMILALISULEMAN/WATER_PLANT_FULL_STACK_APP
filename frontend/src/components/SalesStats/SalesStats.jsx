@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SalesStats.module.css';
-
+const URL = import.meta.env.url;
 /**
  * Data layout (index):
  * 0: total sales revenue
@@ -16,7 +16,7 @@ function SalesStats({ refresh ,externalRefresh}) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let DATA = await fetch('http://127.0.0.1:8001/sales/stats',{
+        let DATA = await fetch(`${URL}/sales/stats`,{
           method:"GET",
           headers:{
             "Content-Type":"application/json"

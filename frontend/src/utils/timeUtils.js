@@ -2,13 +2,12 @@
 
 const TZ = 'Asia/Karachi';
 
-/**
- * Full datetime — e.g. "Mar 27, 2026, 2:10 AM"
- * Using 'en-US' for the specific "Month Day, Year" comma format.
- */
 export function toKarachi(utcString) {
   if (!utcString) return '—';
-  return new Date(utcString).toLocaleString('en-US', {
+
+  const isoUtcString = utcString.replace(' ', 'T') + 'Z';
+
+  return new Date(isoUtcString).toLocaleString('en-US', {
     timeZone: TZ,
     month: 'short',
     day: '2-digit',

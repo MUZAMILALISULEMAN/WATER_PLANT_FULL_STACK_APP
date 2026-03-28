@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './SalesDetailsCard.module.css';
-import { toKarachi } from '../../utils/timeUtils';
+import styles from '/src/components/SalesDetailsCard/SalesDetailsCard.module.css';
+import { toKarachi } from '/src/utils/timeUtils';
 
-const API_BASE = 'http://127.0.0.1:8001';
+const URL = import.meta.env.url;
 
 function normalizeSalesRow(data) {
   const rows = data?.data;
@@ -79,7 +79,7 @@ function SalesDetailsCard({
 
       try {
         const res = await fetch(
-          `${API_BASE}/sales/search_customer/${encodeURIComponent(custSearch)}`,
+          `${URL}/sales/search_customer/${encodeURIComponent(custSearch)}`,
           { signal: controller.signal },
         );
         if (!res.ok) { toast.error('Server Internal Error.'); return; }
@@ -129,7 +129,7 @@ function SalesDetailsCard({
     const fetchSales = async () => {
       setIsFetching(true);
       try {
-        const response = await fetch(`${API_BASE}/sales/${sales_id}`, {
+        const response = await fetch(`${URL}/sales/${sales_id}`, {
           signal: controller.signal,
         });
         const data = await response.json();
@@ -258,7 +258,7 @@ function SalesDetailsCard({
 
     const postData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/sales/add`, {
+        const res = await fetch(`${URL}/sales/add`, {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify(payload),

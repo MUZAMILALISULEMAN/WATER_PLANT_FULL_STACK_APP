@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import styles from './DailyDispatchSection.module.css';
 import { toKarachiDate } from '../../utils/timeUtils';
-
+const URL = import.meta.env.url;
 // ── Sub-component: individual row ──────────────────────────────────────────
 const DispatchRow = memo(({
   row, index, onBottlesChange, onPriceChange, onToggleStatus, onToggleAdd, onBottlesBlur, onPriceBlur, locked
@@ -117,7 +117,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
   const fetchCustomers = useCallback(async () => {
     try {
       setFetchLoader(true);
-      const res  = await fetch('http://127.0.0.1:8001/sales/dispatch_customers');
+      const res  = await fetch(`${URL}/sales/dispatch_customers`);
       const DATA = await res.json();
       if (DATA.status) {
         setRows((DATA.data || []).map(c => ({
@@ -147,7 +147,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
     const init = async () => {
       setLocked(true);
       try {
-        const res  = await fetch('http://127.0.0.1:8001/sales/dispatch_today');
+        const res  = await fetch(`${URL}/sales/dispatch_today`);
         if (!res.ok) throw new Error('Network response was not ok');
         const DATA = await res.json();
         if (DATA.status) {
@@ -193,7 +193,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
 
     try {
       setSubmitLoader(true);
-      const response = await fetch('http://127.0.0.1:8001/sales/dispatch', {
+      const response = await fetch(`${URL}/sales/dispatch`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),

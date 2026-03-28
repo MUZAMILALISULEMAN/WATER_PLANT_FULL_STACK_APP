@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './AllCustomersDetailsSection.module.css';
+import styles from '/src/components/AllCustomersDetailsSection.module.css';
 import { toast } from 'sonner';
+
+const URL = import.meta.env.url;
 
 function FilterDropdown({ onSelect }) {
   const options = ["A-Z", "Z-A", "1-*", "+/-"];
@@ -60,11 +62,11 @@ function AllCustomersDetailsSection({ setSelectedCustomerId, setMode, refresh, s
     const fetchData = async () => {
       let url = "";
       if (state.current === "FILTER" || state.current === "FILTER-REFRESH") {
-        url = `http://127.0.0.1:8001/customer/filter?q=${filterMode}`;
+        url = `${URL}/customer/filter?q=${filterMode}`;
       } else if (state.current === "CUSTOMER-OPERATIONS") {
-        url = `http://127.0.0.1:8001/customer/`;
+        url = `${URL}/customer/`;
       } else if (state.current === "SEARCH" || state.current === "SEARCH-REFRESH") {
-        url = searchField === "" ? `http://127.0.0.1:8001/customer/` : `http://127.0.0.1:8001/customer/search?q=${searchField}`;
+        url = searchField === "" ? `${URL}/customer/` : `${URL}/customer/search?q=${searchField}`;
       }
 
       if (url) {
