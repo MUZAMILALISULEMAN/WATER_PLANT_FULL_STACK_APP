@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import styles from './SideBar.module.css';
+import styles from '/src/components/SideBar/SideBar.module.css';
 
 const NAV_ITEMS = [
   

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
-import styles from './DailyDispatchSection.module.css';
-import { toKarachiDate } from '../../utils/timeUtils';
-const URL = import.meta.env.url;
+import styles from './DailyDispatchSection/DailyDispatchSection.module.css';
+import { toKarachiDate } from '../../utils/timeUtils.js';
+const URL = import.meta.env.VITE_URL;
 // ── Sub-component: individual row ──────────────────────────────────────────
 const DispatchRow = memo(({
   row, index, onBottlesChange, onPriceChange, onToggleStatus, onToggleAdd, onBottlesBlur, onPriceBlur, locked

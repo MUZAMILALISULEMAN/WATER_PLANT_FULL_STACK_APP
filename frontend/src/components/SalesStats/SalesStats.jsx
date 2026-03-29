@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import styles from './SalesStats.module.css';
-const URL = import.meta.env.url;
+import styles from './SalesStats/SalesStats.module.css';
+const URL = import.meta.env.VITE_URL; 
 /**
  * Data layout (index):
  * 0: total sales revenue

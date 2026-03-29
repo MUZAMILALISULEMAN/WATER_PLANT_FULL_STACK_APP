@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styles from '/src/components/CustomerStats/CustomerStats.module.css';
+import styles from './CustomerStats/CustomerStats.module.css';
 
-const URL = import.meta.env.url;
+const URL = import.meta.env.VITE_URL;
 
 function CustomerStats({refresh,externalRefresh}) {
   const [data, setData] = useState([0, 0, 0,'Customer',0,0,-1]);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from '/src/components/CustomerDetailsCard.module.css';
-import { toKarachi } from '/src/utils/timeUtils';
+import styles from './CustomerDetailsCard/CustomerDetailsCard.module.css';
+import { toKarachi } from '../../utils/timeUtils.js';
 
-const URL = import.meta.env.url;
+const URL = import.meta.env.VITE_URL;
 
 function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRefresh, refresh ,state}) {
   if (Mode === "None") return null;

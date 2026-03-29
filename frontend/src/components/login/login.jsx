@@ -1,5 +1,9 @@
 import { useState } from "react";
-import styles from "/src/components/login/login.module.css";
+import styles from "./login/login.module.css";
+const URL = import.meta.env.VITE_URL; 
+
+
+
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
@@ -24,7 +28,7 @@ const handleSubmit = async () => {
   setLoading(true);
 
   try {
-    const res = await fetch("http://127.0.0.1:8001/login", {
+    const res = await fetch(`${URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: username.trim(), password: password.trim() }),

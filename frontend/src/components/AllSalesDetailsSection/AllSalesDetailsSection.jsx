@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
-import styles from '/src/components/AllSalesDetailsSection/AllSalesDetailsSection.module.css';
-import { todayKarachi, yesterdayKarachi, weekStartKarachi, monthStartKarachi } from '../../utils/timeUtils';
+import styles from './AllSalesDetailsSection/AllSalesDetailsSection.module.css';
+import { todayKarachi, yesterdayKarachi, weekStartKarachi, monthStartKarachi } from '/src/utils/timeUtils';
 
-const URL = import.meta.env.url;
+const URL = import.meta.env.VITE_URL; 
 
 const Table = memo(SalesTable);
 

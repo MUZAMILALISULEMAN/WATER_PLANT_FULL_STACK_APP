@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from '/src/components/SalesDetailsCard/SalesDetailsCard.module.css';
-import { toKarachi } from '/src/utils/timeUtils';
+import styles from './SalesDetailsCard/SalesDetailsCard.module.css';
+import { toKarachi } from '../../utils/timeUtils.js';
 
-const URL = import.meta.env.url;
+const URL = import.meta.env.VITE_URL;
 
 function normalizeSalesRow(data) {
   const rows = data?.data;

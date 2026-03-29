@@ -1,8 +1,8 @@
 import React, { useState, useRef, memo } from 'react';
-import styles from '/src/components/CustomerSection.module.css';
-import CustomerDetailsCard from '/src/components/CustomerDetailsCard/CustomerDetailsCard';
-import CustomerStats from '/src/components/CustomerStats/CustomerStats';
-import AllCustomersDetailsSection from '/src/components/AllCustomersDetailsSection/AllCustomersDetailsSection';
+import styles from './CustomerSection/CustomerSection.module.css';
+import CustomerDetailsCard from './CustomerDetailsCard/CustomerDetailsCard';
+import CustomerStats from './CustomerStats/CustomerStats';
+import AllCustomersDetailsSection from './AllCustomersDetailsSection/AllCustomersDetailsSection';
 
 const Stats         = memo(CustomerStats);
 const CustomerTable = memo(AllCustomersDetailsSection);

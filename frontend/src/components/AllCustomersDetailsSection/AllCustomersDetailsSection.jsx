@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from '/src/components/AllCustomersDetailsSection.module.css';
+import styles from './AllCustomersDetailsSection/AllCustomersDetailsSection.module.css';
 import { toast } from 'sonner';
 
-const URL = import.meta.env.url;
+const URL = import.meta.env.VITE_URL;
 
 function FilterDropdown({ onSelect }) {
   const options = ["A-Z", "Z-A", "1-*", "+/-"];
