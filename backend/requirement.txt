@@ -1,8 +1,6 @@
 fastapi[standard]
 uvicorn[standard]
-psycopg2
+psycopg2-binary
 pydantic
 loguru
-python-dotenv
-"bcrypt<4.0.0"
-os
+bcrypt<4.0.0
