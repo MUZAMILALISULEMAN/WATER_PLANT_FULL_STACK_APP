@@ -4,3 +4,4 @@ psycopg2-binary
 pydantic
 loguru
 bcrypt<4.0.0
+passlib[bcrypt]
