@@ -54,7 +54,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.post("/login")
 def login(payload : Credentials):
     authPayload = authenticate_user(payload); 
-    if authPayload["status"]:
+    if authPayload != None and authPayload["status"]  :
         return ValidationResponse(status=True,data=authPayload["payload"]["user_id"],message="Login successful")
     return ValidationResponse(status=False,message="Invalid credentials")
         

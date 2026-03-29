@@ -3,6 +3,7 @@ from psycopg2 import connect,OperationalError
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
 import os
+
 DB_CONFIG = {
    "host": os.getenv("host"),
     # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)

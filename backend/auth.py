@@ -4,7 +4,6 @@ from database import GET_DB
 from psycopg2 import connect
 from loguru import logger
 import os
-
 # DB_CONFIG = {
 #     "host": "localhost",
 #     # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
@@ -25,11 +24,18 @@ DB_CONFIG = {
     "user": os.getenv("user"), # CHANGE 2: Use the correct username provided by Supabase
     "password": os.getenv("pwd") # CHANGE 3: Use the correct password provided by Supabase
 }   
+print(DB_CONFIG)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def verify_password(password, hashed_password):
     return pwd_context.verify(password, hashed_password)
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+if __name__ == "__main__": 
+ print("tulip","tulip1234")
+ print("muzzy","muzzy2006")
+ print("system","system1234")
+ print("system",get_password_hash("system1234"))
 
 def authenticate_user(credientials: Credentials):
 
@@ -50,7 +56,9 @@ def authenticate_user(credientials: Credentials):
      return {"status": True, "payload": {"user_id": user[0], "username": user[1], "role": user[3]}}
     
     except Exception as e:
-     connection.rollback()
+     
+     if (connection):
+      connection.rollback()
      logger.error(f"ERROR OCCURED DURING USER AUTHENTICATION => {e}")
 
     finally:

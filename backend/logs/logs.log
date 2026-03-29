@@ -351,3 +351,68 @@
 2026-03-28 12:12:28.949 | SUCCESS  | customer_module.customer:display_all_customers_stats:37 - FETCHED CUSTOMERS STATS...
 2026-03-28 12:15:20.698 | INFO     | sales_module.sales:display_all_sales_stats:138 - FETCHING SALES STATS...
 2026-03-28 12:15:20.879 | SUCCESS  | sales_module.sales:display_all_sales_stats:144 - FETCHED SALES STATS...
+2026-03-29 07:59:41.029 | ERROR    | auth:authenticate_user:56 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:00:18.176 | ERROR    | auth:authenticate_user:56 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:00:27.117 | ERROR    | auth:authenticate_user:56 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:00:28.142 | ERROR    | auth:authenticate_user:56 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:18:02.446 | ERROR    | auth:authenticate_user:62 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:18:15.721 | ERROR    | auth:authenticate_user:62 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:19:48.032 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+
+2026-03-29 08:21:00.522 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => relation "schema_users.users" does not exist
+LINE 1: SELECT user_id, user_name, password, role FROM schema_users....
+                                                       ^
+
+2026-03-29 08:22:31.695 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+
+2026-03-29 08:23:28.027 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  Authentication error, reason: "Authentication query failed: Connection to database not available", context: Handshake
+
+2026-03-29 08:25:04.673 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (13.213.241.248), port 5432 failed: FATAL:  Authentication error, reason: "Authentication query failed: Connection to database not available", context: Handshake
+
+2026-03-29 08:26:15.381 | ERROR    | auth:authenticate_user:64 - ERROR OCCURED DURING USER AUTHENTICATION => connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (3.1.167.181), port 5432 failed: FATAL:  Authentication error, reason: "Authentication query failed: Connection to database not available", context: Handshake
+connection to server at "aws-1-ap-southeast-1.pooler.supabase.com" (3.1.167.181), port 5432 failed: FATAL:  Authentication error, reason: "Authentication query failed: Connection to database not available", context: Handshake
+
+2026-03-29 08:28:04.512 | INFO     | auth:authenticate_user:52 - USER AUTHENTICATION ATTEMPT FOR USERNAME => (1, 'muzzy', '$2b$12$WSRtEkQIDDv.xWyFu6JI5uGMU8I6ksKdEk7IqgrLP6dNxk7xvAJBq', 'admin')
+2026-03-29 08:28:05.758 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:28:05.852 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:28:05.889 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:28:05.917 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:28:31.430 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:28:32.532 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:29:28.850 | INFO     | auth:authenticate_user:52 - USER AUTHENTICATION ATTEMPT FOR USERNAME => (1, 'muzzy', '$2b$12$WSRtEkQIDDv.xWyFu6JI5uGMU8I6ksKdEk7IqgrLP6dNxk7xvAJBq', 'admin')
+2026-03-29 08:29:30.149 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:29:30.266 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:29:30.368 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:29:30.374 | CRITICAL | database:GET_DB:42 - DATABASE SERVER IS DEAD AND CONNECTION LOST DURING TRANSCATION... connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+2026-03-29 08:29:39.554 | INFO     | auth:authenticate_user:52 - USER AUTHENTICATION ATTEMPT FOR USERNAME => (1, 'muzzy', '$2b$12$WSRtEkQIDDv.xWyFu6JI5uGMU8I6ksKdEk7IqgrLP6dNxk7xvAJBq', 'admin')
+2026-03-29 08:29:41.127 | INFO     | customer_module.customer:display_all_customers:16 - FETCHING ALL CUSTOMERS...
+2026-03-29 08:29:41.128 | INFO     | sales_module.sales:display_all_sales_stats:138 - FETCHING SALES STATS...
+2026-03-29 08:29:41.128 | INFO     | customer_module.customer:display_all_customers_stats:31 - FETCHING CUSTOMERS STATS...
+2026-03-29 08:29:41.128 | INFO     | sales_module.sales:get_all_sales:226 - GETTING ALL SALES....
+2026-03-29 08:29:41.363 | SUCCESS  | customer_module.customer:display_all_customers_stats:37 - FETCHED CUSTOMERS STATS...
+2026-03-29 08:29:41.364 | SUCCESS  | sales_module.sales:display_all_sales_stats:146 - NO SALES SO NO STATS FETCHED...
+2026-03-29 08:29:41.364 | SUCCESS  | customer_module.customer:display_all_customers:22 - FETCHED ALL CUSTOMERS...
+2026-03-29 08:29:41.568 | SUCCESS  | sales_module.sales:get_all_sales:236 - NO SALES FETCH...
+2026-03-29 08:29:43.887 | INFO     | sales_module.sales:dispatch_today:32 - FETCHING TODAY'S DISPATCH STATUS...
+2026-03-29 08:29:44.070 | SUCCESS  | sales_module.sales:dispatch_today:37 - FETCHED TODAY'S DISPATCH STATUS...
+2026-03-29 08:29:44.096 | INFO     | sales_module.sales:dispatch_today:38 - DISPATCH STATUS: False
+2026-03-29 08:29:44.656 | INFO     | sales_module.sales:dispatch_customers:16 - FETCHING CUSTOMERS TO DISPATCH...
+2026-03-29 08:29:44.832 | SUCCESS  | sales_module.sales:dispatch_customers:23 - FETCHED CUSTOMERS TO DISPATCH...
