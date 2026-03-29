@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./login/login.module.css";
+import styles from "./login.module.css";
 const URL = import.meta.env.VITE_URL; 
 
 

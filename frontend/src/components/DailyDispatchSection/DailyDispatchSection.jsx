@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
-import styles from './DailyDispatchSection/DailyDispatchSection.module.css';
+import styles from './DailyDispatchSection.module.css';
 import { toKarachiDate } from '../../utils/timeUtils.js';
 const URL = import.meta.env.VITE_URL;
 // ── Sub-component: individual row ──────────────────────────────────────────

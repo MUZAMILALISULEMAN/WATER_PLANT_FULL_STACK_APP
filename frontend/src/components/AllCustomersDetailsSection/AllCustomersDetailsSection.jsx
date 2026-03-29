@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './AllCustomersDetailsSection/AllCustomersDetailsSection.module.css';
+import styles from './AllCustomersDetailsSection.module.css';
 import { toast } from 'sonner';
 
 const URL = import.meta.env.VITE_URL;

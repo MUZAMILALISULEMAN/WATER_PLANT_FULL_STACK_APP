@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styles from './CustomerDetailsCard/CustomerDetailsCard.module.css';
+import styles from './CustomerDetailsCard.module.css';
 import { toKarachi } from '../../utils/timeUtils.js';
 
 const URL = import.meta.env.VITE_URL;

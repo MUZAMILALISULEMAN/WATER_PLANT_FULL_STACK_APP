@@ -1,14 +1,14 @@
 import React, { useState, useRef, memo } from 'react';
-import styles from './CustomerSection/CustomerSection.module.css';
-import CustomerDetailsCard from './CustomerDetailsCard/CustomerDetailsCard';
-import CustomerStats from './CustomerStats/CustomerStats';
-import AllCustomersDetailsSection from './AllCustomersDetailsSection/AllCustomersDetailsSection';
+import styles from './CustomerSection.module.css';
+import CustomerDetailsCard from '../CustomerDetailsCard/CustomerDetailsCard';
+import CustomerStats from '../CustomerStats/CustomerStats';
+import AllCustomersDetailsSection from '../AllCustomersDetailsSection/AllCustomersDetailsSection';
 
 const Stats         = memo(CustomerStats);
 const CustomerTable = memo(AllCustomersDetailsSection);
 const DetailsCard   = memo(CustomerDetailsCard);
 
-// externalRefresh — flipped by App when Sales/Dispatch update something
+// externalRefresh — flipped by App when Sales/Dispat ch update something
 // onCustomerUpdated — called after a customer edit, tells App to refresh Sales
 function CustomerSection({ toast, appUser, isVisible, externalRefresh, onCustomerUpdated }) {
   const [refresh, setRefresh] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
-import styles from './AllSalesDetailsSection/AllSalesDetailsSection.module.css';
+import styles from './AllSalesDetailsSection.module.css';
 import { todayKarachi, yesterdayKarachi, weekStartKarachi, monthStartKarachi } from '/src/utils/timeUtils';
 
 const URL = import.meta.env.VITE_URL; 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './SalesStats/SalesStats.module.css';
+import styles from './SalesStats.module.css';
 const URL = import.meta.env.VITE_URL; 
 /**
  * Data layout (index):

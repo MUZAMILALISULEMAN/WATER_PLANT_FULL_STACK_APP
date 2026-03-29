@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './CustomerStats/CustomerStats.module.css';
+import styles from './CustomerStats.module.css';
 
 const URL = import.meta.env.VITE_URL;
 
