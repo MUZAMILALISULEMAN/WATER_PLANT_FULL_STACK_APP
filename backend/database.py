@@ -7,7 +7,7 @@ import os
 DB_CONFIG = {
    "host": os.getenv("host"),
     # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
-    "port": "5432", 
+    "port": os.getenv("port"), 
     "database": os.getenv("db"), # READ NOTE BELOW
     # CHANGE 2: The username must match exactly what Supabase provides
     "user": os.getenv("user"), # CHANGE 2: Use the correct username provided by Supabase
