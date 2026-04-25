@@ -380,8 +380,10 @@ function CustomerDetailsCard({ cust_id, appUser, Mode, setMode, toast, triggerRe
                 setIsAdding(true);
 
                 const postData = async () => {
+                 
+                  
                   try {
-                    let res = await fetch("${URL}/customer/add", {
+                    let res = await fetch(`${URL}/customer/add`, {
                       method: "POST",
                       body: JSON.stringify(requestBody),
                       headers: { 'Content-Type': 'application/json' },

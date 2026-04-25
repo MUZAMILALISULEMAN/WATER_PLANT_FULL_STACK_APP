@@ -4,24 +4,22 @@ from fastapi.exceptions import RequestValidationError
 from loguru import logger
 import os
 
-DB_CONFIG = {
-   "host": os.getenv("host"),
-    # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
-    "port": os.getenv("port"), 
-    "database": os.getenv("db"), # READ NOTE BELOW
-    # CHANGE 2: The username must match exactly what Supabase provides
-    "user": os.getenv("user"), # CHANGE 2: Use the correct username provided by Supabase
-    "password": os.getenv("pwd") # CHANGE 3: Use the correct password provided by Supabase
-}   
 # DB_CONFIG = {
-#     "host": "localhost",
+#    "host": os.getenv("host"),
 #     # CHANGE 1: Use Port 6543 for the Pooler (Transaction Mode)
-#     "port": "5432", 
-#     "database": "tulip-db", # READ NOTE BELOW
+#     "port": os.getenv("port"), 
+#     "database": os.getenv("db"), # READ NOTE BELOW
 #     # CHANGE 2: The username must match exactly what Supabase provides
-#     "user": "postgres", # CHANGE 2: Use the correct username provided by Supabase 
-#     "password": "muzzy" # CHANGE 3: Use the correct password provided by Supabase
+#     "user": os.getenv("user"), # CHANGE 2: Use the correct username provided by Supabase
+#     "password": os.getenv("pwd") # CHANGE 3: Use the correct password provided by Supabase
 # }   
+DB_CONFIG = {
+    "host": "localhost",
+    "port": "5432", 
+    "database": "tulip-db",
+    "user": "postgres", 
+    "password": "&MU77Y1023" 
+}   
 
 def GET_DB():
     connection = None

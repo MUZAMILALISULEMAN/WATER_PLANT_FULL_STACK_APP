@@ -1,0 +1,28 @@
+
+VITE_URL=http://127.0.0.1:8001
+
+ print("tulip","tulip1234")
+ print("muzzy","muzzy2006")
+ print("system","system1234")
+
+ DB_CONFIG = {
+    "host": os.getenv("host"),
+     "port": os.getenv("port"), 
+     "database": os.getenv("db"), 
+     "user": os.getenv("user"), 
+     "password": os.getenv("pwd") 
+ }   
+DB_CONFIG = {
+    "host": "localhost",
+    "port": "5432", 
+    "database": "tulip-db",
+    "user": "postgres", 
+    "password": "&MU77Y1023" 
+}   
+
+host=aws-1-ap-southeast-1.pooler.supabase.com
+port=5432
+db=tulip_water_plant
+user=postgres.abkspargekqnfnnyxkqx
+pwd=eI2Bus5vF34n8y4X
+

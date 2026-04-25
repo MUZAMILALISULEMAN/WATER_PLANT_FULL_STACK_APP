@@ -14,7 +14,7 @@ const Sales     = memo(SalesSection);
 function App() {
   const [activeTab,  setActiveTab]  = useState('customers');
   const [appUser,    setAppUser]    = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   // ── Cross-section refresh triggers ──────────────────────────────────────
   const [customerRefresh, setCustomerRefresh] = useState(false);

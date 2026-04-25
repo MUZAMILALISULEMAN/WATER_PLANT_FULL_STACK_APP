@@ -71,7 +71,7 @@ function SalesDetailsCard({
       setShowDropdown(false);
       return;
     }
-
+    
     const timer = setTimeout(async () => {
       if (searchAbortRef.current) searchAbortRef.current.abort();
       const controller = new AbortController();
