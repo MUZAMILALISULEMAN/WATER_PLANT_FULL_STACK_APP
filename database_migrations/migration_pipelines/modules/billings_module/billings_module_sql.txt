@@ -1,0 +1,477 @@
+-- ============================================================================
+-- BILLINGS MODULE — 5 routines feeding the FastAPI billings routes
+-- ----------------------------------------------------------------------------
+--   Read-only:
+--     schema_billings.get_billing_summary(month, year)         -> GET  /billings/summary
+--     schema_billings.get_customer_bill(cust_id, month, year)  -> GET  /billings/customer/{id}
+--
+--   Mutations:
+--     schema_billings.mark_customer_paid(cust_id, m, y, uid)   -> POST /billings/mark_paid
+--     schema_billings.mark_customer_unpaid(cust_id, m, y, uid) -> POST /billings/mark_unpaid
+--     schema_billings.send_bills_for_month(month, year, uid)   -> POST /billings/send_all
+--
+-- PRE-REQUISITE
+--   Run schemas/billings_schema.txt first (creates the bills table,
+--   billing_locked column, the two sales triggers, and the bill_status enum).
+--
+-- AUDIT NOTE
+--   modified_at and modified_by are NOT written by the mutating procedures.
+--   The audit trigger (utils.fn_audit_modified, attached as trg_audit_bills
+--   AND trg_audit_sales) fills them in. Each procedure stashes the acting
+--   user once via set_config('app.user_id', ..., true).
+--
+-- BUSINESS RULE: when is a month payable?
+--   A month becomes "billable" on the FIRST DAY OF THE NEXT MONTH. Until
+--   then, the customer is shown with a running total that updates live
+--   from sales, but no PAY button appears for that month.
+-- ============================================================================
+
+
+-- ============================================================================
+-- READ FUNCTIONS  (no writes -> no audit interaction)
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: get_billing_summary(month, year)  →  one row per customer
+-- ----------------------------------------------------------------------------
+--   this_month   = how much they owe (or owed) for the viewed month, resolved
+--                  per the rule below.
+--   outstanding  = SUM of unpaid bill amounts from STRICTLY PRIOR months.
+--   total_due    = this_month + outstanding.
+--   status       = bills.status if a row exists, else 'unpaid'.
+--
+--   "this_month" resolution:
+--     no bill row     -> live SUM from sales (running total)
+--     paid bill       -> frozen snapshot     (history can't shift)
+--     unpaid bill     -> GREATEST(snapshot, live)
+--                          live > snapshot -> new sales since snapshot
+--                          live < snapshot -> sales were deleted, bill stands
+--
+--   Customers with nothing this month AND no outstanding are excluded.
+--   Unpaid rows come first, alphabetical within each group.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_billings.get_billing_summary(
+    p_month int,
+    p_year  int
+)
+RETURNS TABLE (
+    f_cust_id     int,
+    f_name        varchar,
+    f_this_month  bigint,
+    f_outstanding bigint,
+    f_total_due   bigint,
+    f_status      varchar
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_month < 1 OR p_month > 12 THEN
+        RAISE EXCEPTION 'invalid month: %', p_month;
+    END IF;
+    IF p_year < 2020 THEN
+        RAISE EXCEPTION 'invalid year: %', p_year;
+    END IF;
+
+    RETURN QUERY
+    WITH
+    -- Live SUM of non-deleted, non-locked account sales for the viewed month.
+    -- Paid + pending both included so the total stays stable after payment.
+    sales_for_month AS (
+        SELECT s.cust_id, COALESCE(SUM(s.price), 0)::bigint AS amt
+          FROM schema_sales.sales s
+         WHERE s.sales_type     = 'account'
+           AND s.billing_locked = FALSE
+           AND s.sales_status   <> 'deleted'
+           AND s.cust_id IS NOT NULL
+           AND EXTRACT(MONTH FROM s.created_at) = p_month
+           AND EXTRACT(YEAR  FROM s.created_at) = p_year
+         GROUP BY s.cust_id
+    ),
+    -- The bill row for the viewed month, if any.
+    bill_for_month AS (
+        SELECT b.cust_id, b.amount::bigint AS amt, b.status
+          FROM schema_billings.bills b
+         WHERE b.bill_month = p_month
+           AND b.bill_year  = p_year
+    ),
+    -- Apply the resolution rule above to settle on a single this_month.
+    resolved AS (
+        SELECT c.cust_id,
+               CASE
+                   WHEN bfm.amt    IS NULL  THEN COALESCE(sfm.amt, 0)
+                   WHEN bfm.status = 'paid' THEN bfm.amt
+                   ELSE GREATEST(bfm.amt, COALESCE(sfm.amt, 0))
+               END                                              AS this_month_amt,
+               COALESCE(bfm.status::varchar, 'unpaid')::varchar AS status
+          FROM schema_customers.customers c
+          LEFT JOIN sales_for_month sfm ON sfm.cust_id = c.cust_id
+          LEFT JOIN bill_for_month  bfm ON bfm.cust_id = c.cust_id
+    ),
+    -- All unpaid bills from strictly prior months, summed per customer.
+    outstanding AS (
+        SELECT b.cust_id, COALESCE(SUM(b.amount), 0)::bigint AS amt
+          FROM schema_billings.bills b
+         WHERE b.status = 'unpaid'
+           AND (b.bill_year <  p_year
+                OR (b.bill_year = p_year AND b.bill_month < p_month))
+         GROUP BY b.cust_id
+    )
+    SELECT c.cust_id,
+           c.name,
+           r.this_month_amt                                  AS this_month,
+           COALESCE(o.amt, 0)::bigint                        AS outstanding,
+           (r.this_month_amt + COALESCE(o.amt, 0))::bigint   AS total_due,
+           r.status
+      FROM schema_customers.customers c
+      JOIN resolved          r ON r.cust_id = c.cust_id
+      LEFT JOIN outstanding  o ON o.cust_id = c.cust_id
+     WHERE r.this_month_amt > 0
+        OR COALESCE(o.amt, 0) > 0
+     ORDER BY (r.status = 'unpaid') DESC,   -- unpaid first
+              c.name ASC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: get_customer_bill(cust_id, month, year)  →  single row
+-- ----------------------------------------------------------------------------
+-- Same shape as get_billing_summary plus:
+--   unpaid_months : JSONB array of {label, amount, month, year} for every
+--                   still-unpaid bill (newest first). The viewed month is
+--                   appended only AFTER it has closed (1st of next month).
+--   audit fields  : generated_at, paid_at, modified_at, modified_by(user_name)
+-- ----------------------------------------------------------------------------
+-- Return type changed (added audit fields) -> drop+recreate. Idempotent.
+DROP FUNCTION IF EXISTS schema_billings.get_customer_bill(int, int, int);
+
+CREATE FUNCTION schema_billings.get_customer_bill(
+    p_cust_id int,
+    p_month   int,
+    p_year    int
+)
+RETURNS TABLE (
+    f_cust_id       int,
+    f_name          varchar,
+    f_this_month    bigint,
+    f_outstanding   bigint,
+    f_total_due     bigint,
+    f_status        varchar,
+    f_unpaid_months jsonb,
+    -- audit metadata for the viewed-month bill row (NULL when no row exists)
+    f_generated_at  timestamp,
+    f_paid_at       timestamp,
+    f_modified_at   timestamp,
+    f_modified_by   varchar
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_name         varchar;
+    v_status       varchar;
+    v_this_month   bigint;
+    v_outstanding  bigint;
+    v_unpaid_jsonb jsonb;
+    v_bill_amt     bigint;
+    v_sales_amt    bigint;
+    v_generated_at timestamp;
+    v_paid_at      timestamp;
+    v_modified_at  timestamp;
+    v_modified_by  varchar;
+BEGIN
+    IF p_cust_id IS NULL OR p_cust_id < 0 THEN
+        RAISE EXCEPTION 'invalid customer id';
+    END IF;
+    IF p_month < 1 OR p_month > 12 THEN
+        RAISE EXCEPTION 'invalid month: %', p_month;
+    END IF;
+
+    -- ── customer name ────────────────────────────────────────────────────
+    SELECT c.name INTO v_name
+      FROM schema_customers.customers c
+     WHERE c.cust_id = p_cust_id;
+
+    IF v_name IS NULL THEN
+        RAISE EXCEPTION 'customer % not found', p_cust_id;
+    END IF;
+
+    -- ── viewed-month bill snapshot (or NULL) ─────────────────────────────
+    SELECT b.amount::bigint, b.status::varchar
+      INTO v_bill_amt, v_status
+      FROM schema_billings.bills b
+     WHERE b.cust_id    = p_cust_id
+       AND b.bill_month = p_month
+       AND b.bill_year  = p_year;
+
+    v_status := COALESCE(v_status, 'unpaid');
+
+    -- ── live sales total for the viewed month ────────────────────────────
+    SELECT COALESCE(SUM(s.price)::bigint, 0) INTO v_sales_amt
+      FROM schema_sales.sales s
+     WHERE s.cust_id        = p_cust_id
+       AND s.sales_type     = 'account'
+       AND s.billing_locked = FALSE
+       AND s.sales_status   <> 'deleted'
+       AND EXTRACT(MONTH FROM s.created_at) = p_month
+       AND EXTRACT(YEAR  FROM s.created_at) = p_year;
+
+    -- ── this_month resolution (same rule as get_billing_summary) ─────────
+    v_this_month := CASE
+        WHEN v_bill_amt IS NULL  THEN v_sales_amt
+        WHEN v_status   = 'paid' THEN v_bill_amt
+        ELSE GREATEST(v_bill_amt, v_sales_amt)
+    END;
+
+    -- ── outstanding from strictly prior months ───────────────────────────
+    SELECT COALESCE(SUM(b.amount), 0)::bigint INTO v_outstanding
+      FROM schema_billings.bills b
+     WHERE b.cust_id = p_cust_id
+       AND b.status  = 'unpaid'
+       AND (b.bill_year <  p_year
+            OR (b.bill_year = p_year AND b.bill_month < p_month));
+
+    -- ── unpaid_months breakdown ──────────────────────────────────────────
+    -- Includes every still-unpaid past bill, plus the viewed month ONLY
+    -- once it has closed (today >= first day of next month).
+    SELECT COALESCE(
+        jsonb_agg(
+            jsonb_build_object(
+                'label',  to_char(make_date(yr, mo, 1), 'FMMonth YYYY'),
+                'amount', amt,
+                'month',  mo,
+                'year',   yr
+            )
+            ORDER BY yr DESC, mo DESC
+        ),
+        '[]'::jsonb
+    ) INTO v_unpaid_jsonb
+    FROM (
+        -- prior unpaid months (NOT the viewed one)
+        SELECT b.bill_year AS yr, b.bill_month AS mo, b.amount::bigint AS amt
+          FROM schema_billings.bills b
+         WHERE b.cust_id = p_cust_id
+           AND b.status  = 'unpaid'
+           AND NOT (b.bill_year = p_year AND b.bill_month = p_month)
+
+        UNION ALL
+
+        -- viewed month — appended only after it has closed
+        SELECT p_year, p_month, v_this_month
+         WHERE v_status = 'unpaid'
+           AND v_this_month > 0
+           AND now()::date >= (make_date(p_year, p_month, 1) + interval '1 month')::date
+    ) u;
+
+    -- ── audit metadata for the viewed month ──────────────────────────────
+    SELECT b.generated_at, b.paid_at, b.modified_at, u.user_name
+      INTO v_generated_at, v_paid_at, v_modified_at, v_modified_by
+      FROM schema_billings.bills b
+      LEFT JOIN schema_users.users u ON u.user_id = b.modified_by
+     WHERE b.cust_id    = p_cust_id
+       AND b.bill_month = p_month
+       AND b.bill_year  = p_year;
+
+    -- ── return ───────────────────────────────────────────────────────────
+    RETURN QUERY SELECT
+        p_cust_id,
+        v_name,
+        v_this_month,
+        v_outstanding,
+        (v_this_month + v_outstanding)::bigint,
+        v_status,
+        v_unpaid_jsonb,
+        v_generated_at,
+        v_paid_at,
+        v_modified_at,
+        v_modified_by;
+END;
+$$;
+
+
+-- ============================================================================
+-- MUTATIONS  (audit fields handled by trg_audit_bills + trg_audit_sales)
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: mark_customer_paid(cust_id, month, year, user_id)
+-- ----------------------------------------------------------------------------
+--   1. Refuses to run before the month has closed (defense in depth).
+--   2. Upserts the bills row for that month -> status='paid'.
+--   3. Cascades: marks the underlying account sales for that month as
+--      'paid' WHERE billing_locked = FALSE (cash-paid sales are protected).
+--   The session flag tells the sales lock-trigger NOT to flip
+--   billing_locked, so those sales remain reversible by mark_unpaid.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_billings.mark_customer_paid(
+    p_cust_id int,
+    p_month   int,
+    p_year    int,
+    p_user_id int DEFAULT 0
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_amount int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', p_user_id::text, true);
+
+    -- ── guards ───────────────────────────────────────────────────────────
+    IF p_cust_id IS NULL OR p_cust_id < 0 THEN
+        RAISE EXCEPTION 'invalid customer id';
+    END IF;
+    IF p_month < 1 OR p_month > 12 THEN
+        RAISE EXCEPTION 'invalid month: %', p_month;
+    END IF;
+    -- Bill becomes payable on the 1st of the FOLLOWING month.
+    IF (make_date(p_year, p_month, 1) + interval '1 month')::date > now()::date THEN
+        RAISE EXCEPTION 'Bill for %/% can only be marked paid from the first day of the following month',
+                        p_month, p_year;
+    END IF;
+
+    -- ── snapshot the amount from current pending sales ───────────────────
+    SELECT COALESCE(SUM(s.price), 0)::int INTO v_amount
+      FROM schema_sales.sales s
+     WHERE s.cust_id        = p_cust_id
+       AND s.sales_type     = 'account'
+       AND s.billing_locked = FALSE
+       AND s.sales_status   <> 'deleted'
+       AND EXTRACT(MONTH FROM s.created_at) = p_month
+       AND EXTRACT(YEAR  FROM s.created_at) = p_year;
+
+    -- ── upsert the bill row -> paid (modified_* via trg_audit_bills) ─────
+    INSERT INTO schema_billings.bills (
+        cust_id, bill_month, bill_year, amount, status, paid_at, paid_by
+    ) VALUES (
+        p_cust_id, p_month, p_year, GREATEST(v_amount, 0),
+        'paid', (now() AT TIME ZONE 'UTC'), p_user_id
+    )
+    ON CONFLICT (cust_id, bill_month, bill_year) DO UPDATE
+       SET status  = 'paid',
+           paid_at = (now() AT TIME ZONE 'UTC'),
+           paid_by = p_user_id;
+
+    -- ── cascade to underlying sales (skip the lock trigger) ──────────────
+    -- modified_* on those sales rows still get filled by trg_audit_sales.
+    PERFORM set_config('app.skip_billing_lock', 'on', true);
+
+    UPDATE schema_sales.sales
+       SET sales_status = 'paid'
+     WHERE cust_id        = p_cust_id
+       AND sales_type     = 'account'
+       AND billing_locked = FALSE
+       AND sales_status   = 'pending'
+       AND EXTRACT(MONTH FROM created_at) = p_month
+       AND EXTRACT(YEAR  FROM created_at) = p_year;
+
+    PERFORM set_config('app.skip_billing_lock', 'off', true);
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: mark_customer_unpaid(cust_id, month, year, user_id)
+-- ----------------------------------------------------------------------------
+-- Reverses ONLY the specified month. Other paid months are untouched.
+-- Cash-paid sales stay paid because billing_locked = TRUE protects them.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_billings.mark_customer_unpaid(
+    p_cust_id int,
+    p_month   int,
+    p_year    int,
+    p_user_id int DEFAULT 0
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', p_user_id::text, true);
+
+    IF p_cust_id IS NULL OR p_cust_id < 0 THEN
+        RAISE EXCEPTION 'invalid customer id';
+    END IF;
+    IF p_month < 1 OR p_month > 12 THEN
+        RAISE EXCEPTION 'invalid month: %', p_month;
+    END IF;
+
+    -- Flip the bill row back to unpaid (modified_* via trg_audit_bills).
+    UPDATE schema_billings.bills
+       SET status  = 'unpaid',
+           paid_at = NULL,
+           paid_by = NULL
+     WHERE cust_id    = p_cust_id
+       AND bill_month = p_month
+       AND bill_year  = p_year;
+
+    -- Cascade to underlying paid sales (skip the lock trigger).
+    PERFORM set_config('app.skip_billing_lock', 'on', true);
+
+    UPDATE schema_sales.sales
+       SET sales_status = 'pending'
+     WHERE cust_id        = p_cust_id
+       AND sales_type     = 'account'
+       AND billing_locked = FALSE
+       AND sales_status   = 'paid'
+       AND EXTRACT(MONTH FROM created_at) = p_month
+       AND EXTRACT(YEAR  FROM created_at) = p_year;
+
+    PERFORM set_config('app.skip_billing_lock', 'off', true);
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: send_bills_for_month(month, year, user_id)
+-- ----------------------------------------------------------------------------
+-- Snapshots a bills row for every customer with pending account sales in
+-- the given month. Idempotent — ON CONFLICT DO NOTHING. Returns the
+-- number of NEW bills created on this call (0 if everything was already
+-- snapshotted).
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_billings.send_bills_for_month(
+    p_month   int,
+    p_year    int,
+    p_user_id int DEFAULT 0
+)
+RETURNS int
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_count int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', p_user_id::text, true);
+
+    IF p_month < 1 OR p_month > 12 THEN
+        RAISE EXCEPTION 'invalid month: %', p_month;
+    END IF;
+
+    WITH per_cust AS (
+        SELECT s.cust_id,
+               COALESCE(SUM(s.price), 0)::int AS amt
+          FROM schema_sales.sales s
+         WHERE s.sales_type     = 'account'
+           AND s.billing_locked = FALSE
+           AND s.sales_status   <> 'deleted'
+           AND s.cust_id IS NOT NULL
+           AND EXTRACT(MONTH FROM s.created_at) = p_month
+           AND EXTRACT(YEAR  FROM s.created_at) = p_year
+         GROUP BY s.cust_id
+        HAVING COALESCE(SUM(s.price), 0) > 0
+    ),
+    inserted AS (
+        INSERT INTO schema_billings.bills (
+            cust_id, bill_month, bill_year, amount, status
+        )
+        SELECT cust_id, p_month, p_year, amt, 'unpaid'
+          FROM per_cust
+        ON CONFLICT (cust_id, bill_month, bill_year) DO NOTHING
+        RETURNING bill_id
+    )
+    SELECT COUNT(*) INTO v_count FROM inserted;
+
+    RETURN v_count;
+END;
+$$;

@@ -1,0 +1,10 @@
+create schema schema_users;
+
+
+
+create table schema_users.users (
+user_id serial primary key,
+user_name varchar(20) not null unique check (user_name <> ''),
+password varchar(100) not null,
+role varchar not null 
+);

@@ -1,0 +1,20 @@
+create schema schema_customers;
+
+CREATE TABLE schema_customers.customers (
+    cust_id serial primary key,
+    name varchar(100) Unique NOT NULL,
+    cell_phone varchar(20) Unique NOT NULL,
+    address text DEFAULT 'no address'::text not null,
+    unit_price int DEFAULT 60 NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    active_status_changed_at timestamp DEFAULT now() not null,
+    advance_money int DEFAULT 0 NOT NULL,
+	modified_by int not null default 0,
+	modified_at timestamp default now() not null,
+	regular_bottles int not null,
+    CONSTRAINT chk_cell_phone_format CHECK (((cell_phone)::text ~ '^03[0-9]{9}$'::text)),
+    CONSTRAINT customers_advance_money_check CHECK ((advance_money >= 0)),
+    CONSTRAINT customers_unit_price_check CHECK ((unit_price >= 0)),
+	CONSTRAINT fk_users foreign key (modified_by) references schema_users.users(user_id)
+	
+);

@@ -45,3 +45,16 @@ class Update_Sales(BaseModel):
     sales_id :Optional[int] = None
     user_id : Optional[int] = None
     sales_status : Optional[str] = None
+
+
+class BillingMark(BaseModel):
+    cust_id : int
+    month   : int
+    year    : int
+    user_id : Optional[int] = 0
+
+
+class BillingSendAll(BaseModel):
+    month   : int
+    year    : int
+    user_id : Optional[int] = 0

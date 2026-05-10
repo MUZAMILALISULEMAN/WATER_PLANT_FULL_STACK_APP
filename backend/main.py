@@ -6,6 +6,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from logger_config import setup_logger
 from sales_module.sales import salesAPI
+from stats_module.stats import statsAPI
+from billings_module.billings import billingsAPI
 from validation import Credentials, Response as ValidationResponse
 from auth import authenticate_user
 
@@ -61,3 +63,5 @@ def login(payload : Credentials):
     
 app.include_router(customersAPI,prefix="/customer",tags=["CUSTOMER MANAGMENT"])
 app.include_router(salesAPI,prefix="/sales",tags=["SALES MANAGMENT"])
+app.include_router(statsAPI,prefix="/stats",tags=["STATS & ANALYSIS"])
+app.include_router(billingsAPI,prefix="/billings",tags=["BILLINGS"])

@@ -1,0 +1,277 @@
+-- ============================================================================
+-- SALES MODULE — read functions
+-- ----------------------------------------------------------------------------
+-- 5 SELECT-able functions used by the FastAPI sales routes:
+--   schema_sales.search_customer(text)        <- GET /sales/search_customer/{q}
+--   schema_sales.search_sales(text)           <- GET /sales/search?q=...
+--   schema_sales.display_sales_stats()        <- GET /sales/stats   (SalesStats card)
+--   schema_sales.display_sales(int)           <- GET /sales/{id}
+--   schema_sales.display_all_sales(jsonb)     <- PUT /sales/all
+--
+-- Sister files in this folder:
+--   sales_filter-sql.txt    -> 3 sales_filter_by_* functions (already in DB)
+--   sales_procedure_sql.txt -> add_sales / update_sales_status procedures
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: schema_sales.search_customer(Q)
+-- Used inside the Sales section to find customers by name/id while
+-- attaching a sale to them. Returns active customers only.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_sales.search_customer(IN Q text)
+RETURNS TABLE (
+    f_cust_id         int,
+    f_name            varchar,
+    f_unit_price      int,
+    f_regular_bottles int
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    Q := trim(lower(Q));
+
+    RETURN QUERY
+    SELECT c.cust_id, c.name, c.unit_price, c.regular_bottles
+    FROM schema_customers.customers c
+    WHERE c.is_active = TRUE
+      AND ((c.name LIKE '%' || Q || '%') OR (c.cust_id::text LIKE Q || '%'))
+    ORDER BY
+        (c.name LIKE Q || '%') DESC,   -- starts-with matches first
+        c.name ASC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: schema_sales.search_sales(Q)
+-- Same shape as the sales_filter_by_* functions so it slots into the same
+-- frontend table.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_sales.search_sales(IN Q text)
+RETURNS TABLE (
+    f_sales_id      int,
+    f_name          varchar,
+    f_cust_id       int,
+    f_sales_type    schema_sales.sales_category,
+    f_litres        int,
+    f_bottles       int,
+    f_price         int,
+    f_status        schema_sales.sales_status
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    Q := lower(trim(Q));
+    IF Q IS NULL OR Q = '' THEN
+        RAISE EXCEPTION 'input is null or empty.';
+    END IF;
+
+    RETURN QUERY
+    SELECT
+        s.sales_id,
+        coalesce(c.name, s.consumer_name)::varchar AS name,
+        s.cust_id,
+        s.sales_type,
+        s.litres,
+        s.bottles,
+        s.price,
+        s.sales_status
+    FROM schema_sales.sales s
+    LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+    WHERE (coalesce(c.name, s.consumer_name) LIKE '%' || Q || '%')
+       OR (s.sales_id::text LIKE Q || '%')
+    ORDER BY
+        coalesce(c.name, s.consumer_name) LIKE (Q || '%') DESC,
+        (s.sales_id::text = Q) DESC,
+        coalesce(c.name, s.consumer_name) ASC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: schema_sales.display_sales_stats()
+-- Single-row tuple consumed positionally by SalesStats.jsx:
+--   [0] total_sale (count)   [4] top_sale_amount
+--   [1] total_account        [5] bottles
+--   [2] total_cash           [6] litres
+--   [3] top_customer_name    [7] top_sale_id
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_sales.display_sales_stats()
+RETURNS TABLE (
+    f_total_sale     int,
+    f_total_account  int,
+    f_total_cash     int,
+    f_customer_name  varchar,
+    f_amt            bigint,
+    f_bqty           int,
+    f_lqty           int,
+    f_sales_id       int
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_sale    int;
+    v_total_account int;
+    v_total_cash    int;
+    v_customer_name varchar;
+    v_amt           bigint;
+    v_lqty          int;
+    v_bqty          int;
+    v_sales_id      int;
+BEGIN
+    SELECT COUNT(*) INTO v_total_sale
+    FROM schema_sales.sales
+    WHERE sales_status::varchar <> 'deleted'
+      AND created_at::date = now()::date;
+
+    SELECT COUNT(*) INTO v_total_account
+    FROM schema_sales.sales
+    WHERE sales_status::varchar <> 'deleted'
+      AND sales_type::varchar = 'account'
+      AND created_at::date = now()::date;
+
+    SELECT COUNT(*) INTO v_total_cash
+    FROM schema_sales.sales
+    WHERE sales_status::varchar <> 'deleted'
+      AND sales_type::varchar <> 'account'
+      AND created_at::date = now()::date;
+
+    SELECT
+        coalesce(c.name, s.consumer_name),
+        s.price, s.litres, s.bottles, s.sales_id
+    INTO
+        v_customer_name, v_amt, v_lqty, v_bqty, v_sales_id
+    FROM schema_customers.customers c
+    RIGHT JOIN schema_sales.sales s ON c.cust_id = s.cust_id
+    WHERE s.created_at::date = now()::date
+      AND s.sales_status::varchar <> 'deleted'
+    ORDER BY s.price DESC
+    LIMIT 1;
+
+    RETURN QUERY
+    SELECT v_total_sale, v_total_account, v_total_cash,
+           v_customer_name, v_amt, v_bqty, v_lqty, v_sales_id;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: schema_sales.display_sales(p_sales_id)
+-- Single sale, joined to customer (for name) and user (for who-modified).
+-- Used by the SalesDetailsCard.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_sales.display_sales(IN p_sales_id int)
+RETURNS TABLE (
+    f_sales_id     int,
+    f_name         varchar,
+    f_cust_id      int,
+    f_sales_type   schema_sales.sales_category,
+    f_litres       int,
+    f_bottles      int,
+    f_price        int,
+    f_status       schema_sales.sales_status,
+    f_created_at   timestamp,
+    f_modified_at  timestamp,
+    f_modified_by  varchar
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_sales_id IS NULL THEN
+        RAISE EXCEPTION 'sales id is null or empty';
+    END IF;
+
+    IF p_sales_id < 0 THEN
+        RAISE EXCEPTION 'sales id is negative';
+    END IF;
+
+    RETURN QUERY
+    SELECT
+        s.sales_id,
+        coalesce(s.consumer_name, c.name)::varchar AS name,
+        s.cust_id,
+        s.sales_type,
+        s.litres,
+        s.bottles,
+        s.price,
+        s.sales_status,
+        s.created_at,
+        s.modified_at,
+        u.user_name
+    FROM schema_sales.sales s
+    LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+    JOIN schema_users.users u             ON s.modified_by = u.user_id
+    WHERE s.sales_id = p_sales_id;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: schema_sales.display_all_sales(date_range)
+-- All sales in a date range, newest first. date_range is JSONB of
+-- {start: "YYYY-MM-DD", end: "YYYY-MM-DD"} — either bound may be NULL,
+-- and an empty {} is treated as "today only" (same as both NULL).
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_sales.display_all_sales(IN date_range jsonb)
+RETURNS TABLE (
+    f_sales_id      int,
+    f_name          varchar,
+    f_cust_id       int,
+    f_sales_type    schema_sales.sales_category,
+    f_litres        int,
+    f_bottles       int,
+    f_price         int,
+    f_status        schema_sales.sales_status
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF date_range = '{}'::jsonb
+       OR (date_range ->> 'start' IS NULL AND date_range ->> 'end' IS NULL) THEN
+        date_range := NULL;
+    END IF;
+
+    IF date_range IS NULL THEN
+        RETURN QUERY
+        SELECT s.sales_id,
+               coalesce(c.name, s.consumer_name)::varchar,
+               s.cust_id, s.sales_type, s.litres, s.bottles, s.price, s.sales_status
+        FROM schema_sales.sales s
+        LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+        WHERE s.created_at::date = now()::date
+        ORDER BY s.created_at DESC;
+
+    ELSIF date_range ->> 'start' IS NULL AND date_range ->> 'end' IS NOT NULL THEN
+        RETURN QUERY
+        SELECT s.sales_id,
+               coalesce(c.name, s.consumer_name)::varchar,
+               s.cust_id, s.sales_type, s.litres, s.bottles, s.price, s.sales_status
+        FROM schema_sales.sales s
+        LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+        WHERE s.created_at::date <= (date_range ->> 'end')::date
+        ORDER BY s.created_at DESC;
+
+    ELSIF date_range ->> 'end' IS NULL AND date_range ->> 'start' IS NOT NULL THEN
+        RETURN QUERY
+        SELECT s.sales_id,
+               coalesce(c.name, s.consumer_name)::varchar,
+               s.cust_id, s.sales_type, s.litres, s.bottles, s.price, s.sales_status
+        FROM schema_sales.sales s
+        LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+        WHERE s.created_at::date >= (date_range ->> 'start')::date
+        ORDER BY s.created_at DESC;
+
+    ELSE
+        RETURN QUERY
+        SELECT s.sales_id,
+               coalesce(c.name, s.consumer_name)::varchar,
+               s.cust_id, s.sales_type, s.litres, s.bottles, s.price, s.sales_status
+        FROM schema_sales.sales s
+        LEFT JOIN schema_customers.customers c ON s.cust_id = c.cust_id
+        WHERE s.created_at::date BETWEEN (date_range ->> 'start')::date
+                                     AND (date_range ->> 'end')::date
+        ORDER BY s.created_at DESC;
+    END IF;
+END;
+$$;

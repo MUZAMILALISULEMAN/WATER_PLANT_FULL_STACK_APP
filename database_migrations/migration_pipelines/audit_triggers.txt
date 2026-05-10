@@ -1,0 +1,82 @@
+-- ============================================================================
+-- AUDIT TRIGGERS
+-- ----------------------------------------------------------------------------
+-- One generic trigger function that:
+--   * writes modified_at = now() AT TIME ZONE 'UTC'  (so the FE's toKarachi
+--     helper, which appends 'Z' to parse as UTC, displays the right time)
+--   * reads optional session var `app.user_id` to populate modified_by
+--     (procedures call PERFORM set_config('app.user_id', '<id>', true) once
+--      at the top — saves repeating modified_by = X in every UPDATE)
+--
+-- Applied to every table that has (modified_at, modified_by):
+--   schema_customers.customers
+--   schema_sales.sales
+--   schema_billings.bills
+--
+-- Trigger naming: trg_audit_* sorts alphabetically BEFORE trg_lock_*, so
+-- audit timestamps are written first; the billing-lock trigger runs after
+-- and is unaffected.
+-- ============================================================================
+
+
+-- 1. The generic function (lives in utils — single source of truth)
+CREATE OR REPLACE FUNCTION utils.fn_audit_modified()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_uid text;
+BEGIN
+    -- Always store true UTC (column is naive `timestamp` so we strip the tz
+    -- after converting). Frontend will reapply Karachi when displaying.
+    NEW.modified_at := (now() AT TIME ZONE 'UTC')::timestamp;
+
+    -- If the calling procedure stashed app.user_id in the session, use it.
+    -- Otherwise leave whatever modified_by the caller already set.
+    v_uid := current_setting('app.user_id', true);
+    IF v_uid IS NOT NULL AND v_uid <> '' THEN
+        BEGIN
+            NEW.modified_by := v_uid::int;
+        EXCEPTION WHEN others THEN
+            -- Bad value in the session var -> ignore, keep caller's value
+            NULL;
+        END;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+-- 2. Customers
+DROP TRIGGER IF EXISTS trg_audit_customers ON schema_customers.customers;
+CREATE TRIGGER trg_audit_customers
+    BEFORE INSERT OR UPDATE ON schema_customers.customers
+    FOR EACH ROW EXECUTE FUNCTION utils.fn_audit_modified();
+
+
+-- 3. Sales
+DROP TRIGGER IF EXISTS trg_audit_sales ON schema_sales.sales;
+CREATE TRIGGER trg_audit_sales
+    BEFORE INSERT OR UPDATE ON schema_sales.sales
+    FOR EACH ROW EXECUTE FUNCTION utils.fn_audit_modified();
+
+
+-- 4. Bills
+DROP TRIGGER IF EXISTS trg_audit_bills ON schema_billings.bills;
+CREATE TRIGGER trg_audit_bills
+    BEFORE INSERT OR UPDATE ON schema_billings.bills
+    FOR EACH ROW EXECUTE FUNCTION utils.fn_audit_modified();
+
+
+-- ============================================================================
+-- USAGE PATTERN inside procedures (optional — only needed if you want the
+-- trigger to populate modified_by automatically). Replace any remaining
+-- `modified_by = X` SET clauses with this once at the top of the procedure:
+--
+--   PERFORM set_config('app.user_id', p_user_id::text, true);
+--
+-- Then any UPDATE/INSERT inside this procedure will have modified_by set
+-- by the trigger to that user. Use `, true` (the third arg) so it's
+-- transaction-local and doesn't leak into other connections.
+-- ============================================================================

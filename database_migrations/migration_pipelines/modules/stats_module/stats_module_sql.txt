@@ -1,0 +1,156 @@
+-- ============================================================================
+-- STATS MODULE
+-- ----------------------------------------------------------------------------
+-- 3 endpoints feed off this file:
+--   GET /stats/pulse  -> schema_stats.current_month_pulse()
+--   GET /stats/vip    -> schema_stats.vip_customers_current_month()
+--   GET /stats/trend  -> schema_stats.sales_trend_6months()
+--
+-- All three exclude sales_status = 'deleted'.
+-- All three count revenue for both 'paid' AND 'pending'.
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- 1. PULSE  (current month totals)
+-- ----------------------------------------------------------------------------
+-- Single-row function. Uses FILTER (WHERE ...) so the whole month is read
+-- exactly once, instead of one subquery per category.
+CREATE OR REPLACE FUNCTION schema_stats.current_month_pulse()
+RETURNS TABLE (
+    f_total_revenue   bigint,
+    f_cod_revenue     bigint,
+    f_account_revenue bigint,
+    f_vendor_revenue  bigint,
+    f_total_bottles   bigint,
+    f_total_litres    bigint
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        coalesce(sum(s.price), 0)::bigint                                                AS f_total_revenue,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'cod'),     0)::bigint        AS f_cod_revenue,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'account'), 0)::bigint        AS f_account_revenue,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'vendor'),  0)::bigint        AS f_vendor_revenue,
+        coalesce(sum(s.bottles), 0)::bigint                                              AS f_total_bottles,
+        coalesce(sum(s.litres),  0)::bigint                                              AS f_total_litres
+    FROM schema_sales.sales s
+    WHERE s.sales_status <> 'deleted'
+      AND date_trunc('month', s.created_at) = date_trunc('month', now());
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- 2. VIP CUSTOMERS  (top 7 by revenue this month)
+-- ----------------------------------------------------------------------------
+-- Joins to customers, so walk-in rows (cust_id IS NULL) are dropped.
+-- "sales_type" returned is the customer's DOMINANT type this month (the
+-- type with the highest revenue contribution from them) — useful badge
+-- for the frontend.
+CREATE OR REPLACE FUNCTION schema_stats.vip_customers_current_month()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_sales_type schema_sales.sales_category,
+    f_revenue    bigint,
+    f_bottles    bigint
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH per_cust_per_type AS (
+        SELECT
+            s.cust_id,
+            s.sales_type,
+            sum(s.price)::bigint   AS revenue,
+            sum(s.bottles)::bigint AS bottles
+        FROM schema_sales.sales s
+        WHERE s.sales_status <> 'deleted'
+          AND s.cust_id IS NOT NULL
+          AND date_trunc('month', s.created_at) = date_trunc('month', now())
+        GROUP BY s.cust_id, s.sales_type
+    ),
+    totals AS (
+        SELECT
+            cust_id,
+            sum(revenue)::bigint AS revenue,
+            sum(bottles)::bigint AS bottles
+        FROM per_cust_per_type
+        GROUP BY cust_id
+    ),
+    dominant AS (
+        SELECT DISTINCT ON (cust_id)
+            cust_id,
+            sales_type
+        FROM per_cust_per_type
+        ORDER BY cust_id, revenue DESC
+    )
+    SELECT
+        t.cust_id,
+        c.name,
+        d.sales_type,
+        t.revenue,
+        t.bottles
+    FROM totals t
+    JOIN dominant d ON d.cust_id = t.cust_id
+    JOIN schema_customers.customers c ON c.cust_id = t.cust_id
+    ORDER BY t.revenue DESC
+    LIMIT 7;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- 3. SALES TREND  (last 6 months, current month included)
+-- ----------------------------------------------------------------------------
+-- generate_series is used so months with zero sales still appear
+-- (otherwise a quiet month would be missing from the chart entirely).
+-- Returns one row per month, oldest first, with revenue split by type.
+CREATE OR REPLACE FUNCTION schema_stats.sales_trend_6months()
+RETURNS TABLE (
+    f_month   text,   -- e.g. 'Nov'
+    f_year    int,
+    f_cod     bigint,
+    f_vendor  bigint,
+    f_account bigint
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH months AS (
+        SELECT date_trunc('month', m)::date AS month_start
+        FROM generate_series(
+            date_trunc('month', now()) - interval '5 months',
+            date_trunc('month', now()),
+            interval '1 month'
+        ) AS g(m)
+    )
+    SELECT
+        to_char(m.month_start, 'Mon')                                                  AS f_month,
+        EXTRACT(YEAR FROM m.month_start)::int                                          AS f_year,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'cod'),     0)::bigint      AS f_cod,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'vendor'),  0)::bigint      AS f_vendor,
+        coalesce(sum(s.price) FILTER (WHERE s.sales_type = 'account'), 0)::bigint      AS f_account
+    FROM months m
+    LEFT JOIN schema_sales.sales s
+           ON date_trunc('month', s.created_at) = m.month_start
+          AND s.sales_status <> 'deleted'
+    GROUP BY m.month_start
+    ORDER BY m.month_start ASC;
+END;
+$$;
+
+
+-- ============================================================================
+-- TEST CALLS (uncomment to verify after creating)
+-- ============================================================================
+-- SELECT * FROM schema_stats.current_month_pulse();
+-- SELECT * FROM schema_stats.vip_customers_current_month();
+-- SELECT * FROM schema_stats.sales_trend_6months();
+
+

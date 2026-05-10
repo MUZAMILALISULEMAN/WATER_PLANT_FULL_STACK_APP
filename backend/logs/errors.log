@@ -95,3 +95,193 @@ CONTEXT:  SQL statement "INSERT INTO schema_customers.customers (
     )"
 PL/pgSQL function schema_customers.add_customer(jsonb) line 54 at SQL statement
 
+2026-05-10 23:34:38.414 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.sales_trend_6months()
+                      ^
+
+2026-05-10 23:34:38.415 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.vip_customers_current_month()
+                      ^
+
+2026-05-10 23:34:38.415 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.current_month_pulse()
+                      ^
+
+2026-05-10 23:34:38.492 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_sales_stats() does not exist
+LINE 1: select * from schema_sales.display_sales_stats()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:34:38.494 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_all_sales(unknown) does not exist
+LINE 1: select * from schema_sales.display_all_sales('{"start":null,...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:34:57.908 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_all_sales(unknown) does not exist
+LINE 1: select * from schema_sales.display_all_sales('{"start":null,...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:34:57.921 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_sales_stats() does not exist
+LINE 1: select * from schema_sales.display_sales_stats()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:34:57.935 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.current_month_pulse()
+                      ^
+
+2026-05-10 23:34:57.982 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.vip_customers_current_month()
+                      ^
+
+2026-05-10 23:34:57.987 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.sales_trend_6months()
+                      ^
+
+2026-05-10 23:35:48.632 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(0) is not present in table "users".
+CONTEXT:  SQL statement "INSERT INTO schema_customers.customers (
+        name, 
+        cell_phone, 
+        address, 
+        unit_price, 
+        is_active, 
+        advance_money,
+		modified_by,
+		regular_bottles
+		
+    ) 
+    VALUES (
+        p_name, 
+        p_cell_phone, 
+        p_address, 
+        p_unit_price, 
+        p_is_active, 
+        p_advance_money,
+		p_modified_by,
+		p_regular_bottles
+    )"
+PL/pgSQL function schema_customers.add_customer(jsonb) line 54 at SQL statement
+
+2026-05-10 23:36:28.042 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(0) is not present in table "users".
+CONTEXT:  SQL statement "INSERT INTO schema_customers.customers (
+        name, 
+        cell_phone, 
+        address, 
+        unit_price, 
+        is_active, 
+        advance_money,
+		modified_by,
+		regular_bottles
+		
+    ) 
+    VALUES (
+        p_name, 
+        p_cell_phone, 
+        p_address, 
+        p_unit_price, 
+        p_is_active, 
+        p_advance_money,
+		p_modified_by,
+		p_regular_bottles
+    )"
+PL/pgSQL function schema_customers.add_customer(jsonb) line 54 at SQL statement
+
+2026-05-10 23:40:04.670 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.current_month_pulse()
+                      ^
+
+2026-05-10 23:40:04.671 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.sales_trend_6months()
+                      ^
+
+2026-05-10 23:40:04.671 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.vip_customers_current_month()
+                      ^
+
+2026-05-10 23:40:04.754 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_sales_stats() does not exist
+LINE 1: select * from schema_sales.display_sales_stats()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:40:04.756 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_all_sales(unknown) does not exist
+LINE 1: select * from schema_sales.display_all_sales('{"start":null,...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:40:34.680 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_all_sales(unknown) does not exist
+LINE 1: select * from schema_sales.display_all_sales('{"start":null,...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:40:34.706 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.current_month_pulse()
+                      ^
+
+2026-05-10 23:40:34.765 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_sales_stats() does not exist
+LINE 1: select * from schema_sales.display_sales_stats()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:40:34.798 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.sales_trend_6months()
+                      ^
+
+2026-05-10 23:40:34.823 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.vip_customers_current_month()
+                      ^
+
+2026-05-10 23:40:51.995 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => insert or update on table "customers" violates foreign key constraint "fk_users"
+DETAIL:  Key (modified_by)=(0) is not present in table "users".
+CONTEXT:  SQL statement "INSERT INTO schema_customers.customers (
+        name, 
+        cell_phone, 
+        address, 
+        unit_price, 
+        is_active, 
+        advance_money,
+		modified_by,
+		regular_bottles
+		
+    ) 
+    VALUES (
+        p_name, 
+        p_cell_phone, 
+        p_address, 
+        p_unit_price, 
+        p_is_active, 
+        p_advance_money,
+		p_modified_by,
+		p_regular_bottles
+    )"
+PL/pgSQL function schema_customers.add_customer(jsonb) line 54 at SQL statement
+
+2026-05-10 23:47:36.746 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_sales_stats() does not exist
+LINE 1: select * from schema_sales.display_sales_stats()
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:47:36.765 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.display_all_sales(unknown) does not exist
+LINE 1: select * from schema_sales.display_all_sales('{"start":null,...
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-10 23:48:01.248 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => function schema_sales.search_customer(unknown) does not exist
+LINE 1: select * from schema_sales.search_customer('Mu')
+                      ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+2026-05-11 00:15:31.225 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.current_month_pulse()
+                      ^
+
+2026-05-11 00:15:31.318 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.vip_customers_current_month()
+                      ^
+
+2026-05-11 00:15:31.406 | ERROR    | database:GET_DB:63 - LOGIC ERROR OR BACKEND ERROR => schema "schema_stats" does not exist
+LINE 1: select * from schema_stats.sales_trend_6months()
+                      ^
+

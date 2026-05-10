@@ -67,13 +67,14 @@ const onDispatchSubmitted = useCallback(() => {
 
       <Stats
   isVisible={activeTab === 'stats'}
-  externalRefresh={customerRefresh} 
+  externalRefresh={`${customerRefresh}|${salesRefresh}`}
 />
 
 <Billings
   isVisible={activeTab === 'billings'}
   toast={toast}
-  externalRefresh={salesRefresh}
+  externalRefresh={`${customerRefresh}|${salesRefresh}`}
+  onBillingUpdated={refreshSales}
 />
 
 

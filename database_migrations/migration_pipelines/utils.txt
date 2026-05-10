@@ -1,0 +1,76 @@
+create schema utils;
+
+create function utils.dispatch_customers()
+returns table
+(
+
+customer_id int,
+customer_name varchar,
+bottles int,
+price int
+
+)
+language plpgsql
+as $$
+begin
+return query
+select cust_id,name,regular_bottles,unit_price from schema_customers.customers where is_active = true;
+end;
+$$;
+
+
+
+create table utils.dispatched_logs
+(
+id serial primary key,
+dispatched_at timestamp not null default now(),
+dispatched_by int not null references schema_users.users(user_id) 
+)
+;
+
+create procedure utils.dispatch(payload jsonb)
+language plpgsql
+
+
+as $$
+
+DECLARE
+
+v_dispatched_at timestamp :=   coalesce((payload ->> 'dispatched_at'),now())::timestamp;
+v_dispatched_by int := (nullif(payload ->> 'dispatched_by',''))::int;
+
+begin
+
+
+if v_dispatched_by is null or v_dispatched_by < 0 then 
+
+raise exception 'dispatcher id is null or negative.';
+
+end if;
+
+insert into utils.dispatched_logs (dispatched_at,dispatched_by) values(v_dispatched_at,v_dispatched_by);
+
+
+end;
+  $$;
+
+
+
+
+create function utils.dispatch_today()
+
+returns table(
+
+status boolean 
+
+)
+language plpgsql
+as $$
+
+
+begin
+return query 
+select exists (select * from utils.dispatched_logs where dispatched_at::date = now()::date );  
+
+end;
+$$;

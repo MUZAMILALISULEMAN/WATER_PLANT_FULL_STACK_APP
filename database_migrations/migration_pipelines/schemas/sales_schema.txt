@@ -1,0 +1,18 @@
+
+create schema schema_sales;
+CREATE TYPE schema_sales.sales_category AS ENUM ('account', 'cod', 'vendor');
+CREATE TYPE schema_sales.sales_status AS ENUM ('pending', 'paid', 'deleted');
+CREATE TABLE schema_sales.Sales (
+    sales_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    consumer_name VARCHAR(100) DEFAULT 'tulip',
+    cust_id INT REFERENCES schema_customers.customers(cust_id),
+    sales_type schema_sales.sales_category not null,
+    litres INT  DEFAULT 0 check (litres >= 0 ),
+);
+
+
+
+
+
+
+

@@ -1,0 +1,404 @@
+-- ============================================================================
+-- CUSTOMER MODULE
+-- ----------------------------------------------------------------------------
+-- All routines feeding the FastAPI customer routes.
+--
+--   Procedures (CALL):
+--     schema_customers.add_customer(payload jsonb)
+--     schema_customers.update_customer(id int, p_updates jsonb)
+--
+--   Read-only functions (SELECT):
+--     schema_customers.display_customer(id int)
+--     schema_customers.search_customer(q text)
+--     schema_customers.display_all_customers()
+--     schema_customers.display_customer_stats()
+--     schema_customers.customer_filter_by_id_asc()
+--     schema_customers.customer_filter_by_name_asc()
+--     schema_customers.customer_filter_by_name_desc()
+--     schema_customers.customer_filter_by_active()
+--
+-- AUDIT NOTE
+--   modified_at and modified_by are NOT written by these procedures.
+--   The audit trigger (utils.fn_audit_modified, attached as trg_audit_customers)
+--   fills them in automatically. Each write-procedure stashes the acting
+--   user once via set_config('app.user_id', ..., true) and the trigger
+--   reads it on every INSERT/UPDATE in the same transaction.
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: schema_customers.add_customer(payload jsonb)
+-- ----------------------------------------------------------------------------
+-- Validates and inserts a new customer. Runs duplicate checks on name +
+-- phone before insertion. Phone must match Pakistani mobile pattern.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_customers.add_customer(IN payload jsonb)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_name            varchar := lower(trim(payload->>'name'))::varchar;
+    v_cell_phone      varchar := trim(payload->>'cell_phone')::varchar;
+    v_unit_price      int     := coalesce(payload->>'unit_price','0')::int;
+    v_address         text    := lower(trim(coalesce(nullif(payload->>'address',''),'no address')));
+    v_is_active       boolean := coalesce(payload->>'is_active','true')::boolean;
+    v_advance_money   int     := coalesce(payload->>'advance_money','0')::int;
+    v_regular_bottles int     := coalesce(payload->>'regular_bottles','0')::int;
+    v_user_id         int     := coalesce(payload->>'user_id','0')::int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', v_user_id::text, true);
+
+    -- ── validations ──────────────────────────────────────────────────────
+    IF v_name IS NULL OR v_name = '' THEN
+        RAISE EXCEPTION 'Name cannot be empty or null';
+    END IF;
+
+    IF v_regular_bottles < 0 THEN
+        RAISE EXCEPTION 'Regular bottles cannot be negative';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM schema_customers.customers WHERE name = v_name) THEN
+        RAISE EXCEPTION 'Name cannot be duplicate';
+    END IF;
+
+    IF v_cell_phone IS NULL OR v_cell_phone = '' OR v_cell_phone !~ '^03[0-9]{9}$' THEN
+        RAISE EXCEPTION 'Cell phone is empty or has wrong format (must be 03XXXXXXXXX)';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM schema_customers.customers WHERE cell_phone = v_cell_phone) THEN
+        RAISE EXCEPTION 'Cell phone (%) is already registered', v_cell_phone;
+    END IF;
+
+    IF v_unit_price < 0 THEN
+        RAISE EXCEPTION 'Bottle price must be 0 or greater';
+    END IF;
+
+    IF v_advance_money < 0 THEN
+        RAISE EXCEPTION 'Advance money cannot be negative';
+    END IF;
+
+    -- ── insertion ────────────────────────────────────────────────────────
+    -- modified_by / modified_at are filled in by trg_audit_customers.
+    INSERT INTO schema_customers.customers (
+        name, cell_phone, address, unit_price,
+        is_active, advance_money, regular_bottles
+    ) VALUES (
+        v_name, v_cell_phone, v_address, v_unit_price,
+        v_is_active, v_advance_money, v_regular_bottles
+    );
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: schema_customers.update_customer(id, p_updates)
+-- ----------------------------------------------------------------------------
+-- Partial update via JSONB. Each key is optional: only the fields present
+-- in the payload are touched. active_status_changed_at is auto-bumped
+-- whenever is_active is included in the update.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_customers.update_customer(
+    IN id        int,
+    IN p_updates jsonb
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_rows_affected            integer;
+    v_name                     text;
+    v_phone                    text;
+    v_address                  text;
+    v_price                    integer;
+    v_advance                  integer;
+    v_is_active                boolean;
+    v_regular_bottles          integer;
+    v_active_status_changed_at timestamp;
+    v_user_id                  int := coalesce(p_updates->>'user_id','0')::int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', v_user_id::text, true);
+
+    -- ── input guards ─────────────────────────────────────────────────────
+    IF p_updates IS NULL THEN
+        RAISE EXCEPTION 'Update payload is missing.';
+    END IF;
+    IF id IS NULL OR id < 0 THEN
+        RAISE EXCEPTION 'The provided customer id (%) is invalid.', id;
+    END IF;
+
+    -- ── extract + clean values that ARE in the payload ───────────────────
+    v_name            := lower(trim(p_updates->>'name'));
+    v_phone           := trim(p_updates->>'cell_phone');
+    v_address         := lower(trim(coalesce(nullif(p_updates->>'address',''),'no address')));
+    v_price           := (p_updates->>'unit_price')::int;
+    v_advance         := (p_updates->>'advance_money')::int;
+    v_is_active       := (p_updates->>'is_active')::boolean;
+    v_regular_bottles := (p_updates->>'regular_bottles')::int;
+
+    -- ── numeric guards (only when the field is present) ─────────────────
+    IF v_price             < 0 THEN RAISE EXCEPTION 'Price cannot be negative.';            END IF;
+    IF v_advance           < 0 THEN RAISE EXCEPTION 'Advance cannot be negative.';          END IF;
+    IF v_user_id           < 0 THEN RAISE EXCEPTION 'User id cannot be negative.';          END IF;
+    IF v_regular_bottles   < 0 THEN RAISE EXCEPTION 'Regular bottles cannot be negative.';  END IF;
+
+    -- ── name guards (only when 'name' is present) ────────────────────────
+    IF p_updates ? 'name' THEN
+        IF v_name IS NULL THEN
+            RAISE EXCEPTION 'Customer name cannot be null.';
+        ELSIF v_name = '' THEN
+            RAISE EXCEPTION 'Customer name cannot be empty.';
+        ELSIF EXISTS (SELECT 1 FROM schema_customers.customers WHERE name = v_name AND cust_id <> id) THEN
+            RAISE EXCEPTION 'The name "%" is already taken by another customer.', v_name;
+        END IF;
+    END IF;
+
+    -- ── phone guards (only when 'cell_phone' is present) ─────────────────
+    IF p_updates ? 'cell_phone' THEN
+        IF v_phone IS NULL OR v_phone = '' THEN
+            RAISE EXCEPTION 'Cell phone number is required.';
+        ELSIF v_phone !~ '^03[0-9]{9}$' THEN
+            RAISE EXCEPTION 'Invalid format "%": phone must start with 03 and be 11 digits.', v_phone;
+        ELSIF EXISTS (SELECT 1 FROM schema_customers.customers WHERE cell_phone = v_phone AND cust_id <> id) THEN
+            RAISE EXCEPTION 'The cell phone number "%" is already registered.', v_phone;
+        END IF;
+    END IF;
+
+    -- ── is_active flips bump the status-changed timestamp ────────────────
+    IF p_updates ? 'is_active' THEN
+        IF (p_updates->>'is_active') IS NULL THEN
+            RAISE EXCEPTION 'Active status cannot be null.';
+        END IF;
+        v_active_status_changed_at := current_timestamp;
+    END IF;
+
+    -- ── the update ───────────────────────────────────────────────────────
+    -- modified_by / modified_at are filled in by trg_audit_customers.
+    UPDATE schema_customers.customers
+       SET name                     = COALESCE(v_name,                     name),
+           cell_phone               = COALESCE(v_phone,                    cell_phone),
+           address                  = COALESCE(v_address,                  address),
+           unit_price               = COALESCE(v_price,                    unit_price),
+           advance_money            = COALESCE(v_advance,                  advance_money),
+           is_active                = COALESCE(v_is_active,                is_active),
+           regular_bottles          = COALESCE(v_regular_bottles,          regular_bottles),
+           active_status_changed_at = COALESCE(v_active_status_changed_at, active_status_changed_at)
+     WHERE cust_id = id;
+
+    GET DIAGNOSTICS v_rows_affected = ROW_COUNT;
+    IF v_rows_affected <= 0 THEN
+        RAISE EXCEPTION 'No customer found with id %.', id;
+    END IF;
+END;
+$$;
+
+
+-- ============================================================================
+-- READ FUNCTIONS  (no writes -> no audit trigger interaction)
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: display_customer(id) — full row + last-modifier user_name
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_customers.display_customer(id int)
+RETURNS TABLE (
+    f_cust_id                  int,
+    f_name                     varchar,
+    f_cell_phone               varchar,
+    f_address                  text,
+    f_unit_price               int,
+    f_advance_money            int,
+    f_is_active                boolean,
+    f_active_status_changed_at timestamp,
+    f_modified_at              timestamp,
+    f_username                 varchar,
+    f_regular_bottles          int
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF id IS NULL OR id < 0 THEN
+        RAISE EXCEPTION 'id is null or negative — enter a correct id.';
+    END IF;
+
+    RETURN QUERY
+    SELECT c.cust_id, c.name, c.cell_phone, c.address, c.unit_price,
+           c.advance_money, c.is_active, c.active_status_changed_at,
+           c.modified_at, u.user_name, c.regular_bottles
+      FROM schema_customers.customers c
+      JOIN schema_users.users        u ON u.user_id = c.modified_by
+     WHERE c.cust_id = id;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: search_customer(q) — fuzzy match on name OR cust_id
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_customers.search_customer(IN q text)
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    q := lower(trim(q));
+    IF q IS NULL OR q = '' THEN
+        RAISE EXCEPTION 'input is null or empty.';
+    END IF;
+
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     WHERE (name LIKE '%' || q || '%')
+        OR (cust_id::text LIKE q || '%')
+     ORDER BY (name LIKE q || '%') DESC,        -- starts-with first
+              (cust_id::text = q)  DESC,        -- exact id match next
+              name ASC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: display_all_customers() — all rows, recently-modified first
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_customers.display_all_customers()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     ORDER BY modified_at DESC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FILTER FUNCTIONS  (matches the four "Filter by" options in CustomerSection)
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_customers.customer_filter_by_id_asc()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     ORDER BY cust_id ASC;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION schema_customers.customer_filter_by_name_asc()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     ORDER BY name ASC;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION schema_customers.customer_filter_by_name_desc()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     ORDER BY name DESC;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION schema_customers.customer_filter_by_active()
+RETURNS TABLE (
+    f_cust_id    int,
+    f_name       varchar,
+    f_cell_phone varchar,
+    f_is_active  boolean
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cust_id, name, cell_phone, is_active
+      FROM schema_customers.customers
+     ORDER BY is_active DESC;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- FUNCTION: display_customer_stats() — header card on CustomerSection
+-- Returns: total customers, total active, total inactive,
+--          plus the top buyer's (name, this-month revenue, deliveries, id).
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION schema_customers.display_customer_stats()
+RETURNS TABLE (
+    f_total_cust     int,
+    f_total_inactive int,
+    f_total_active   int,
+    c_name           varchar,
+    c_amt            bigint,
+    c_deliveries     int,
+    c_id             int
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_cust     int;
+    v_total_inactive int;
+    v_total_active   int;
+    v_top_name       varchar;
+    v_top_amt        bigint;
+    v_top_deliveries int;
+    v_top_id         int;
+BEGIN
+    SELECT COUNT(*) INTO v_total_cust     FROM schema_customers.customers;
+    SELECT COUNT(*) INTO v_total_inactive FROM schema_customers.customers WHERE is_active = FALSE;
+    SELECT COUNT(*) INTO v_total_active   FROM schema_customers.customers WHERE is_active = TRUE;
+
+    SELECT c.name, SUM(s.price)::bigint, COUNT(*)::int, c.cust_id
+      INTO v_top_name, v_top_amt, v_top_deliveries, v_top_id
+      FROM schema_customers.customers c
+      JOIN schema_sales.sales        s ON c.cust_id = s.cust_id
+     WHERE to_char(s.created_at, 'YY-MM') = to_char(current_date, 'YY-MM')
+       AND s.sales_status::varchar <> 'deleted'
+       AND c.is_active = TRUE
+     GROUP BY c.cust_id
+     ORDER BY SUM(s.price) DESC
+     
+     LIMIT 1;
+
+    RETURN QUERY
+    SELECT v_total_cust, v_total_active, v_total_inactive,
+           v_top_name, v_top_amt, v_top_deliveries, v_top_id;
+END;
+$$;

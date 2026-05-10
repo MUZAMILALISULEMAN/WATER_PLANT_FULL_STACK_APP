@@ -1,0 +1,199 @@
+-- CREATE OR REPLACE FUNCTION schema_sales.sales_filter_by_status(DATE_RANGE JSONB)
+-- returns table (
+-- f_sales_id int,
+-- f_consumer_name varchar,
+-- f_cust_id int,
+-- f_sales_type schema_sales.sales_category,
+-- f_litres int,
+-- f_bottles int,
+-- f_price int,
+-- f_status schema_sales.sales_status
+-- )
+-- LANGUAGE PLPGSQL
+-- AS $$
+
+
+-- begin
+
+-- IF date_range = '{}'::jsonb  or (date_range ->> 'start' is null and date_range ->> 'end' is null  )THEN 
+--     date_range := NULL; 
+-- END IF;
+
+-- IF date_range IS NULL 
+   
+-- THEN
+
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date = now()::date 
+
+-- order by 
+-- s.sales_status = 'paid' desc,
+-- s.sales_status =  'pending' desc;
+
+
+-- elsif date_range ->> 'start' IS NULL AND date_range ->> 'end' is not null then
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date <= (date_range->>'end')::date
+-- order by 
+-- s.sales_status = 'paid' desc,
+-- s.sales_status =  'pending' desc;
+
+
+
+-- elsif date_range ->> 'end' IS NULL AND date_range ->> 'start' is not null then
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date >= (date_range ->> 'start')::date 
+
+-- order by 
+-- s.sales_status = 'paid' desc,
+-- s.sales_status =  'pending' desc;
+
+-- else
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date order by 
+-- s.sales_status = 'paid' desc,
+-- s.sales_status =  'pending' desc;
+ 
+
+-- end if;
+		 	
+-- END;
+
+
+-- $$;
+
+
+
+-- CREATE OR REPLACE FUNCTION schema_sales.sales_filter_by_id_asc(DATE_RANGE JSONB)
+-- returns table (
+-- f_sales_id int,
+-- f_consumer_name varchar,
+-- f_cust_id int,
+-- f_sales_type schema_sales.sales_category,
+-- f_litres int,
+-- f_bottles int,
+-- f_price int,
+-- f_status schema_sales.sales_status
+-- )
+-- LANGUAGE PLPGSQL
+-- AS $$
+
+
+
+-- begin
+
+-- IF date_range = '{}'::jsonb  or (date_range ->> 'start' is null and date_range ->> 'end' is null  ) THEN 
+--     date_range := NULL; 
+-- END IF;
+
+-- IF date_range IS NULL 
+   
+-- THEN
+
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date = now()::date 
+-- order by 
+-- s.sales_id asc;
+
+
+-- elsif date_range ->> 'start' IS NULL AND date_range ->> 'end' is not null then
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date <= (date_range->>'end')::date
+-- order by s.sales_id asc;
+
+
+
+-- elsif date_range ->> 'end' IS NULL AND date_range ->> 'start' is not null then
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date >= (date_range ->> 'start')::date 
+-- order by s.sales_id asc;
+
+-- else
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date 
+-- order by s.sales_id asc;
+ 
+
+-- end if;
+		 	
+-- END;
+
+
+
+-- $$;
+
+
+-- CREATE OR REPLACE FUNCTION schema_sales.sales_filter_by_price_desc(DATE_RANGE JSONB)
+-- returns table (
+-- f_sales_id int,
+-- f_consumer_name varchar,
+-- f_cust_id int,
+-- f_sales_type schema_sales.sales_category,
+-- f_litres int,
+-- f_bottles int,
+-- f_price int,
+-- f_status schema_sales.sales_status
+-- )
+-- LANGUAGE PLPGSQL
+-- AS $$
+
+
+-- begin
+
+-- IF date_range = '{}'::jsonb  or (date_range ->> 'start' is null and date_range ->> 'end' is null  ) THEN 
+--     date_range := NULL; 
+-- END IF;
+
+-- IF date_range IS NULL 
+   
+-- THEN
+
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date = now()::date 
+-- order by 
+-- s.price desc;
+
+
+-- elsif date_range ->> 'start' IS NULL AND date_range ->> 'end' is not null then
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date <= (date_range->>'end')::date
+-- order by s.price desc;
+
+
+
+-- elsif date_range ->> 'end' IS NULL AND date_range ->> 'start' is not null then
+-- return query
+
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status 
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date >= (date_range ->> 'start')::date 
+-- order by s.price desc;
+
+-- else
+-- return query
+-- select s.sales_id,coalesce(c.name,s.consumer_name),s.cust_id,s.sales_type,s.litres,s.bottles,s.price,s.sales_status
+-- from schema_sales.sales s left join schema_customers.customers c on s.cust_id = c.cust_id where created_at::date  between (date_range->>'start')::date and (date_range->>'end')::date 
+-- order by s.price desc;
+ 
+
+-- end if;
+		 	
+-- END;
+
+
+-- $$;
+

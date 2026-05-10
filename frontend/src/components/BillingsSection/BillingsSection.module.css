@@ -119,8 +119,8 @@
   text-transform: capitalize;
 }
 
-.info-value--red  { color: var(--color-primary); }
-.info-value--bold { font-weight: 700; font-size: 13px; }
+.info-value--red  { color: var(--color-secondary-active); font-weight: 600; }
+.info-value--bold { font-weight: 700; font-size: 13px; color: var(--color-secondary); }
 
 /* Unpaid breakdown — now has room to breathe */
 .breakdown-title {
@@ -141,10 +141,16 @@
   margin-left: var(--space-xl);
   margin-right: var(--space-xl);
   padding-bottom: 10px;
+  padding-right: 6px;
   border-bottom: 1px solid var(--border-light);
-  max-height: 160px;
+  max-height: 220px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-light) transparent;
 }
+.breakdown-list::-webkit-scrollbar       { width: 6px; }
+.breakdown-list::-webkit-scrollbar-track { background: transparent; }
+.breakdown-list::-webkit-scrollbar-thumb { background: var(--color-secondary-light); border-radius: 4px; }
 
 .breakdown-row {
   display: flex;
@@ -156,8 +162,37 @@
 }
 .breakdown-row:last-child { border-bottom: none; }
 
-.breakdown-month { color: var(--text-secondary); }
-.breakdown-amt   { font-weight: 600; color: var(--color-primary); }
+.breakdown-month { color: var(--text-secondary); flex: 1; }
+.breakdown-amt   { font-weight: 600; color: var(--color-secondary); margin-right: 8px; }
+
+/* Inline Pay button per breakdown row */
+.breakdown-pay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid var(--color-success);
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background var(--transition-quick), color var(--transition-quick);
+  min-width: 52px;
+}
+.breakdown-pay-btn:hover:not(:disabled) {
+  background: var(--color-success);
+  color: var(--text-on-secondary);
+}
+.breakdown-pay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.breakdown-pay-btn > i { font-size: 9px; }
 
 /* Action buttons */
 .bill-card__btns {
@@ -225,12 +260,25 @@
   animation: spin 0.7s linear infinite;
 }
 
+.bill-card__hint {
+  margin: 8px var(--space-xl) 0;
+  padding: 6px 8px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  background: var(--color-secondary-soft);
+  border-left: 2px solid var(--color-secondary-light);
+  border-radius: 2px;
+  line-height: 1.4;
+}
+
 /* Footer */
 .bill-card__footer {
   margin-top: auto;
   color: var(--text-secondary);
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 6px;
   font-size: 0.62rem;
   background-color: var(--color-secondary-soft);
   border-top: 1px solid var(--color-secondary-active);
@@ -238,6 +286,13 @@
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
+.bill-card__by {
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+.bill-card__at { color: var(--text-secondary); }
 
 /* ═══════════════════════════════════════════
    MAIN AREA HEADER — untouched from your version
@@ -388,7 +443,7 @@
   font-weight: 600;
 }
 
-.text-error   { color: var(--color-primary) !important; }
+.text-error   { color: var(--color-warning) !important; }
 .text-success { color: var(--color-success) !important; }
 
 /* ── TABLE WRAPPER ── */
@@ -442,7 +497,7 @@
   text-transform: capitalize;
 }
 
-.amount--overdue { color: var(--color-primary); font-weight: 600; }
+.amount--overdue { color: var(--color-warning); font-weight: 600; }
 .amount--total   { font-weight: 700; color: var(--color-secondary); }
 
 /* ── BADGES — both paid and unpaid use same outline soft style ── */
@@ -453,8 +508,15 @@
   font-weight: 500;
   text-transform: capitalize;
   border-radius: 3px;
+  text-align: center;
+  box-sizing: border-box;
 }
-.badge--pill { border-radius: 999px; }
+/* Status badges have fixed width so the column doesn't jitter as text changes. */
+.badge--pill {
+  border-radius: 999px;
+  width: 72px;
+  min-width: 72px;
+}
 
 .badge--id {
   background: var(--color-secondary-soft);
@@ -470,7 +532,7 @@
   color: var(--color-success);
 }
 
-/* Unpaid — soft red outline, matches paid style exactly */
+/* Unpaid — soft red outline */
 .badge--error {
   background-color: var(--color-error-soft);
   border: 1px solid var(--color-error-light);

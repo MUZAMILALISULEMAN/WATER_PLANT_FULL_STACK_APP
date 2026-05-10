@@ -47,6 +47,14 @@
   background-color: var(--color-secondary-soft);
 }
 
+/* ── ROWS ── line breaks + hover, matching the billings table */
+.customer-table__row {
+  transition: background var(--transition-quick);
+}
+.customer-table__row:hover { background: var(--bg-hover); }
+.customer-table__row .customer-table__cell { border-bottom: 1px solid var(--border-light); }
+.customer-table__row:last-child .customer-table__cell { border-bottom: none; }
+
 /* ── CELLS ── */
 .customer-table__cell {
   padding: 8px 0;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import styles from './BillingsSection.module.css';
+import { toKarachi } from '../../utils/timeUtils.js';
 
 const API_BASE = import.meta.env.VITE_URL;
 const fmtRs = (n) => `Rs ${Number(n || 0).toLocaleString()}`;
@@ -10,7 +11,7 @@ const MONTHS = [
 ];
 
 // ── Bill Details Card (sidebar — mirrors SalesDetailsCard) ─────────────────
-function BillDetailsCard({ bill, Mode, setMode, onMarkPaid, onMarkUnpaid, isMarking }) {
+function BillDetailsCard({ bill, Mode, setMode, onMarkPaid, onMarkUnpaid, onPayMonth, payingKey, isMarking, isMonthClosed }) {
   if (Mode === 'None') return null;
 
   return (
@@ -74,12 +75,26 @@ function BillDetailsCard({ bill, Mode, setMode, onMarkPaid, onMarkUnpaid, isMark
             <>
               <div className={styles['breakdown-title']}>Unpaid Months</div>
               <div className={styles['breakdown-list']}>
-                {bill.unpaid_months.map((m, i) => (
-                  <div key={i} className={styles['breakdown-row']}>
-                    <span className={styles['breakdown-month']}>{m.label}</span>
-                    <span className={styles['breakdown-amt']}>{fmtRs(m.amount)}</span>
-                  </div>
-                ))}
+                {bill.unpaid_months.map((m, i) => {
+                  const key       = `${m.month}-${m.year}`;
+                  const isPaying  = payingKey === key;
+                  return (
+                    <div key={i} className={styles['breakdown-row']}>
+                      <span className={styles['breakdown-month']}>{m.label}</span>
+                      <span className={styles['breakdown-amt']}>{fmtRs(m.amount)}</span>
+                      <button
+                        className={styles['breakdown-pay-btn']}
+                        title={`Mark ${m.label} as paid`}
+                        disabled={isPaying || isMarking}
+                        onClick={() => onPayMonth?.(m)}
+                      >
+                        {isPaying
+                          ? <span className={styles['bill-card__btn-spinner']} />
+                          : <><i className="fa-solid fa-check" /> Pay</>}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </>
           )}
@@ -89,7 +104,8 @@ function BillDetailsCard({ bill, Mode, setMode, onMarkPaid, onMarkUnpaid, isMark
             <button
               className={`${styles['submit-btn']} ${isMarking ? styles['btn--loading'] : ''}`}
               onClick={onMarkPaid}
-              disabled={isMarking || bill.status === 'paid'}
+              disabled={isMarking || bill.status === 'paid' || !isMonthClosed}
+              title={!isMonthClosed ? 'This month is still running. Payable from the 1st of next month.' : undefined}
             >
               {isMarking
                 ? <span className={styles['bill-card__btn-spinner']} />
@@ -105,12 +121,25 @@ function BillDetailsCard({ bill, Mode, setMode, onMarkPaid, onMarkUnpaid, isMark
                 : <><i className="fa-solid fa-rotate-left" /> Mark Unpaid</>}
             </button>
           </div>
+
+          {!isMonthClosed && (
+            <div className={styles['bill-card__hint']}>
+              Current month — billable from the 1st of next month.
+            </div>
+          )}
         </>
       )}
 
       {/* Footer — matches sales-card__footer */}
       <div className={styles['bill-card__footer']}>
-        <span className={styles['footer-meta']}>Account Customers Only</span>
+        {bill?.modified_at ? (
+          <>
+            <span className={styles['bill-card__by']}>{bill.modified_by || 'system'}</span>
+            <span className={styles['bill-card__at']}>on {toKarachi(bill.modified_at)}</span>
+          </>
+        ) : (
+          <span className={styles['footer-meta']}>Account Customers Only</span>
+        )}
       </div>
 
     </div>
@@ -190,7 +219,7 @@ function BillingsTable({ data, showLoader, onView, selectedId }) {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────
-function BillingsSection({ isVisible, toast, externalRefresh }) {
+function BillingsSection({ isVisible, toast, externalRefresh, onBillingUpdated }) {
   const now = new Date();
   const [period,       setPeriod]       = useState({ month: now.getMonth() + 1, year: now.getFullYear() });
   const [search,       setSearch]       = useState('');
@@ -199,7 +228,7 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
   const [Mode,         setMode]         = useState('None');
   const [selectedBill, setSelectedBill] = useState(null);
   const [isMarking,    setIsMarking]    = useState(false);
-  const [isSendingAll, setIsSendingAll] = useState(false);
+  const [payingKey,    setPayingKey]    = useState(null);   // `${month}-${year}` of row being paid
   const searchRef = useRef(null);
 
   const currentYear = now.getFullYear();
@@ -254,6 +283,7 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
         toast.success(DATA.message || 'Marked as paid.');
         fetchBillings();
         handleView({ cust_id: selectedBill.cust_id });
+        onBillingUpdated?.();   // notify App -> Sales + Stats refetch
       } else {
         toast.error(DATA.message || 'Failed.');
       }
@@ -279,6 +309,7 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
         toast.success(DATA.message || 'Marked as unpaid.');
         fetchBillings();
         handleView({ cust_id: selectedBill.cust_id });
+        onBillingUpdated?.();   // notify App -> Sales + Stats refetch
       } else {
         toast.error(DATA.message || 'Failed.');
       }
@@ -289,25 +320,38 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
     }
   };
 
-  // ── Send bill to all ──
-  const handleSendAll = async () => {
-    if (isSendingAll) return;
-    setIsSendingAll(true);
+  // ── Pay a specific month from the breakdown row ──
+  const handlePayMonth = async (m) => {
+    if (!selectedBill || payingKey) return;
+    const key = `${m.month}-${m.year}`;
+    setPayingKey(key);
     try {
-      const res  = await fetch(`${API_BASE}/billings/send_all`, {
+      const res  = await fetch(`${API_BASE}/billings/mark_paid`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ month: period.month, year: period.year }),
+        body:    JSON.stringify({ cust_id: selectedBill.cust_id, month: m.month, year: m.year }),
       });
       const DATA = await res.json();
-      if (DATA.status) toast.success(DATA.message || 'Bills sent.');
-      else toast.error(DATA.message || 'Failed to send bills.');
+      if (DATA.status) {
+        toast.success(DATA.message || `Marked ${m.label} as paid.`);
+        fetchBillings();
+        handleView({ cust_id: selectedBill.cust_id });
+        onBillingUpdated?.();   // notify App -> Sales + Stats refetch
+      } else {
+        toast.error(DATA.message || 'Failed.');
+      }
     } catch {
       toast.error('Network issue — try later.');
     } finally {
-      setIsSendingAll(false);
+      setPayingKey(null);
     }
   };
+
+  // ── Is the viewed month CLOSED? ──
+  // A month becomes payable starting on the FIRST DAY OF THE NEXT MONTH.
+  // period.month is 1-12; new Date(year, period.month, 1) gives the 1st of the next month
+  // (JS months are 0-indexed, so passing period.month=5 yields June 1 for May).
+  const isMonthClosed = new Date() >= new Date(period.year, period.month, 1);
 
   // ── Filtered data ──
   const filtered = data.filter(r =>
@@ -337,7 +381,10 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
           setMode={setMode}
           onMarkPaid={handleMarkPaid}
           onMarkUnpaid={handleMarkUnpaid}
+          onPayMonth={handlePayMonth}
+          payingKey={payingKey}
           isMarking={isMarking}
+          isMonthClosed={isMonthClosed}
         />
       </aside>
 
@@ -392,17 +439,6 @@ function BillingsSection({ isVisible, toast, externalRefresh }) {
                 />
                  <i className={`fa-solid fa-magnifying-glass ${styles['billings-manager__search-icon']}`} />
               </div>
-
-              {/* Send bill to all */}
-              <button
-                className={`${styles['btn-send-all']} ${isSendingAll ? styles['btn--loading'] : ''}`}
-                onClick={handleSendAll}
-                disabled={isSendingAll}
-              >
-                {isSendingAll
-                  ? <span className={styles['bill-card__btn-spinner']} />
-                  : <><i className="fa-solid fa-paper-plane" /> Send Bill to All</>}
-              </button>
             </div>
           </div>
         </header>

@@ -16,8 +16,9 @@ DB_CONFIG = {
     "host": "localhost",
     "port": "5432", 
     "database": "tulip-db",
-    "user": "postgres", 
-    "password": "&MU77Y1023" 
+    "user": "postgres",
+    &MU77Y1023 
+    "password": "newpassword123" 
 }   
 
 host=aws-1-ap-southeast-1.pooler.supabase.com

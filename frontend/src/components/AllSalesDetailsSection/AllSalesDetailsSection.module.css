@@ -126,6 +126,14 @@
   background-color: var(--color-secondary-soft);
 }
 
+/* ── ROWS ── line breaks + hover, matching the billings table */
+.sales-table__row {
+  transition: background var(--transition-quick);
+}
+.sales-table__row:hover { background: var(--bg-hover); }
+.sales-table__row .sales-table__cell { border-bottom: 1px solid var(--border-light); }
+.sales-table__row:last-child .sales-table__cell { border-bottom: none; }
+
 /* ── CELLS ── */
 .sales-table__cell {
   padding: 8px 0;

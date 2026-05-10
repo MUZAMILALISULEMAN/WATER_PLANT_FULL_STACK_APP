@@ -188,7 +188,7 @@ function StatsSection({ isVisible, externalRefresh }) {
     };
 
     fetchAll();
-  }, [externalRefresh]);
+  }, [externalRefresh, isVisible]);
 
   // ── Derived pulse values ──
   const totalRevenue   = pulse?.total_revenue   ?? 0;

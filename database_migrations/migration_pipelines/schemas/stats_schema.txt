@@ -1,0 +1,16 @@
+create schema if not exists schema_stats;
+
+-- schema_stats holds analytics-only objects (views + functions).
+-- It owns NO tables of its own. All data is derived from
+-- schema_sales.sales (joined with schema_customers.customers when needed).
+--
+-- Rules applied in every aggregate:
+--   1. sales_status = 'deleted' rows are EXCLUDED everywhere
+--      (deleted = audit-removed, must not inflate numbers).
+--   2. 'paid' AND 'pending' both count toward revenue
+--      (revenue earned in the month, paid-or-owed).
+--   3. VIP joins to customers and excludes rows with NULL cust_id
+--      (walk-in cash/vendor sales with no customer can't be VIP).
+--   4. is_active filter is intentionally NOT applied — a deactivated
+--      customer who bought heavily this month is still a top customer
+--      for the month.

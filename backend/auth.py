@@ -1,17 +1,8 @@
 from passlib.context import CryptContext
 from validation import Credentials
-from database import GET_DB
+from database import DB_CONFIG          # single source of truth
 from psycopg2 import connect
 from loguru import logger
-import os
-
-DB_CONFIG = {
-    "host": "localhost",
-    "port": "5432", 
-    "database": "tulip-db",
-    "user": "postgres", 
-    "password": "&MU77Y1023" 
-}   
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def verify_password(password, hashed_password):
@@ -20,10 +11,6 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-
-print(get_password_hash("system1234"));
-
- 
 def authenticate_user(credientials: Credentials):
 
 

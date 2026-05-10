@@ -1,0 +1,196 @@
+-- ============================================================================
+-- SALES PROCEDURES
+-- ----------------------------------------------------------------------------
+-- Two CALL-able procedures used by the FastAPI sales routes:
+--   schema_sales.add_sales(payload jsonb)            <- POST /sales/add, /sales/dispatch
+--   schema_sales.update_sales_status(payload jsonb)  <- PUT  /sales/update
+--
+-- AUDIT NOTE
+--   modified_at and modified_by are NOT written by these procedures.
+--   The audit trigger (utils.fn_audit_modified, attached as trg_audit_sales)
+--   fills them in automatically once the procedure stashes the acting user
+--   via set_config('app.user_id', ..., true).
+-- ============================================================================
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: schema_sales.add_sales(payload jsonb)
+-- ----------------------------------------------------------------------------
+-- BUSINESS RULES
+--   1. ACCOUNT BUDDIES (cust_id IS NOT NULL):
+--        - sales_type must be 'account'
+--        - consumer_name must be NULL  (we use the joined customers.name)
+--        - sales_status defaults to 'pending'
+--        - Customer must be is_active = TRUE
+--   2. WALK-INS / GUESTS (cust_id IS NULL):
+--        - sales_type must NOT be 'account'
+--        - consumer_name defaults to 'tulip' if blank
+--        - sales_status defaults to 'paid'
+--   3. AUTO-PRICE
+--        - For account buddies, if price is missing but bottles is given,
+--          price is computed as customer.unit_price * bottles.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_sales.add_sales(IN payload jsonb)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_rows_affected  integer;
+    v_is_active      boolean;
+    v_unit_price     integer;
+
+    v_consumer_name  varchar   := lower(trim(nullif(payload->>'consumer_name', '')));
+    v_cust_id        int       := (payload->>'cust_id')::int;
+    v_sales_type     varchar   := lower(trim(payload->>'sales_type'));
+    v_litres         int       := (payload->>'litres')::int;
+    v_bottles        int       := (payload->>'bottles')::int;
+    v_price          int       := (payload->>'price')::int;
+    v_sales_status   varchar   := lower(trim(nullif(payload->>'sales_status','')));
+    v_reporting_time timestamp := (payload->>'reporting_time')::timestamp;
+    v_user_id        int       := coalesce(payload->>'user_id','0')::int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', v_user_id::text, true);
+
+    -- ── numeric guards ───────────────────────────────────────────────────
+    IF v_cust_id < 0 THEN RAISE EXCEPTION 'customer id cannot be negative'; END IF;
+    IF v_litres  < 0 THEN RAISE EXCEPTION 'litres cannot be negative';      END IF;
+    IF v_price   < 0 THEN RAISE EXCEPTION 'price cannot be negative';       END IF;
+    IF v_bottles < 0 THEN RAISE EXCEPTION 'bottles cannot be negative';     END IF;
+
+    IF v_litres IS NOT NULL AND v_bottles IS NOT NULL THEN
+        RAISE EXCEPTION 'litres and bottles cannot both be set on the same sale';
+    END IF;
+    IF v_litres IS NULL AND v_bottles IS NULL THEN
+        RAISE EXCEPTION 'one of litres or bottles must be provided';
+    END IF;
+
+    IF v_litres IS NOT NULL AND v_price IS NULL THEN
+        RAISE EXCEPTION 'price is required when litres are given';
+    END IF;
+
+    -- ── consumer name vs cust id ─────────────────────────────────────────
+    IF v_consumer_name IS NOT NULL AND v_cust_id IS NOT NULL THEN
+        RAISE EXCEPTION 'do not pass consumer_name when cust_id is given';
+    END IF;
+
+    -- ── sales type ───────────────────────────────────────────────────────
+    IF v_sales_type IS NULL THEN
+        RAISE EXCEPTION 'sales_type is null.';
+    END IF;
+    IF v_sales_type NOT IN ('cod','account','vendor') THEN
+        RAISE EXCEPTION 'sales_type "%" is not valid', v_sales_type;
+    END IF;
+
+    -- ── sales status (NULL is fine — defaulted below) ────────────────────
+    IF v_sales_status IS NOT NULL AND v_sales_status NOT IN ('paid','pending','deleted') THEN
+        RAISE EXCEPTION 'sales_status "%" is not valid', v_sales_status;
+    END IF;
+
+    -- ── account vs cust id consistency ───────────────────────────────────
+    IF v_cust_id IS NULL     AND v_sales_type =  'account' THEN
+        RAISE EXCEPTION 'cust_id is required for account-type sales';
+    END IF;
+    IF v_cust_id IS NOT NULL AND v_sales_type <> 'account' THEN
+        RAISE EXCEPTION 'cust_id present but sales_type is not account';
+    END IF;
+
+    -- ── defaulting ───────────────────────────────────────────────────────
+    IF v_consumer_name IS NULL AND v_sales_type <> 'account' THEN
+        v_consumer_name := 'tulip';
+    END IF;
+
+    IF v_sales_status IS NULL THEN
+        v_sales_status := CASE WHEN v_sales_type = 'account' THEN 'pending' ELSE 'paid' END;
+    END IF;
+
+    -- Auto-price for account buddies (price = unit_price * bottles)
+    IF v_price IS NULL AND v_bottles IS NOT NULL AND v_cust_id IS NOT NULL THEN
+        SELECT unit_price INTO v_unit_price
+          FROM schema_customers.customers
+         WHERE cust_id = v_cust_id AND is_active = TRUE;
+        v_price := v_unit_price * v_bottles;
+    END IF;
+
+    v_price          := coalesce(v_price, 0);
+    v_reporting_time := coalesce(v_reporting_time, (now() AT TIME ZONE 'UTC')::timestamp);
+
+    -- ── insertion (modified_by / modified_at filled by trg_audit_sales) ──
+    IF v_cust_id IS NOT NULL THEN
+        SELECT is_active INTO v_is_active
+          FROM schema_customers.customers
+         WHERE cust_id = v_cust_id;
+
+        IF v_is_active IS TRUE THEN
+            INSERT INTO schema_sales.sales (
+                consumer_name, cust_id, sales_type, litres, bottles, price,
+                sales_status, created_at
+            ) VALUES (
+                v_consumer_name, v_cust_id, v_sales_type::schema_sales.sales_category,
+                v_litres, v_bottles, v_price,
+                v_sales_status::schema_sales.sales_status,
+                v_reporting_time
+            );
+        END IF;
+    ELSE
+        INSERT INTO schema_sales.sales (
+            consumer_name, cust_id, sales_type, litres, bottles, price,
+            sales_status, created_at
+        ) VALUES (
+            v_consumer_name, NULL, v_sales_type::schema_sales.sales_category,
+            v_litres, v_bottles, v_price,
+            v_sales_status::schema_sales.sales_status,
+            v_reporting_time
+        );
+    END IF;
+
+    GET DIAGNOSTICS v_rows_affected = ROW_COUNT;
+    IF v_rows_affected <= 0 THEN
+        RAISE EXCEPTION 'unable to add sale — customer #% is not active or missing', v_cust_id;
+    END IF;
+END;
+$$;
+
+
+-- ----------------------------------------------------------------------------
+-- PROCEDURE: schema_sales.update_sales_status(payload jsonb)
+-- ----------------------------------------------------------------------------
+-- Flips a single sale's status. Backs the
+-- "Mark Paid / Pending / Deleted" dropdown on the SalesDetailsCard.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE schema_sales.update_sales_status(IN payload jsonb)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_result       integer;
+    v_user_id      int     := coalesce(payload->>'user_id','0')::int;
+    v_sales_status varchar := lower(trim(nullif(payload->>'sales_status','')));
+    v_sales_id     int     := (payload->>'sales_id')::int;
+BEGIN
+    -- Hand the user id to the audit trigger for this transaction.
+    PERFORM set_config('app.user_id', v_user_id::text, true);
+
+    -- ── guards ───────────────────────────────────────────────────────────
+    IF v_user_id < 0 THEN
+        RAISE EXCEPTION 'user_id cannot be negative';
+    END IF;
+    IF v_sales_id IS NULL OR v_sales_id < 0 THEN
+        RAISE EXCEPTION 'sales_id is missing or negative';
+    END IF;
+    IF v_sales_status IS NULL THEN
+        RAISE EXCEPTION 'sales_status is empty';
+    END IF;
+    IF v_sales_status NOT IN ('deleted','paid','pending') THEN
+        RAISE EXCEPTION 'sales_status "%" is not valid', v_sales_status;
+    END IF;
+
+    -- ── update (modified_by / modified_at filled by trg_audit_sales) ─────
+    UPDATE schema_sales.sales
+       SET sales_status = v_sales_status::schema_sales.sales_status
+     WHERE sales_id = v_sales_id;
+
+    GET DIAGNOSTICS v_result = ROW_COUNT;
+    IF v_result <= 0 THEN
+        RAISE EXCEPTION 'No sale found with id %', v_sales_id;
+    END IF;
+END;
+$$;

@@ -1,0 +1,111 @@
+-- ============================================================================
+-- BILLINGS SCHEMA — table + status enum + billing_locked column on sales
+--                  + 2 triggers that auto-set billing_locked
+-- ----------------------------------------------------------------------------
+-- DESIGN (Option A from the design discussion):
+--   * Each (customer, month, year) gets ONE bills row.
+--   * bills.amount is a SNAPSHOT taken at generation time; it doesn't
+--     re-derive from sales every read.
+--   * bills.status is the source of truth for "did the customer pay
+--     for this month yet". Paying May NEVER affects March's row.
+--
+--   * schema_sales.sales gets a NEW column: billing_locked BOOLEAN.
+--     This is the safety net for cash-paid sales:
+--       - Sale inserted as 'paid'  -> billing_locked = TRUE  (auto via trigger)
+--       - Sale inserted as 'pending' -> billing_locked = FALSE (default)
+--       - User flips status in Sales section -> billing_locked auto-flipped
+--       - Billing module's mark_paid / mark_unpaid only touches sales
+--         rows WHERE billing_locked = FALSE, so cash-paid entries are
+--         protected from corruption.
+-- ============================================================================
+
+
+-- 1. Schema -----------------------------------------------------------------
+create schema if not exists schema_billings;
+
+
+-- 2. Status enum ------------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'bill_status') THEN
+        CREATE TYPE schema_billings.bill_status AS ENUM ('unpaid', 'paid');
+    END IF;
+END $$;
+
+
+-- 3. Bills table ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS schema_billings.bills (
+    bill_id      INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cust_id      INT NOT NULL,
+    bill_month   INT NOT NULL CHECK (bill_month BETWEEN 1 AND 12),
+    bill_year    INT NOT NULL CHECK (bill_year >= 2020),
+    amount       INT NOT NULL CHECK (amount >= 0),
+    status       schema_billings.bill_status NOT NULL DEFAULT 'unpaid',
+    generated_at TIMESTAMP NOT NULL DEFAULT now(),
+    paid_at      TIMESTAMP,
+    paid_by      INT,
+    modified_by  INT NOT NULL DEFAULT 0,
+    modified_at  TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT fk_bills_customer    FOREIGN KEY (cust_id)     REFERENCES schema_customers.customers(cust_id),
+    CONSTRAINT fk_bills_paid_by     FOREIGN KEY (paid_by)     REFERENCES schema_users.users(user_id),
+    CONSTRAINT fk_bills_modified_by FOREIGN KEY (modified_by) REFERENCES schema_users.users(user_id),
+    CONSTRAINT uq_bills_cust_month_year UNIQUE (cust_id, bill_month, bill_year)
+);
+
+
+-- 4. billing_locked column on sales ----------------------------------------
+ALTER TABLE schema_sales.sales
+    ADD COLUMN IF NOT EXISTS billing_locked BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- One-time backfill: every existing 'paid' sale was paid at the counter
+-- (since no billing module has ever run before this point), so lock them.
+UPDATE schema_sales.sales
+   SET billing_locked = TRUE
+ WHERE sales_status = 'paid'
+   AND billing_locked = FALSE;
+
+
+-- 5. Triggers --------------------------------------------------------------
+
+-- 5a. INSERT trigger: if a sale is added as 'paid', it's a cash-at-counter
+--     sale -> lock it from billing reversals.
+CREATE OR REPLACE FUNCTION schema_sales.fn_lock_on_paid_insert()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.sales_status = 'paid' THEN
+        NEW.billing_locked := TRUE;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_sales_lock_on_insert ON schema_sales.sales;
+CREATE TRIGGER trg_sales_lock_on_insert
+    BEFORE INSERT ON schema_sales.sales
+    FOR EACH ROW EXECUTE FUNCTION schema_sales.fn_lock_on_paid_insert();
+
+
+-- 5b. UPDATE trigger: when a user manually flips status in the Sales section,
+--     auto-flip billing_locked accordingly. Billing module sets a session
+--     flag to bypass this trigger when IT performs the update.
+CREATE OR REPLACE FUNCTION schema_sales.fn_lock_on_status_update()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+    -- Bypass when billing module is updating (set_config('app.skip_billing_lock','on', true))
+    IF current_setting('app.skip_billing_lock', true) = 'on' THEN
+        RETURN NEW;
+    END IF;
+
+    IF NEW.sales_status = 'paid' AND OLD.sales_status IS DISTINCT FROM 'paid' THEN
+        NEW.billing_locked := TRUE;
+    ELSIF NEW.sales_status = 'pending' AND OLD.sales_status = 'paid' THEN
+        NEW.billing_locked := FALSE;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_sales_lock_on_update ON schema_sales.sales;
+CREATE TRIGGER trg_sales_lock_on_update
+    BEFORE UPDATE OF sales_status ON schema_sales.sales
+    FOR EACH ROW EXECUTE FUNCTION schema_sales.fn_lock_on_status_update();
