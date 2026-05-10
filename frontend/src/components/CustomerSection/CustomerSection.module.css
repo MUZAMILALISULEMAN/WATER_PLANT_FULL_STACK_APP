@@ -19,6 +19,7 @@
   display: grid;
   grid-template-rows: 128px .98fr;
   
+  
 }
 
 .display-none{

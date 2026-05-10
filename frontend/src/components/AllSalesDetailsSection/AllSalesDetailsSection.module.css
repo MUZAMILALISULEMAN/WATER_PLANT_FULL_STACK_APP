@@ -310,6 +310,7 @@
   flex: 1;
   overflow: hidden;
   display: flex;
+  border-radius: var(--radius-md);
 }
 
 /* ── HEADER ── */

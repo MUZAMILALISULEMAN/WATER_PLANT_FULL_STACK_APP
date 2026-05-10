@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { id: 'stats', label: 'Stats & Analysis', icon: 'fa-chart-bar' },
   { id: 'billings', label: 'Billings', icon: 'fa-file-invoice' },
 ];
-// { id: 'expenses', label: 'Daily Expenses', icon: 'fa-box-dollar' }
+
 
 function SideBar({ activeTab, setActiveTab ,setIsLoggedIn}) {
   return (
@@ -23,7 +23,8 @@ function SideBar({ activeTab, setActiveTab ,setIsLoggedIn}) {
             className={`${styles['sidebar__item']} ${
               activeTab === item.id ? styles['sidebar__item--active'] : ''
             }`}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {setActiveTab(item.id);console.log(item.id);
+            }}
           >
             <i className={`fa-solid ${item.icon}`}></i> {item.label}
           </div>

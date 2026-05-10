@@ -1,0 +1,358 @@
+/* ── VISIBILITY — matches your app pattern ── */
+
+
+/* ── SECTION SHELL — full content area, internal grid ── */
+.stats-section {
+  display: grid;
+  grid-template-rows: auto 0.96fr;  
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-page);
+  margin-right: 24px;
+  border-left: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+}
+.display-grid { display: grid; }
+.display-none { display: none; }
+/* ── HEADER ── */
+.stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-secondary-soft);
+  border-bottom: 1px solid var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.stats-header__title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: var(--font-body);
+}
+
+.stats-header__sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ── BENTO GRID ── 
+   Row 1: two pulse cards
+   Row 2: VIP (left) + Chart (right)
+── */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  padding: 16px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── SHARED CARD BASE ── */
+.pulse-card,
+.vip-card,
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── PULSE CARDS (row 1) ── */
+.pulse-card__label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.pulse-card__primary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.pulse-card__primary-val {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  font-family: var(--font-body);
+  line-height: 1;
+}
+
+.pulse-card__primary-lbl {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.pulse-card__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
+}
+
+.pulse-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-xs);
+}
+
+.pulse-card__row-label { color: var(--text-secondary); }
+.pulse-card__row-val   { color: var(--color-secondary); font-weight: 600; }
+
+/* ── SECTION LABEL (VIP + Chart header) ── */
+.section-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  flex-shrink: 0;
+}
+
+.section-label__sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── VIP LEADERBOARD (bottom left) ── */
+.vip-card {
+  overflow: hidden;
+}
+
+.vip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.vip-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.vip-row__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vip-row__left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.vip-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-secondary-soft);
+  color: var(--color-secondary-active);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.vip-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-secondary-active);
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vip-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.vip-bottles {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.vip-row__right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.vip-revenue {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.vip-pct {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* Progress bar */
+.vip-bar-track {
+  height: 2px;
+  background: var(--border-light);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.vip-bar-fill {
+  height: 100%;
+  background: var(--color-secondary);
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ── CHART CARD (bottom right) ── */
+.chart-card {
+  overflow: hidden;
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.chart-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chart-legend__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chart-legend__label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── TOOLTIP ── */
+.tooltip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-md);
+  min-width: 160px;
+}
+
+.tooltip__label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.tooltip__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-primary);
+  margin-top: 3px;
+}
+
+.tooltip__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.tooltip__name { flex: 1; color: var(--text-secondary); }
+.tooltip__val  { font-weight: 600; color: var(--color-secondary); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: capitalize;
+  border-radius: 3px;
+}
+
+.badge--unit {
+  background-color: var(--color-secondary-soft);
+  border: 1px solid var(--color-secondary-light);
+  color: var(--color-secondary-active);
+}
+
+/* ── LOADER ── */
+.loader-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid var(--color-secondary-soft);
+  border-top-color: var(--color-secondary);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── EMPTY ── */
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+}

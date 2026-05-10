@@ -6,25 +6,36 @@ import SalesSection from './components/SalesSection/SalesSection';
 import SideBar from './components/SideBar/SideBar'
 import Login from './components/login/login';
 import DailyDispatchSection from './components/DailyDispatchSection/DailyDispatchSection';
+import StatsSection from './components/StatsSection/StatsSection';
+import BillingsSection from './components/BillingsSection/BillingsSection';
 
+
+const Billings = memo(BillingsSection);
+const Stats = memo(StatsSection);
 const Dispatch  = memo(DailyDispatchSection);
 const Customers = memo(CustomerSection);
 const Sales     = memo(SalesSection);
 
+
+
+
+
 function App() {
-  const [activeTab,  setActiveTab]  = useState('customers');
-  const [appUser,    setAppUser]    = useState(null);
+  const [activeTab,  setActiveTab]  = useState('stats');
+  const [appUser,    setAppUser]    = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  // ── Cross-section refresh triggers ──────────────────────────────────────
   const [customerRefresh, setCustomerRefresh] = useState(false);
   const [salesRefresh,    setSalesRefresh]    = useState(false);
-
   const refreshCustomers = useCallback(() => setCustomerRefresh(p => !p), []);
-  const refreshSales     = useCallback(() => setSalesRefresh(p => !p),    []);
+const refreshSales     = useCallback(() => setSalesRefresh(p => !p),    []);
+const onDispatchSubmitted = useCallback(() => {
+  refreshSales();
+  refreshCustomers();
+}, [refreshSales, refreshCustomers]);
 
   return (
-    isLoggedIn ? (
+    isLoggedIn ? ( 
       <div className="app-layout">
         <SideBar activeTab={activeTab} setActiveTab={setActiveTab} setIsLoggedIn={setIsLoggedIn} />
 
@@ -37,7 +48,7 @@ function App() {
           externalRefresh={customerRefresh}
         />
 
-        {/* Sales status updated → refresh Customers */}
+   
         <Sales
           toast={toast}
           appUser={appUser}
@@ -46,13 +57,25 @@ function App() {
           externalRefresh={salesRefresh}
         />
 
-        {/* Dispatch submitted → refresh both Sales and Customers */}
+       
         <Dispatch
           toast={toast}
           appUser={appUser}
           isVisible={activeTab === 'dispatch'}
-          onDispatchSubmitted={() => { refreshSales(); refreshCustomers(); }}
+          onDispatchSubmitted={onDispatchSubmitted}
         />
+
+      <Stats
+  isVisible={activeTab === 'stats'}
+  externalRefresh={customerRefresh} 
+/>
+
+<Billings
+  isVisible={activeTab === 'billings'}
+  toast={toast}
+  externalRefresh={salesRefresh}
+/>
+
 
         <Toaster
           visibleToasts={1}

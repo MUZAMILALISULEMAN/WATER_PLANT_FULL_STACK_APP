@@ -142,7 +142,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
 
   // ── Init: lock check then conditionally fetch ──
   useEffect(() => {
-    if (!isVisible) return;
+    
 
     const init = async () => {
       setLocked(true);
@@ -152,7 +152,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
         const DATA = await res.json();
         if (DATA.status) {
           setLockMessage(DATA.message);
-          return; // stay locked, skip customer fetch
+          return; 
         }
         setLocked(false);
         fetchCustomers();
@@ -165,7 +165,7 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
     };
 
     init();
-  }, [isVisible]);
+  }, []);
 
   // ── Handlers ──
   const handleBottles      = useCallback((i, v) => { const val = v === '' ? '' : Number(v); setRows(prev => prev.map((r, idx) => idx === i ? { ...r, bottles: val } : r)); }, []);
@@ -216,10 +216,10 @@ function DailyDispatchSection({ toast, appUser, isVisible, onDispatchSubmitted }
   };
 
   const today    = toKarachiDate(new Date());
-  const visClass = isVisible ? styles['display-block'] : styles['display-none'];
+  
 
   return (
-    <div className={`${styles['dispatch-section']} ${visClass}`}>
+    <div className={`${styles['dispatch-section']} ${isVisible ? styles['display-block'] : styles['display-none']}`}>
 
       {/* ── HEADER ── */}
       <div className={styles['dispatch-card__header']}>
